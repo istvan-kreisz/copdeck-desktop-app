@@ -2,6 +2,7 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { Currency, EUR } from "copdeck-scraper/dist/types";
+import { CheckIcon } from "@heroicons/react/outline";
 
 function App() {
   return (
@@ -12,6 +13,9 @@ function App() {
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
         <h3>{EUR.symbol}</h3>
+        <h3>{EUR.symbol}</h3>
+        <h3>{EUR.symbol}</h3>
+        <CheckIcon></CheckIcon>
 
         <a
           className="App-link"
