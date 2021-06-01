@@ -18,6 +18,8 @@ function App() {
 				<h3>{EUR.symbol}</h3>
 				<h3>{EUR.symbol}</h3>
 				<CheckIcon></CheckIcon>
+				<CheckIcon></CheckIcon>
+				<CheckIcon></CheckIcon>
 
 				<a
 					className="App-link"
