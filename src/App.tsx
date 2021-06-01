@@ -13,6 +13,7 @@ function App() {
 					Edit <code>src/App.tsx</code> and save to reload.
 				</p>
 				<h3 className="text-red-600">{EUR.symbol}</h3>
+				<h3 className="text-red-600">{EUR.symbol}</h3>
 				<h3>{EUR.symbol}</h3>
 				<h3>{EUR.symbol}</h3>
 				<h3>{EUR.symbol}</h3>
