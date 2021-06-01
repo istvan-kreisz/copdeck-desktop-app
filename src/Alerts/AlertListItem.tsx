@@ -1,6 +1,6 @@
-import React from 'react'
-import ListItem from '../Components/ListItem'
-import { ChevronRightIcon, TrashIcon } from '@heroicons/react/outline'
+import React from 'react';
+import ListItem from '../Components/ListItem';
+import { ChevronRightIcon, TrashIcon } from '@heroicons/react/outline';
 
 const AlertListItem = ({
 	imageURL,
@@ -70,7 +70,7 @@ const AlertListItem = ({
 
 			<ChevronRightIcon className="h-6 text-gray-400 flex-shrink-0"></ChevronRightIcon>
 		</ListItem>
-	)
-}
+	);
+};
 
-export default AlertListItem
+export default AlertListItem;

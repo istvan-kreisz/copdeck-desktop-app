@@ -1,60 +1,60 @@
-import React from 'react'
-import { useState, useRef, useEffect } from 'react'
-import { Currency, ALLCURRENCIES, EUR } from 'copdeck-scraper/dist/types'
-import { databaseCoordinator } from '../services/databaseCoordinator'
-import { QuestionMarkCircleIcon } from '@heroicons/react/solid'
-import Popup from '../Components/Popup'
-import { stringify } from '../utils/proxyparser'
-import { Switch } from '@headlessui/react'
+import React from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Currency, ALLCURRENCIES, EUR } from 'copdeck-scraper/dist/types';
+import { databaseCoordinator } from '../services/databaseCoordinator';
+import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
+import Popup from '../Components/Popup';
+import { stringify } from '../utils/proxyparser';
+import { Switch } from '@headlessui/react';
 
 const SettingsTab = (prop: {
 	setToastMessage: React.Dispatch<
 		React.SetStateAction<{
-			message: string
-			show: boolean
+			message: string;
+			show: boolean;
 		}>
-	>
+	>;
 }) => {
-	const proxyTextField = useRef<HTMLTextAreaElement>(null)
-	const currencySelector = useRef<HTMLDivElement>(null)
+	const proxyTextField = useRef<HTMLTextAreaElement>(null);
+	const currencySelector = useRef<HTMLDivElement>(null);
 
-	const [updateInterval, setUpdateInterval] = useState('5')
-	const [notificationFrequency, setNotificationFrequency] = useState('24')
-	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR)
+	const [updateInterval, setUpdateInterval] = useState('5');
+	const [notificationFrequency, setNotificationFrequency] = useState('24');
+	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
 	const [telltipMessage, setTelltipMessage] = useState<{
-		title: string
-		message: string
-		show: boolean
+		title: string;
+		message: string;
+		show: boolean;
 	}>({
 		title: '',
 		message: '',
 		show: false,
-	})
-	const [enabled, setEnabled] = useState(false)
+	});
+	const [enabled, setEnabled] = useState(false);
 
-	const { listenToSettingsChanges } = databaseCoordinator()
+	const { listenToSettingsChanges } = databaseCoordinator();
 
 	useEffect(() => {
-		;(async () => {
+		(async () => {
 			await listenToSettingsChanges((settings) => {
-				setSelectedCurrency(settings.currency)
+				setSelectedCurrency(settings.currency);
 
-				const proxyField = proxyTextField.current
+				const proxyField = proxyTextField.current;
 				if (proxyField) {
-					proxyField.value = stringify(settings.proxies)
+					proxyField.value = stringify(settings.proxies);
 				}
 
-				setNotificationFrequency(`${settings.notificationFrequency}`)
-				setUpdateInterval(`${settings.updateInterval}`)
-			})
-		})()
-	}, [])
+				setNotificationFrequency(`${settings.notificationFrequency}`);
+				setUpdateInterval(`${settings.updateInterval}`);
+			});
+		})();
+	}, []);
 
 	const saveSettings = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault()
+		event.preventDefault();
 
-		const interval = parseFloat(updateInterval ?? '')
-		const notificationInterval = parseFloat(notificationFrequency ?? '24')
+		const interval = parseFloat(updateInterval ?? '');
+		const notificationInterval = parseFloat(notificationFrequency ?? '24');
 
 		// chrome.runtime.sendMessage(
 		// 	{
@@ -80,27 +80,27 @@ const SettingsTab = (prop: {
 		// 		}
 		// 	}
 		// )
-	}
+	};
 
 	const changedInterval = (event: { target: HTMLInputElement }) => {
-		setUpdateInterval(event.target.value)
-	}
+		setUpdateInterval(event.target.value);
+	};
 
 	const changedNotificationFrequency = (event: { target: HTMLInputElement }) => {
-		setNotificationFrequency(event.target.value)
-	}
+		setNotificationFrequency(event.target.value);
+	};
 
 	const changedCurrency = (event: { target: HTMLInputElement }) => {
-		const currencyCode = event.target.value as Currency['code']
-		const currency = ALLCURRENCIES.find((c) => c.code === currencyCode)
+		const currencyCode = event.target.value['code'];
+		const currency = ALLCURRENCIES.find((c) => c.code === currencyCode);
 		if (currency) {
-			setSelectedCurrency(currency)
+			setSelectedCurrency(currency);
 		}
-	}
+	};
 
 	const clickedContact = () => {
 		// chrome.tabs.create({ url: 'https://copdeck.com/contact' })
-	}
+	};
 
 	return (
 		<>
@@ -133,7 +133,7 @@ const SettingsTab = (prop: {
 										className="h-5 w-5 text-theme-blue rounded-full m-0"
 									/>
 								</div>
-							)
+							);
 						})}
 					</div>
 
@@ -253,7 +253,7 @@ const SettingsTab = (prop: {
 				})}
 			></Popup>
 		</>
-	)
-}
+	);
+};
 
-export default SettingsTab
+export default SettingsTab;

@@ -1,49 +1,49 @@
-import React from 'react'
-import { useEffect, useState, useRef } from 'react'
-import { assert } from 'superstruct'
-import { Item, Store, Currency, ALLSTORES, ExchangeRates } from 'copdeck-scraper/dist/types'
-import { bestStoreInfo } from 'copdeck-scraper'
-import AddAlertModal from '../Main/AddAlertModal'
-import { ChevronLeftIcon, RefreshIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline'
-import LoadingIndicator from '../Components/LoadingIndicator'
-import Popup from '../Components/Popup'
-import { databaseCoordinator } from '../services/databaseCoordinator'
+import React from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { assert } from 'superstruct';
+import { Item, Store, Currency, ALLSTORES, ExchangeRates } from 'copdeck-scraper/dist/types';
+import { bestStoreInfo } from 'copdeck-scraper';
+import AddAlertModal from '../Main/AddAlertModal';
+import { ChevronLeftIcon, RefreshIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
+import LoadingIndicator from '../Components/LoadingIndicator';
+import Popup from '../Components/Popup';
+import { databaseCoordinator } from '../services/databaseCoordinator';
 
 const ItemDetail = (prop: {
-	selectedItem: Item,
-	setSelectedItem: (callback: (item: Item | null | undefined) => Item | null | undefined) => void,
-	currency: Currency,
+	selectedItem: Item;
+	setSelectedItem: (callback: (item: Item | null | undefined) => Item | null | undefined) => void;
+	currency: Currency;
 	setToastMessage: React.Dispatch<
 		React.SetStateAction<{
 			message: string;
-			show: boolean
+			show: boolean;
 		}>
-	>
+	>;
 }) => {
-	const container = useRef<HTMLDivElement>(null)
-	const [showAddPriceAlertModal, setShowAddPriceAlertModal] = useState(false)
-	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask')
-	const didClickBack = useRef(false)
-	const [exchangeRates, setExchangeRates] = useState<ExchangeRates>()
+	const container = useRef<HTMLDivElement>(null);
+	const [showAddPriceAlertModal, setShowAddPriceAlertModal] = useState(false);
+	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask');
+	const didClickBack = useRef(false);
+	const [exchangeRates, setExchangeRates] = useState<ExchangeRates>();
 
-	const { getExchangeRates } = databaseCoordinator()
+	const { getExchangeRates } = databaseCoordinator();
 
 	const [telltipMessage, setTelltipMessage] = useState<{
-		title: string
-		message: JSX.Element | string
-		show: boolean
+		title: string;
+		message: JSX.Element | string;
+		show: boolean;
 	}>({
 		title: '',
 		message: '',
 		show: false,
-	})
+	});
 
-	const [isLoadingPrices, setIsLoadingPrices] = useState(false)
+	const [isLoadingPrices, setIsLoadingPrices] = useState(false);
 
-	const storeInfo = bestStoreInfo(prop.selectedItem)
+	const storeInfo = bestStoreInfo(prop.selectedItem);
 
 	const updateItem = (forceRefresh: boolean) => {
-		setIsLoadingPrices(true)
+		setIsLoadingPrices(true);
 		// chrome.runtime.sendMessage(
 		// 	{ getItemDetails: { item: prop.selectedItem, forceRefresh: forceRefresh } },
 		// 	(item) => {
@@ -56,93 +56,93 @@ const ItemDetail = (prop: {
 		// 		setIsLoadingPrices(false)
 		// 	}
 		// )
-	}
+	};
 
 	useEffect(() => {
-		didClickBack.current = false
+		didClickBack.current = false;
 		if (prop.selectedItem) {
-			updateItem(false)
+			updateItem(false);
 		}
-		;(async () => {
-			const rates = await getExchangeRates()
+		(async () => {
+			const rates = await getExchangeRates();
 			if (rates) {
-				setExchangeRates(rates)
+				setExchangeRates(rates);
 			}
-		})()
-	}, [])
+		})();
+	}, []);
 
 	useEffect(() => {
 		if (!showAddPriceAlertModal) {
 			if (container.current) {
-				container.current.scrollTo(0, 0)
+				container.current.scrollTo(0, 0);
 			}
 		}
-	}, [showAddPriceAlertModal])
+	}, [showAddPriceAlertModal]);
 
 	const backClicked = () => {
-		didClickBack.current = true
-		prop.setSelectedItem(() => null)
-	}
+		didClickBack.current = true;
+		prop.setSelectedItem(() => null);
+	};
 
-	const sizeSet = new Set<string>()
+	const sizeSet = new Set<string>();
 	const allStores =
-		prop.selectedItem?.storePrices.filter((prices) => prices.inventory.length) ?? []
+		prop.selectedItem?.storePrices.filter((prices) => prices.inventory.length) ?? [];
 	allStores.forEach((store) => {
 		return store.inventory.map((inventoryItem) => {
-			sizeSet.add(inventoryItem.size)
-		})
-	})
+			sizeSet.add(inventoryItem.size);
+		});
+	});
 	const allSizes = Array.from(sizeSet).sort((a, b) => {
-		const regex = /[\d|,|.|e|E|\+]+/g
-		const aNum = parseFloat(a.match(regex)?.[0] ?? '')
-		const bNum = parseFloat(b.match(regex)?.[0] ?? '')
-		if (aNum < bNum) return -1
-		if (aNum > bNum) return 1
-		return 0
-	})
+		const regex = /[\d|,|.|e|E|\+]+/g;
+		const aNum = parseFloat(a.match(regex)?.[0] ?? '');
+		const bNum = parseFloat(b.match(regex)?.[0] ?? '');
+		if (aNum < bNum) return -1;
+		if (aNum > bNum) return 1;
+		return 0;
+	});
 
 	const price = (size: string, store: Store): [string, number] => {
 		const prices = allStores
 			.find((s) => s.store.id === store.id)
-			?.inventory.find((inventoryItem) => inventoryItem.size === size)
-		let price = priceType === 'ask' ? prices?.lowestAsk : prices?.highestBid
+			?.inventory.find((inventoryItem) => inventoryItem.size === size);
+		let price = priceType === 'ask' ? prices?.lowestAsk : prices?.highestBid;
 		if (price) {
 			if (store.id === 'goat' && prop.currency.code !== 'USD') {
 				if (exchangeRates) {
 					switch (prop.currency.code) {
 						case 'EUR':
-							price = Math.round(price / exchangeRates.usd)
-							break
+							price = Math.round(price / exchangeRates.usd);
+							break;
 						case 'GBP':
-							price = Math.round((price / exchangeRates.usd) * exchangeRates.gbp)
+							price = Math.round((price / exchangeRates.usd) * exchangeRates.gbp);
 					}
-					return [prop.currency.symbol + price, price]
+					return [prop.currency.symbol + price, price];
 				} else {
-					return ['-', 0]
+					return ['-', 0];
 				}
 			} else {
-				return [prop.currency.symbol + price, price]
+				return [prop.currency.symbol + price, price];
 			}
 		} else {
-			return ['-', 0]
+			return ['-', 0];
 		}
-	}
+	};
 
 	const prices = (size: string): { prices: { text: string; store: Store }[]; best?: Store } => {
 		const prices = ALLSTORES.map((store) => {
-			const p = price(size, store)
+			const p = price(size, store);
 			return {
 				priceText: p[0],
 				price: p[1],
 				store: store,
-			}
-		})
-		const realPrices = prices.filter((price) => price.priceText !== '-')
-		let best: Store | undefined
+			};
+		});
+		const realPrices = prices.filter((price) => price.priceText !== '-');
+		let best: Store | undefined;
 		if (realPrices.length) {
 			best = realPrices.reduce((prev, current) => {
-				return prev.price < current.price ? prev : current
-			})?.store
+				return prev.price < current.price ? prev : current;
+			})?.store;
 		}
 
 		return {
@@ -151,19 +151,19 @@ const ItemDetail = (prop: {
 				return {
 					text: p.priceText,
 					store: p.store,
-				}
+				};
 			}),
-		}
-	}
+		};
+	};
 
 	const priceClicked = (store: Store) => {
-		const storeInfo = prop.selectedItem.storeInfo.find((s) => s.store.id === store.id)
+		const storeInfo = prop.selectedItem.storeInfo.find((s) => s.store.id === store.id);
 		if (storeInfo) {
 			// chrome.tabs.create({
 			// 	url: storeInfo.url,
 			// })
 		}
-	}
+	};
 
 	return (
 		<>
@@ -270,7 +270,7 @@ const ItemDetail = (prop: {
 									>
 										{store.name}
 									</p>
-								)
+								);
 							})}
 							<p className="flex-grow"></p>
 						</li>
@@ -278,7 +278,7 @@ const ItemDetail = (prop: {
 						{!isLoadingPrices
 							? allSizes
 									.map((size) => {
-										return { size: size, prices: prices(size) }
+										return { size: size, prices: prices(size) };
 									})
 									.map((row) => {
 										return (
@@ -356,11 +356,11 @@ const ItemDetail = (prop: {
 																></QuestionMarkCircleIcon>
 															) : null}
 														</div>
-													)
+													);
 												})}
 												<p className="flex-grow"></p>
 											</li>
-										)
+										);
 									})
 							: null}
 					</ul>
@@ -406,7 +406,7 @@ const ItemDetail = (prop: {
 				})}
 			></Popup>
 		</>
-	)
-}
+	);
+};
 
-export default ItemDetail
+export default ItemDetail;

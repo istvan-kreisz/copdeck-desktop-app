@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const ListItem = ({ onClicked, children, className }) => {
 	return (
@@ -8,7 +8,7 @@ const ListItem = ({ onClicked, children, className }) => {
 		>
 			{children}
 		</li>
-	)
-}
+	);
+};
 
-export default ListItem
+export default ListItem;

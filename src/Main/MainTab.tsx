@@ -1,27 +1,27 @@
-import React from 'react'
-import { useState, useRef } from 'react'
-import { array, is } from 'superstruct'
-import ItemDetail from '../Components/ItemDetail'
-import LoadingIndicator from '../Components/LoadingIndicator'
-import MainListItem from './MainListItem'
-import { Item, Currency } from 'copdeck-scraper/dist/types'
+import React from 'react';
+import { useState, useRef } from 'react';
+import { array, is } from 'superstruct';
+import ItemDetail from '../Components/ItemDetail';
+import LoadingIndicator from '../Components/LoadingIndicator';
+import MainListItem from './MainListItem';
+import { Item, Currency } from 'copdeck-scraper/dist/types';
 
 const MainTab = (prop: {
-	currency: Currency
+	currency: Currency;
 	setToastMessage: React.Dispatch<
 		React.SetStateAction<{
-			message: string
-			show: boolean
+			message: string;
+			show: boolean;
 		}>
-	>
+	>;
 }) => {
-	const [searchState, setSearchState] = useState<Item[] | null | 'searching'>(null)
-	const [selectedItem, setSelectedItem] = useState<Item | null>()
+	const [searchState, setSearchState] = useState<Item[] | null | 'searching'>(null);
+	const [selectedItem, setSelectedItem] = useState<Item | null>();
 
-	const searchBar = useRef<HTMLInputElement>(null)
+	const searchBar = useRef<HTMLInputElement>(null);
 
 	const search = () => {
-		setSearchState('searching')
+		setSearchState('searching');
 		if (searchBar.current?.value) {
 			// chrome.runtime.sendMessage({ search: searchBar.current?.value }, (response) => {
 			// 	if (is(response, array(Item))) {
@@ -35,19 +35,19 @@ const MainTab = (prop: {
 			// 	}
 			// })
 		}
-	}
+	};
 
 	const clickedItem = (item: Item) => {
 		if (item.id !== selectedItem?.id) {
-			setSelectedItem(item)
+			setSelectedItem(item);
 		}
-	}
+	};
 
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
-			search()
+			search();
 		}
-	}
+	};
 
 	return (
 		<>
@@ -69,7 +69,7 @@ const MainTab = (prop: {
 				</div>
 				<ul className="my-4 flex flex-col space-y-3">
 					{typeof searchState === 'object'
-						? (searchState as Item[])?.map((item, index) => {
+						? searchState?.map((item, index) => {
 								return (
 									<MainListItem
 										key={item.id}
@@ -81,7 +81,7 @@ const MainTab = (prop: {
 									>
 										<p>{item.name}</p>
 									</MainListItem>
-								)
+								);
 						  })
 						: null}
 				</ul>
@@ -101,7 +101,7 @@ const MainTab = (prop: {
 				></ItemDetail>
 			) : null}
 		</>
-	)
-}
+	);
+};
 
-export default MainTab
+export default MainTab;

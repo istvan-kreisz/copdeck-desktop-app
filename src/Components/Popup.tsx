@@ -1,10 +1,10 @@
-import React from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import React from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
 
 const Popup = ({ title, message, open, close }) => {
 	function closeModal() {
-		close()
+		close();
 	}
 
 	return (
@@ -66,7 +66,7 @@ const Popup = ({ title, message, open, close }) => {
 				</div>
 			</Dialog>
 		</Transition>
-	)
-}
+	);
+};
 
-export default Popup
+export default Popup;

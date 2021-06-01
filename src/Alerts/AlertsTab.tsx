@@ -1,10 +1,10 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
-import { Item, PriceAlert, Currency } from 'copdeck-scraper/dist/types'
-import { itemBestPrice } from 'copdeck-scraper'
-import ItemDetail from '../Components/ItemDetail'
-import AlertListItem from './AlertListItem'
-import { databaseCoordinator } from '../services/databaseCoordinator'
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { Item, PriceAlert, Currency } from 'copdeck-scraper/dist/types';
+import { itemBestPrice } from 'copdeck-scraper';
+import ItemDetail from '../Components/ItemDetail';
+import AlertListItem from './AlertListItem';
+import { databaseCoordinator } from '../services/databaseCoordinator';
 
 const AlertsTab = (prop: {
 	activeTab: 'main' | 'settings' | 'alerts';
@@ -12,47 +12,47 @@ const AlertsTab = (prop: {
 	setToastMessage: React.Dispatch<
 		React.SetStateAction<{
 			message: string;
-			show: boolean
+			show: boolean;
 		}>
-	>
+	>;
 }) => {
-	const [priceAlerts, setPriceAlerts] = useState<[PriceAlert, Item][]>([])
-	const [selectedItem, setSelectedItem] = useState<Item | null>()
+	const [priceAlerts, setPriceAlerts] = useState<[PriceAlert, Item][]>([]);
+	const [selectedItem, setSelectedItem] = useState<Item | null>();
 
-	const { getAlertsWithItems, deleteAlert } = databaseCoordinator()
+	// const { getAlertsWithItems, deleteAlert } = databaseCoordinator();
 
 	useEffect(() => {
 		if (prop.activeTab === 'alerts') {
-			;(async () => {
-				const alertsWithItems = await getAlertsWithItems()
-				setPriceAlerts(alertsWithItems)
-			})()
+			(async () => {
+				// const alertsWithItems = await getAlertsWithItems();
+				// setPriceAlerts(alertsWithItems);
+			})();
 		}
-	}, [prop.activeTab])
+	}, [prop.activeTab]);
 
 	useEffect(() => {
 		if (!selectedItem) {
-			;(async () => {
-				const alertsWithItems = await getAlertsWithItems()
-				setPriceAlerts(alertsWithItems)
-			})()
+			(async () => {
+				// const alertsWithItems = await getAlertsWithItems();
+				// setPriceAlerts(alertsWithItems);
+			})();
 		}
-	}, [selectedItem])
+	}, [selectedItem]);
 
 	const clickedItem = (item: Item) => {
 		if (item.id !== selectedItem?.id) {
-			setSelectedItem(item)
+			setSelectedItem(item);
 		}
-	}
+	};
 
 	const deletedAlert = (alert: PriceAlert, event) => {
-		event.stopPropagation()
-		;(async () => {
-			await deleteAlert(alert)
-			const alertsWithItems = await getAlertsWithItems()
-			setPriceAlerts(alertsWithItems)
-		})()
-	}
+		event.stopPropagation();
+		(async () => {
+			// await deleteAlert(alert);
+			// const alertsWithItems = await getAlertsWithItems();
+			// setPriceAlerts(alertsWithItems);
+		})();
+	};
 
 	return (
 		<>
@@ -75,7 +75,7 @@ const AlertsTab = (prop: {
 								targetPrice={alert.targetPrice}
 								onDeleted={deletedAlert.bind(null, alert)}
 							></AlertListItem>
-						)
+						);
 					})}
 				</ul>
 				{!priceAlerts.length ? (
@@ -94,7 +94,7 @@ const AlertsTab = (prop: {
 				></ItemDetail>
 			) : null}
 		</>
-	)
-}
+	);
+};
 
-export default AlertsTab
+export default AlertsTab;

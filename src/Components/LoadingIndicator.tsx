@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const LoadingIndicator = (prop: { title: string }) => {
 	return (
@@ -25,7 +25,7 @@ const LoadingIndicator = (prop: { title: string }) => {
 			</svg>
 			{prop.title}
 		</div>
-	)
-}
+	);
+};
 
-export default LoadingIndicator
+export default LoadingIndicator;

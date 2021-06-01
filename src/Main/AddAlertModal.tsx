@@ -1,96 +1,96 @@
-import React from 'react'
-import { useRef, useState } from 'react'
-import { Item, StorePrices, PriceAlert, Currency } from 'copdeck-scraper/dist/types'
-import { v4 as uuidv4 } from 'uuid'
-import { databaseCoordinator } from '../services/databaseCoordinator'
-import Popup from '../Components/Popup'
-import { is, type } from 'copdeck-scraper/node_modules/superstruct'
+import React from 'react';
+import { useRef, useState } from 'react';
+import { Item, StorePrices, PriceAlert, Currency } from 'copdeck-scraper/dist/types';
+import { v4 as uuidv4 } from 'uuid';
+import { databaseCoordinator } from '../services/databaseCoordinator';
+import Popup from '../Components/Popup';
+import { is, type } from 'copdeck-scraper/node_modules/superstruct';
 
 const AddAlertModal = (prop: {
-	selectedItem: Item
-	showAddPriceAlertModal: boolean
-	setShowAddPriceAlertModal: (show: boolean) => void
-	currency: Currency
+	selectedItem: Item;
+	showAddPriceAlertModal: boolean;
+	setShowAddPriceAlertModal: (show: boolean) => void;
+	currency: Currency;
 	setToastMessage: React.Dispatch<
 		React.SetStateAction<{
-			message: string
-			show: boolean
+			message: string;
+			show: boolean;
 		}>
-	>
+	>;
 }) => {
-	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([])
-	const [selectedSize, setSelectedSize] = useState<string>()
-	const [selectedType, setSelectedType] = useState<string>('below')
+	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([]);
+	const [selectedSize, setSelectedSize] = useState<string>();
+	const [selectedType, setSelectedType] = useState<string>('below');
 
 	const [error, setError] = useState<{ message: string; show: boolean }>({
 		message: '',
 		show: false,
-	})
+	});
 
-	const storeSelector = useRef<HTMLDivElement>(null)
-	const priceField = useRef<HTMLInputElement>(null)
+	const storeSelector = useRef<HTMLDivElement>(null);
+	const priceField = useRef<HTMLInputElement>(null);
 
-	const { saveAlert } = databaseCoordinator()
+	const { saveAlert } = databaseCoordinator();
 
 	const selectableStores = (): StorePrices[] => {
-		return prop.selectedItem?.storePrices.filter((prices) => prices.inventory.length) ?? []
-	}
+		return prop.selectedItem?.storePrices.filter((prices) => prices.inventory.length) ?? [];
+	};
 
-	const sizeSet = new Set<string>()
+	const sizeSet = new Set<string>();
 	selectedStores.forEach((store) => {
 		return store.inventory.map((inventoryItem) => {
-			sizeSet.add(inventoryItem.size)
-		})
-	})
-	const selectableSizes = Array.from(sizeSet)
+			sizeSet.add(inventoryItem.size);
+		});
+	});
+	const selectableSizes = Array.from(sizeSet);
 
 	if (!selectedSize && selectableSizes && selectableSizes.length) {
-		setSelectedSize(selectableSizes[0])
+		setSelectedSize(selectableSizes[0]);
 	}
 
 	const storeToggled = (event: { target: HTMLInputElement }) => {
-		const isChecked = event.target.checked
-		const storeName = event.target.value
-		const store = selectableStores().find((s) => s.store.id === storeName)
-		if (!store) return
+		const isChecked = event.target.checked;
+		const storeName = event.target.value;
+		const store = selectableStores().find((s) => s.store.id === storeName);
+		if (!store) return;
 
 		setSelectedStores((stores) => {
 			if (isChecked) {
 				if (!stores.find((s) => s.store.id === storeName)) {
-					return [...stores, store]
+					return [...stores, store];
 				} else {
-					return stores
+					return stores;
 				}
 			} else {
-				return stores.filter((s) => s.store.id !== storeName)
+				return stores.filter((s) => s.store.id !== storeName);
 			}
-		})
-	}
+		});
+	};
 
 	const sizeSelected = (event: { target: HTMLSelectElement }) => {
-		setSelectedSize(event.target.value)
-	}
+		setSelectedSize(event.target.value);
+	};
 
 	const typeSelected = (event: { target: HTMLSelectElement }) => {
-		setSelectedType(event.target.value)
-	}
+		setSelectedType(event.target.value);
+	};
 
 	const storeLabel = (store: StorePrices): string => {
-		let label = store.store.name
+		let label = store.store.name;
 		if (selectedSize) {
 			const hasSelectedSize = store.inventory.find(
 				(inventoryItem) => inventoryItem.size === selectedSize
-			)
+			);
 			if (!hasSelectedSize) {
-				label += ' (size not available)'
+				label += ' (size not available)';
 			}
 		}
-		return label
-	}
+		return label;
+	};
 
 	const addAlert = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault()
-		const price = parseFloat(priceField.current?.value ?? '')
+		event.preventDefault();
+		const price = parseFloat(priceField.current?.value ?? '');
 
 		if (
 			!price ||
@@ -99,8 +99,8 @@ const AddAlertModal = (prop: {
 			!prop.selectedItem ||
 			(selectedType !== 'above' && selectedType !== 'below')
 		) {
-			setError({ message: 'Please fill out all the fields', show: true })
-			return
+			setError({ message: 'Please fill out all the fields', show: true });
+			return;
 		}
 		const newAlert: PriceAlert = {
 			name: prop.selectedItem.name ?? '',
@@ -110,13 +110,13 @@ const AddAlertModal = (prop: {
 			targetPriceType: selectedType,
 			targetSize: selectedSize,
 			stores: selectedStores.map((store) => store.store),
-		}
+		};
 
 		saveAlert(newAlert, prop.selectedItem).then(() => {
-			prop.setToastMessage({ message: 'Added price alert', show: true })
-			prop.setShowAddPriceAlertModal(false)
-		})
-	}
+			prop.setToastMessage({ message: 'Added price alert', show: true });
+			prop.setShowAddPriceAlertModal(false);
+		});
+	};
 
 	return (
 		<>
@@ -143,7 +143,7 @@ const AddAlertModal = (prop: {
 										onChange={storeToggled}
 									></input>
 								</div>
-							)
+							);
 						})}
 					</div>
 					<h3 className="text-base font-bold mt-4 mb-1">2. Select size</h3>
@@ -155,7 +155,7 @@ const AddAlertModal = (prop: {
 						id="size"
 					>
 						{selectableSizes.map((size) => {
-							return <option value={size}>{size}</option>
+							return <option value={size}>{size}</option>;
 						})}
 					</select>
 					<h3 className="text-base font-bold mt-4 mb-1">{`3. Notify me when price goes `}</h3>
@@ -202,7 +202,7 @@ const AddAlertModal = (prop: {
 				close={setError.bind(null, { message: error?.message ?? '', show: false })}
 			></Popup>
 		</>
-	)
-}
+	);
+};
 
-export default AddAlertModal
+export default AddAlertModal;
