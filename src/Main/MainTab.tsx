@@ -1,10 +1,12 @@
 import React from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { array, is } from 'superstruct';
 import ItemDetail from '../Components/ItemDetail';
 import LoadingIndicator from '../Components/LoadingIndicator';
 import MainListItem from './MainListItem';
 import { Item, Currency } from 'copdeck-scraper/dist/types';
+import { IpcRenderer } from 'electron';
+const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
 const MainTab = (prop: {
 	currency: Currency;
@@ -20,9 +22,26 @@ const MainTab = (prop: {
 
 	const searchBar = useRef<HTMLInputElement>(null);
 
+	useEffect(() => {
+		ipcRenderer.on('search', (event, response) => {
+			console.log('--------');
+			console.log(response);
+			if (is(response, array(Item))) {
+				if (response.length) {
+					setSearchState(response);
+				} else {
+					setSearchState([]);
+				}
+			} else {
+				setSearchState([]);
+			}
+		});
+	}, []);
+
 	const search = () => {
 		setSearchState('searching');
 		if (searchBar.current?.value) {
+			ipcRenderer.send('search', searchBar.current?.value);
 			// chrome.runtime.sendMessage({ search: searchBar.current?.value }, (response) => {
 			// 	if (is(response, array(Item))) {
 			// 		if (response.length) {

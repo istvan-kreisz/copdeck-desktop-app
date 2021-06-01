@@ -1,13 +1,16 @@
 import { array, assert, boolean, is, number } from 'superstruct';
 import { Item, PriceAlert, EUR, ExchangeRates } from 'copdeck-scraper/dist/types';
 import { removeDuplicates } from 'copdeck-scraper';
-import { SettingsSchema, ProxyNotificationUpdatesSchema } from '../utils/types';
-import { log } from '../utils/logger';
-import type { Settings, ProxyNotificationUpdates } from '../utils/types';
+import { SettingsSchema, ProxyNotificationUpdatesSchema } from '../src/utils/types';
+import { log } from '../src/utils/logger';
+import type { Settings, ProxyNotificationUpdates } from '../src/utils/types';
+import Store from 'electron-store';
 
-// type AlertWithItem = [PriceAlert, Item];
+// declare type AlertWithItem = [PriceAlert, Item];
 
 const databaseCoordinator = () => {
+	const store = new Store();
+
 	const defaultSettings: Settings = {
 		currency: EUR,
 		updateInterval: 30,
@@ -17,6 +20,10 @@ const databaseCoordinator = () => {
 
 	const asyncSet = async (key: string, value: any): Promise<Error | undefined> => {
 		return new Promise((resolve, reject) => {
+			store.set({
+				[key]: value,
+			});
+
 			// chrome.storage.local.set({ [key]: value }, () => {
 			// 	resolve(chrome.runtime.lastError)
 			// })

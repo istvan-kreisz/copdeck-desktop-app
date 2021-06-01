@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { Currency, ALLCURRENCIES, EUR } from 'copdeck-scraper/dist/types';
-import { databaseCoordinator } from '../services/databaseCoordinator';
+// import { databaseCoordinator } from '../../electron/services/databaseCoordinator';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import Popup from '../Components/Popup';
 import { stringify } from '../utils/proxyparser';
@@ -32,21 +32,19 @@ const SettingsTab = (prop: {
 	});
 	const [enabled, setEnabled] = useState(false);
 
-	const { listenToSettingsChanges } = databaseCoordinator();
+	// const { listenToSettingsChanges } = databaseCoordinator();
 
 	useEffect(() => {
 		(async () => {
-			await listenToSettingsChanges((settings) => {
-				setSelectedCurrency(settings.currency);
-
-				const proxyField = proxyTextField.current;
-				if (proxyField) {
-					proxyField.value = stringify(settings.proxies);
-				}
-
-				setNotificationFrequency(`${settings.notificationFrequency}`);
-				setUpdateInterval(`${settings.updateInterval}`);
-			});
+			// await listenToSettingsChanges((settings) => {
+			// 	setSelectedCurrency(settings.currency);
+			// 	const proxyField = proxyTextField.current;
+			// 	if (proxyField) {
+			// 		proxyField.value = stringify(settings.proxies);
+			// 	}
+			// 	setNotificationFrequency(`${settings.notificationFrequency}`);
+			// 	setUpdateInterval(`${settings.updateInterval}`);
+			// });
 		})();
 	}, []);
 

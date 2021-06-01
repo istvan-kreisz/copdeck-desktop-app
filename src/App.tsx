@@ -1,57 +1,57 @@
-import React from 'react'
-import logo from './logo.svg'
-import './App.css'
-import { CheckIcon } from '@heroicons/react/outline'
-import MainTab from './Main/MainTab'
-import SettingsTab from './Settings/SettingsTab'
-import AlertsTab from './Alerts/AlertsTab'
-import { useState, useEffect } from 'react'
-import { SearchIcon, CogIcon, BellIcon, DeviceMobileIcon } from '@heroicons/react/outline'
-import { databaseCoordinator } from './services/databaseCoordinator'
-import { Currency, EUR } from 'copdeck-scraper/dist/types'
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+import { CheckIcon } from '@heroicons/react/outline';
+import MainTab from './Main/MainTab';
+import SettingsTab from './Settings/SettingsTab';
+import AlertsTab from './Alerts/AlertsTab';
+import { useState, useEffect } from 'react';
+import { SearchIcon, CogIcon, BellIcon, DeviceMobileIcon } from '@heroicons/react/outline';
+// import { databaseCoordinator } from '../electron/services/databaseCoordinator'
+import { Currency, EUR } from 'copdeck-scraper/dist/types';
 
 const App = () => {
-	const [activeTab, setActiveTab] = useState<'main' | 'settings' | 'alerts'>('main')
-	const [currency, setCurrency] = useState<Currency>(EUR)
+	const [activeTab, setActiveTab] = useState<'main' | 'settings' | 'alerts'>('main');
+	const [currency, setCurrency] = useState<Currency>(EUR);
 	const [toastMessage, setToastMessage] = useState<{ message: string; show: boolean }>({
 		message: '',
 		show: false,
-	})
+	});
 
-	const { listenToSettingsChanges } = databaseCoordinator()
+	// const { listenToSettingsChanges } = databaseCoordinator();
 
 	useEffect(() => {
-		;(async () => {
-			await listenToSettingsChanges((settings) => {
-				setCurrency(settings.currency)
-			})
-		})()
+		(async () => {
+			// await listenToSettingsChanges((settings) => {
+			// 	setCurrency(settings.currency);
+			// });
+		})();
 		// chrome.runtime.sendMessage({ refresh: true })
-	}, [])
+	}, []);
 
 	const hideToast = () => {
-		setToastMessage({ message: toastMessage?.message ?? '', show: false })
-	}
+		setToastMessage({ message: toastMessage?.message ?? '', show: false });
+	};
 
 	useEffect(() => {
-		let interval
+		let interval;
 		if (toastMessage.show) {
 			interval = setTimeout(() => {
-				hideToast()
-			}, 2000)
+				hideToast();
+			}, 2000);
 		}
 		return () => {
-			if (interval) clearTimeout(interval)
-		}
-	}, [toastMessage])
+			if (interval) clearTimeout(interval);
+		};
+	}, [toastMessage]);
 
 	const selectedTab = (tab: 'main' | 'settings' | 'alerts') => {
-		setActiveTab(tab)
-	}
+		setActiveTab(tab);
+	};
 
 	const clickedLink = () => {
 		// chrome.tabs.create({ url: 'https://copdeck.com' })
-	}
+	};
 
 	return (
 		<div className="gap-0 grid grid-row-3 absolute top-0 left-0 right-0 bottom-0 text-left">
@@ -161,7 +161,7 @@ const App = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default App
+export default App;

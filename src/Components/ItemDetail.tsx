@@ -7,7 +7,7 @@ import AddAlertModal from '../Main/AddAlertModal';
 import { ChevronLeftIcon, RefreshIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
 import LoadingIndicator from '../Components/LoadingIndicator';
 import Popup from '../Components/Popup';
-import { databaseCoordinator } from '../services/databaseCoordinator';
+// import { databaseCoordinator } from '../../electron/services/databaseCoordinator';
 
 const ItemDetail = (prop: {
 	selectedItem: Item;
@@ -26,7 +26,7 @@ const ItemDetail = (prop: {
 	const didClickBack = useRef(false);
 	const [exchangeRates, setExchangeRates] = useState<ExchangeRates>();
 
-	const { getExchangeRates } = databaseCoordinator();
+	// const { getExchangeRates } = databaseCoordinator();
 
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
@@ -64,10 +64,10 @@ const ItemDetail = (prop: {
 			updateItem(false);
 		}
 		(async () => {
-			const rates = await getExchangeRates();
-			if (rates) {
-				setExchangeRates(rates);
-			}
+			// const rates = await getExchangeRates();
+			// if (rates) {
+			// 	setExchangeRates(rates);
+			// }
 		})();
 	}, []);
 
