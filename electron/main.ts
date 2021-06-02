@@ -2,7 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
 import {
-	browserAPI,
+	nodeAPI,
 	promiseAllSkippingErrors,
 	isOlderThan,
 	itemBestPrice,
@@ -24,6 +24,8 @@ const refreshPricesAlarm = 'copdeckRefreshPricesAlarm';
 const refreshExchangeRatesAlarm = 'copdeckrefreshExchangeRatesAlarm';
 const proxyRotationAlarm = 'copdeckProxyRotationAlarm';
 const requestDelayMax = 1000;
+
+const { getItems, saveItems, getAlerts, updateItems, getSettings } = databaseCoordinator();
 
 // function showNotification(body: any) {
 // new Notification({ title: NOTIFICATION_TITLE, body: body }).show();
@@ -156,7 +158,7 @@ const updatePrices = async (forced: boolean = false) => {
 					return new Promise<Item>((resolve, reject) => {
 						const delay = Math.random() * requestDelayMax;
 						setTimeout(() => {
-							browserAPI
+							nodeAPI
 								.getItemPrices(item, apiConfig(settings, isDev))
 								.then((result) => {
 									resolve(result);
@@ -184,7 +186,7 @@ const updatePrices = async (forced: boolean = false) => {
 const fetchAndSave = async (item: Item) => {
 	const { updateItem, getSettings } = databaseCoordinator();
 	const settings = getSettings();
-	const newItem = await browserAPI.getItemPrices(item, apiConfig(settings, isDev));
+	const newItem = await nodeAPI.getItemPrices(item, apiConfig(settings, isDev));
 	updateItem(newItem, isDev);
 	return newItem;
 };
@@ -480,7 +482,7 @@ ipcMain.on('search', (event, searchTerm) => {
 			const { getSettings } = databaseCoordinator();
 			const settings = getSettings();
 			log('searching', isDev);
-			const items = await browserAPI.searchItems(searchTerm, apiConfig(settings, isDev));
+			const items = await nodeAPI.searchItems(searchTerm, apiConfig(settings, isDev));
 			log('search results', isDev);
 			log(items, isDev);
 			event.sender.send('search', items);
@@ -499,8 +501,6 @@ ipcMain.on('getItemDetails', (event, msg) => {
 			assert(item, Item);
 			assert(forceRefresh, boolean());
 			const itemWithPrices = await getItemDetails(item, forceRefresh);
-			console.log('**********');
-			console.log(itemWithPrices);
 			event.sender.send('getItemDetails', itemWithPrices);
 		} catch (err) {
 			event.sender.send('getItemDetails', undefined);
@@ -577,3 +577,5 @@ ipcMain.on('getExchangeRates', (event, arg) => {
 	const rates = getExchangeRates();
 	event.returnValue = rates;
 });
+
+// todo: tailwind purge
