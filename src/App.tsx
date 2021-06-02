@@ -8,7 +8,7 @@ import AlertsTab from './Alerts/AlertsTab';
 import { useState, useEffect } from 'react';
 import { SearchIcon, CogIcon, BellIcon, DeviceMobileIcon } from '@heroicons/react/outline';
 // import { databaseCoordinator } from '../electron/services/databaseCoordinator'
-import { Currency, EUR } from 'copdeck-scraper/dist/types';
+import { Currency, EUR } from '@istvankreisz/copdeck-scraper/dist/types';
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState<'main' | 'settings' | 'alerts'>('main');

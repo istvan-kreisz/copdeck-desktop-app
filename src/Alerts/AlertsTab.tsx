@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Item, PriceAlert, Currency } from 'copdeck-scraper/dist/types';
-import { itemBestPrice } from 'copdeck-scraper';
+import { Item, PriceAlert, Currency } from '@istvankreisz/copdeck-scraper/dist/types';
+import { itemBestPrice } from '@istvankreisz/copdeck-scraper';
 import ItemDetail from '../Components/ItemDetail';
 import AlertListItem from './AlertListItem';
 // import { databaseCoordinator } from '../../electron/services/databaseCoordinator';

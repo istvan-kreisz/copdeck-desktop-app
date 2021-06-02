@@ -4,7 +4,7 @@ import { array, is } from 'superstruct';
 import ItemDetail from '../Components/ItemDetail';
 import LoadingIndicator from '../Components/LoadingIndicator';
 import MainListItem from './MainListItem';
-import { Item, Currency } from 'copdeck-scraper/dist/types';
+import { Item, Currency } from '@istvankreisz/copdeck-scraper/dist/types';
 import { IpcRenderer } from 'electron';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 

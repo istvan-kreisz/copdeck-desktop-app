@@ -1,5 +1,5 @@
-import { Proxy } from 'copdeck-scraper/dist/types';
-import { shuffleArray } from 'copdeck-scraper';
+import { Proxy } from '@istvankreisz/copdeck-scraper/dist/types';
+import { shuffleArray } from '@istvankreisz/copdeck-scraper';
 
 function parse(input: string): Proxy[] {
 	return stringToArray(input).map(stringToProxy);
@@ -95,7 +95,8 @@ function pacFormat(proxies: Proxy[]): string {
 		string += `${proxy.host}:${proxy.port}`;
 		return string;
 	});
-	return shuffleArray(proxyStrings).join('; ');
+	return '';
+	// return shuffleArray(proxyStrings).join('; ');
 }
 
 export { parse, stringify, pacFormat };

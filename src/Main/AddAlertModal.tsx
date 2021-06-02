@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRef, useState } from 'react';
-import { Item, StorePrices, PriceAlert, Currency } from 'copdeck-scraper/dist/types';
+import { Item, StorePrices, PriceAlert, Currency } from '@istvankreisz/copdeck-scraper/dist/types';
 import { v4 as uuidv4 } from 'uuid';
 import Popup from '../Components/Popup';
 import { IpcRenderer } from 'electron';

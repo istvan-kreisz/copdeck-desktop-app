@@ -1,5 +1,5 @@
 import { number, object, Infer, array, record, string } from 'superstruct';
-import { Currency, Proxy } from 'copdeck-scraper/dist/types';
+import { Currency, Proxy } from '@istvankreisz/copdeck-scraper/dist/types';
 
 const SettingsSchema = object({
 	proxies: array(Proxy),

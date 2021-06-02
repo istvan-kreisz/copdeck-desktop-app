@@ -7,15 +7,23 @@ import {
 	isOlderThan,
 	itemBestPrice,
 	didFailToFetchAllStorePrices,
-} from 'copdeck-scraper';
+} from '@istvankreisz/copdeck-scraper';
 import { assert, string, is, boolean } from 'superstruct';
-import { ALLSTORES, APIConfig, Item, PriceAlert, Proxy, Store } from 'copdeck-scraper/dist/types';
+import {
+	ALLSTORES,
+	APIConfig,
+	Item,
+	PriceAlert,
+	Proxy,
+	Store,
+} from '@istvankreisz/copdeck-scraper/dist/types';
 import { databaseCoordinator } from './databaseCoordinator';
 import { Settings, SettingsSchema } from '../src/utils/types';
 import { parse, pacFormat } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 const { ipcMain, Notification } = require('electron');
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 const minUpdateInterval = 5;
 const maxUpdateInterval = 1440;
@@ -25,59 +33,156 @@ const refreshExchangeRatesAlarm = 'copdeckrefreshExchangeRatesAlarm';
 const proxyRotationAlarm = 'copdeckProxyRotationAlarm';
 const requestDelayMax = 1000;
 
-const { getItems, saveItems, getAlerts, updateItems, getSettings } = databaseCoordinator();
+const {
+	getAlertsWithItems,
+	getItems,
+	getItemWithId,
+	getAlerts,
+	getSettings,
+	getExchangeRates,
+	listenToSettingsChanges,
+	updateItem,
+	saveItems,
+	updateItems,
+	saveAlert,
+	saveSettings,
+	saveExchangeRates,
+	deleteAlert,
+	clearItemCache,
+	updateLastNotificationDateForAlerts,
+} = databaseCoordinator();
 
 // function showNotification(body: any) {
 // new Notification({ title: NOTIFICATION_TITLE, body: body }).show();
 // }
 
-let mainWindow: BrowserWindow | null | undefined;
+// let mainWindow: BrowserWindow | null | undefined;
 
-function initialize() {
-	function createWindow() {
-		mainWindow = new BrowserWindow({
-			width: 380,
-			height: 580,
-			webPreferences: {
-				nodeIntegration: true,
-				contextIsolation: false,
-				preload: path.join(__dirname, 'preload.js'),
-			},
-		});
+// function initialize() {
+// 	function createWindow() {
+// 		mainWindow = new BrowserWindow({
+// 			width: 380,
+// 			height: 580,
+// 			webPreferences: {
+// 				nodeIntegration: true,
+// 				contextIsolation: false,
+// 				preload: path.join(__dirname, 'preload.js'),
+// 			},
+// 		});
 
-		if (isDev) {
-			mainWindow.loadURL('http://localhost:3000/index.html');
-		} else {
-			// 'build/index.html'
-			mainWindow.loadURL(`file://${__dirname}/../index.html`);
-		}
+// 		if (isDev) {
+// 			mainWindow.loadURL('http://localhost:3000/index.html');
+// 		} else {
+// 			// 'build/index.html'
+// 			mainWindow.loadURL(`file://${__dirname}/../index.html`);
+// 		}
 
-		// Hot Reloading
-		if (isDev) {
-			require('electron-reload')(__dirname, {
-				electron: path.join(
-					__dirname,
-					'..',
-					'..',
-					'node_modules',
-					'.bin',
-					'electron' + (process.platform === 'win32' ? '.cmd' : '')
-				),
-				forceHardReset: false,
-				hardResetMethod: 'exit',
-			});
-		}
+// 		// Hot Reloading
+// 		if (isDev) {
+// 			require('electron-reload')(__dirname, {
+// 				electron: path.join(
+// 					__dirname,
+// 					'..',
+// 					'..',
+// 					'node_modules',
+// 					'.bin',
+// 					'electron' + (process.platform === 'win32' ? '.cmd' : '')
+// 				),
+// 				forceHardReset: false,
+// 				hardResetMethod: 'exit',
+// 			});
+// 		}
 
-		if (isDev) {
-			mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
-		}
+// 		if (isDev) {
+// 			mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
+// 		}
+// 	}
+
+// 	makeSingleInstance();
+
+// 	app.whenReady().then(() => {
+// 		createWindow();
+// 	});
+
+// 	app.on('activate', () => {
+// 		if (BrowserWindow.getAllWindows().length === 0) {
+// 			createWindow();
+// 		}
+// 	});
+
+// 	app.on('window-all-closed', () => {
+// 		if (process.platform !== 'darwin') {
+// 			app.quit();
+// 		}
+// 	});
+// }
+
+// function makeSingleInstance() {
+// 	if (process.mas) return;
+
+// 	app.requestSingleInstanceLock();
+
+// 	app.on('second-instance', () => {
+// 		if (mainWindow) {
+// 			if (mainWindow.isMinimized()) {
+// 				mainWindow.restore();
+// 			}
+// 			mainWindow.focus();
+// 		}
+// 	});
+// }
+
+// initialize();
+
+function createWindow() {
+	const win = new BrowserWindow({
+		width: 380,
+		height: 608,
+		// resizable: isDev,
+		resizable: false,
+		webPreferences: {
+			nodeIntegration: true,
+			contextIsolation: false,
+			preload: path.join(__dirname, 'preload.js'),
+		},
+	});
+
+	console.log(win.getSize()[1] - win.getContentSize()[1]);
+	win.setSize(380, win.getSize()[1] - win.getContentSize()[1] + 580);
+
+	if (isDev) {
+		win.loadURL('http://localhost:3000/index.html');
+	} else {
+		win.loadURL(`file://${__dirname}/../index.html`);
 	}
 
-	makeSingleInstance();
+	if (isDev) {
+		require('electron-reload')(__dirname, {
+			electron: path.join(
+				__dirname,
+				'..',
+				'..',
+				'node_modules',
+				'.bin',
+				'electron' + (process.platform === 'win32' ? '.cmd' : '')
+			),
+			forceHardReset: true,
+			hardResetMethod: 'exit',
+		});
+	}
 
-	app.whenReady().then(() => {
-		createWindow();
-	});
+	if (isDev) {
+		win.webContents.openDevTools();
+	}
+}
+
+app.whenReady().then(() => {
+	// DevTools
+	installExtension(REACT_DEVELOPER_TOOLS)
+		.then((name) => console.log(`Added Extension:  ${name}`))
+		.catch((err) => console.log('An error occurred: ', err));
+
+	createWindow();
 
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) {
@@ -90,24 +195,7 @@ function initialize() {
 			app.quit();
 		}
 	});
-}
-
-function makeSingleInstance() {
-	if (process.mas) return;
-
-	app.requestSingleInstanceLock();
-
-	app.on('second-instance', () => {
-		if (mainWindow) {
-			if (mainWindow.isMinimized()) {
-				mainWindow.restore();
-			}
-			mainWindow.focus();
-		}
-	});
-}
-
-initialize();
+});
 
 /////////////////////////////////////////////
 /////////////////////////////////////////////
@@ -116,9 +204,8 @@ initialize();
 /////////////////////////////////////////////
 
 const clearCache = async () => {
-	// const { clearItemCache } = databaseCoordinator();
 	try {
-		// await clearItemCache();
+		clearItemCache();
 	} catch (err) {
 		log(err, true);
 	}
@@ -138,8 +225,6 @@ const shouldUpdateItem = (item: Item, updateInterval: number): boolean => {
 };
 
 const updatePrices = async (forced: boolean = false) => {
-	const { getItems, saveItems, getAlerts, updateItems, getSettings } = databaseCoordinator();
-
 	try {
 		const [settings, savedAlerts, savedItems] = [getSettings(), getAlerts(), getItems()];
 
@@ -184,7 +269,6 @@ const updatePrices = async (forced: boolean = false) => {
 };
 
 const fetchAndSave = async (item: Item) => {
-	const { updateItem, getSettings } = databaseCoordinator();
 	const settings = getSettings();
 	const newItem = await nodeAPI.getItemPrices(item, apiConfig(settings, isDev));
 	updateItem(newItem, isDev);
@@ -192,8 +276,6 @@ const fetchAndSave = async (item: Item) => {
 };
 
 const getItemDetails = async (item: Item, forceRefresh: boolean) => {
-	const { getItemWithId, getSettings } = databaseCoordinator();
-
 	try {
 		const [savedItem, settings] = [getItemWithId(item.id), getSettings()];
 
@@ -246,7 +328,6 @@ const addRefreshExchangeRatesAlarm = async () => {
 };
 
 const addrefreshPricesAlarm = async (deleteIfExists: boolean) => {
-	// const { getSettings } = databaseCoordinator();
 	// try {
 	// 	const settings = await getSettings();
 	// 	return new Promise<void>((resolve, reject) => {
@@ -283,8 +364,6 @@ const addrefreshPricesAlarm = async (deleteIfExists: boolean) => {
 };
 
 const sendNotifications = async () => {
-	const { getSettings, updateLastNotificationDateForAlerts, getAlertsWithItems } =
-		databaseCoordinator();
 	try {
 		const [alerts, settings] = [getAlertsWithItems(), getSettings()];
 
@@ -360,7 +439,6 @@ const sendNotifications = async () => {
 // 	} else if (alarm.name === refreshExchangeRatesAlarm) {
 // 		await refreshExchangeRates();
 // 	} else if (alarm.name === proxyRotationAlarm) {
-// 		const { getSettings, getIsDevelopment } = databaseCoordinator();
 // 		const [settings, dev] = await Promise.all([getSettings(), getIsDevelopment()]);
 // 		await updateProxies(settings.proxies, dev);
 // 	}
@@ -449,7 +527,6 @@ const updateProxySettings = async (proxies: Proxy[], dev: boolean): Promise<void
 };
 
 // chrome.storage.onChanged.addListener(async function (changes, namespace) {
-// 	const { listenToSettingsChanges } = databaseCoordinator();
 // 	listenToSettingsChanges((settingsOld, settingsNew) => {
 // 		if (
 // 			settingsNew &&
@@ -479,7 +556,6 @@ ipcMain.on('search', (event, searchTerm) => {
 	(async () => {
 		try {
 			assert(searchTerm, string());
-			const { getSettings } = databaseCoordinator();
 			const settings = getSettings();
 			log('searching', isDev);
 			const items = await nodeAPI.searchItems(searchTerm, apiConfig(settings, isDev));
@@ -512,8 +588,6 @@ ipcMain.on('getItemDetails', (event, msg) => {
 ipcMain.on('settings', (event, msg) => {
 	(async () => {
 		try {
-			const { saveSettings } = databaseCoordinator();
-
 			const settings = msg.settings;
 			const proxyString = msg.proxyString;
 			assert(settings, SettingsSchema);
@@ -547,7 +621,6 @@ ipcMain.on('settings', (event, msg) => {
 ipcMain.on('saveAlert', (event, msg) => {
 	(async () => {
 		try {
-			const { saveAlert } = databaseCoordinator();
 			const item = msg.item;
 			const alert = msg.alert;
 			assert(alert, PriceAlert);
@@ -573,7 +646,6 @@ ipcMain.on('refresh', (event) => {
 });
 
 ipcMain.on('getExchangeRates', (event, arg) => {
-	const { getExchangeRates } = databaseCoordinator();
 	const rates = getExchangeRates();
 	event.returnValue = rates;
 });

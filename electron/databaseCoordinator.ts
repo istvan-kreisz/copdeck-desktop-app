@@ -1,6 +1,6 @@
 import { array, assert, boolean, is, number } from 'superstruct';
-import { Item, PriceAlert, EUR, ExchangeRates } from 'copdeck-scraper/dist/types';
-import { removeDuplicates } from 'copdeck-scraper';
+import { Item, PriceAlert, EUR, ExchangeRates } from '@istvankreisz/copdeck-scraper/dist/types';
+import { removeDuplicates } from '@istvankreisz/copdeck-scraper';
 import { SettingsSchema } from '../src/utils/types';
 import { log } from '../src/utils/logger';
 import type { Settings } from '../src/utils/types';

@@ -1,8 +1,14 @@
 import React from 'react';
 import { useEffect, useState, useRef } from 'react';
 import { assert, is } from 'superstruct';
-import { Item, Store, Currency, ALLSTORES, ExchangeRates } from 'copdeck-scraper/dist/types';
-import { bestStoreInfo } from 'copdeck-scraper';
+import {
+	Item,
+	Store,
+	Currency,
+	ALLSTORES,
+	ExchangeRates,
+} from '@istvankreisz/copdeck-scraper/dist/types';
+import { bestStoreInfo } from '@istvankreisz/copdeck-scraper';
 import AddAlertModal from '../Main/AddAlertModal';
 import { ChevronLeftIcon, RefreshIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
 import LoadingIndicator from '../Components/LoadingIndicator';
@@ -61,6 +67,7 @@ const ItemDetail = (prop: {
 			try {
 				assert(item, Item);
 				if (!didClickBack.current) {
+					console.log(item);
 					prop.setSelectedItem((current) => (current ? item : null));
 				}
 			} catch {}
@@ -107,22 +114,22 @@ const ItemDetail = (prop: {
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
 		let price = priceType === 'ask' ? prices?.lowestAsk : prices?.highestBid;
 		if (price) {
-			if (store.id === 'goat' && prop.currency.code !== 'USD') {
-				if (exchangeRates) {
-					switch (prop.currency.code) {
-						case 'EUR':
-							price = Math.round(price / exchangeRates.usd);
-							break;
-						case 'GBP':
-							price = Math.round((price / exchangeRates.usd) * exchangeRates.gbp);
-					}
-					return [prop.currency.symbol + price, price];
-				} else {
-					return ['-', 0];
-				}
-			} else {
-				return [prop.currency.symbol + price, price];
-			}
+			// if (store.id === 'goat' && prop.currency.code !== 'USD') {
+			// 	if (exchangeRates) {
+			// 		switch (prop.currency.code) {
+			// 			case 'EUR':
+			// 				price = Math.round(price / exchangeRates.usd);
+			// 				break;
+			// 			case 'GBP':
+			// 				price = Math.round((price / exchangeRates.usd) * exchangeRates.gbp);
+			// 		}
+			// 		return [prop.currency.symbol + price, price];
+			// 	} else {
+			// 		return ['-', 0];
+			// 	}
+			// } else {
+			return [prop.currency.symbol + price, price];
+			// }
 		} else {
 			return ['-', 0];
 		}
