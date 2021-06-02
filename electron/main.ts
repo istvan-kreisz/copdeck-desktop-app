@@ -38,7 +38,7 @@ const clearCache = async () => {
 // new Notification({ title: NOTIFICATION_TITLE, body: body }).show();
 // }
 
-let mainWindow = null;
+let mainWindow: BrowserWindow | null | undefined;
 
 function initialize() {
 	function createWindow() {
@@ -71,7 +71,7 @@ function initialize() {
 					'.bin',
 					'electron' + (process.platform === 'win32' ? '.cmd' : '')
 				),
-				forceHardReset: true,
+				forceHardReset: false,
 				hardResetMethod: 'exit',
 			});
 		}
@@ -110,29 +110,35 @@ function makeSingleInstance() {
 			if (mainWindow.isMinimized()) {
 				mainWindow.restore();
 			}
-			mainWindow.focus();
+			// mainWindow.focus();
 		}
 	});
 }
 
 initialize();
 
-// ipcMain.on('search', (event, searchTerm) => {
-// 	(async () => {
-// 		try {
-// 			assert(searchTerm, string());
-// 			const { getSettings, getIsDevelopment } = databaseCoordinator();
-// 			const [settings, dev] = await Promise.all([getSettings(), getIsDevelopment()]);
-// 			log('searching', dev);
-// 			const items = await browserAPI.searchItems(searchTerm, apiConfig(settings, dev));
-// 			log('search results', dev);
-// 			log(items, dev);
-// 			sendResponse(items);
-// 		} catch (err) {
-// 			sendResponse([]);
-// 			console.log(err);
-// 		}
-// 	})();
+const apiConfig = (settings: Settings, dev: boolean): APIConfig => {
+	return {
+		currency: settings.currency,
+		isLoggingEnabled: dev,
+		proxies: settings.proxies,
+	};
+};
 
-// 	event.sender.send('search', { a: 1 });
-// });
+ipcMain.on('search', (event, searchTerm) => {
+	(async () => {
+		try {
+			assert(searchTerm, string());
+			const { getSettings } = databaseCoordinator();
+			const settings = getSettings();
+			log('searching', isDev);
+			const items = await browserAPI.searchItems(searchTerm, apiConfig(settings, isDev));
+			log('search results', isDev);
+			log(items, isDev);
+			event.sender.send('search', items);
+		} catch (err) {
+			event.sender.send('search', []);
+			console.log(err);
+		}
+	})();
+});

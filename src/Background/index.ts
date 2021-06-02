@@ -43,14 +43,6 @@
 // 	}
 // }
 
-// const apiConfig = (settings: Settings, dev: boolean): APIConfig => {
-// 	return {
-// 		currency: settings.currency,
-// 		isLoggingEnabled: dev,
-// 		proxies: settings.proxies,
-// 	}
-// }
-
 // const shouldUpdateItem = (item: Item, updateInterval: number): boolean => {
 // 	const lastUpdated = item.updated
 // 	return (!!lastUpdated && isOlderThan(lastUpdated, updateInterval, 'minutes')) || !lastUpdated
