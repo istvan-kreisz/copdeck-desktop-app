@@ -1,13 +1,14 @@
 import React from 'react';
 import { useEffect, useState, useRef } from 'react';
-import { assert } from 'superstruct';
+import { assert, is } from 'superstruct';
 import { Item, Store, Currency, ALLSTORES, ExchangeRates } from 'copdeck-scraper/dist/types';
 import { bestStoreInfo } from 'copdeck-scraper';
 import AddAlertModal from '../Main/AddAlertModal';
 import { ChevronLeftIcon, RefreshIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
 import LoadingIndicator from '../Components/LoadingIndicator';
 import Popup from '../Components/Popup';
-// import { databaseCoordinator } from '../../electron/services/databaseCoordinator';
+import { IpcRenderer } from 'electron';
+const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
 const ItemDetail = (prop: {
 	selectedItem: Item;
@@ -26,8 +27,6 @@ const ItemDetail = (prop: {
 	const didClickBack = useRef(false);
 	const [exchangeRates, setExchangeRates] = useState<ExchangeRates>();
 
-	// const { getExchangeRates } = databaseCoordinator();
-
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
 		message: JSX.Element | string;
@@ -44,18 +43,7 @@ const ItemDetail = (prop: {
 
 	const updateItem = (forceRefresh: boolean) => {
 		setIsLoadingPrices(true);
-		// chrome.runtime.sendMessage(
-		// 	{ getItemDetails: { item: prop.selectedItem, forceRefresh: forceRefresh } },
-		// 	(item) => {
-		// 		try {
-		// 			assert(item, Item)
-		// 			if (!didClickBack.current) {
-		// 				prop.setSelectedItem((current) => (current ? item : null))
-		// 			}
-		// 		} catch {}
-		// 		setIsLoadingPrices(false)
-		// 	}
-		// )
+		ipcRenderer.send('getItemDetails', { item: prop.selectedItem, forceRefresh: forceRefresh });
 	};
 
 	useEffect(() => {
@@ -63,12 +51,26 @@ const ItemDetail = (prop: {
 		if (prop.selectedItem) {
 			updateItem(false);
 		}
-		(async () => {
-			// const rates = await getExchangeRates();
-			// if (rates) {
-			// 	setExchangeRates(rates);
-			// }
-		})();
+
+		const rates = ipcRenderer.sendSync('getExchangeRates');
+		if (rates && is(rates, ExchangeRates)) {
+			setExchangeRates(rates);
+		}
+
+		ipcRenderer.on('getItemDetails', (event, item) => {
+			try {
+				assert(item, Item);
+				console.log(item);
+
+				if (!didClickBack.current) {
+					prop.setSelectedItem((current) => (current ? item : null));
+				}
+			} catch {}
+			setIsLoadingPrices(false);
+		});
+		return () => {
+			ipcRenderer.removeAllListeners('getItemDetails');
+		};
 	}, []);
 
 	useEffect(() => {
@@ -154,15 +156,6 @@ const ItemDetail = (prop: {
 				};
 			}),
 		};
-	};
-
-	const priceClicked = (store: Store) => {
-		const storeInfo = prop.selectedItem.storeInfo.find((s) => s.store.id === store.id);
-		if (storeInfo) {
-			// chrome.tabs.create({
-			// 	url: storeInfo.url,
-			// })
-		}
 	};
 
 	return (
@@ -263,13 +256,17 @@ const ItemDetail = (prop: {
 							</p>
 							{ALLSTORES.map((store) => {
 								return (
-									<p
-										onClick={priceClicked.bind(null, store)}
+									<a
+										href={
+											prop.selectedItem.storeInfo.find(
+												(s) => s.store.id === store.id
+											)?.url
+										}
 										key={store.id}
 										className="h-7 text-gray-800 text-lg font-bold rounded-full flex justify-center items-center w-16 cursor-pointer"
 									>
 										{store.name}
-									</p>
+									</a>
 								);
 							})}
 							<p className="flex-grow"></p>

@@ -2,9 +2,9 @@ import React from 'react';
 import { useRef, useState } from 'react';
 import { Item, StorePrices, PriceAlert, Currency } from 'copdeck-scraper/dist/types';
 import { v4 as uuidv4 } from 'uuid';
-// import { databaseCoordinator } from '../../electron/services/databaseCoordinator';
 import Popup from '../Components/Popup';
-import { is, type } from 'copdeck-scraper/node_modules/superstruct';
+import { IpcRenderer } from 'electron';
+const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
 const AddAlertModal = (prop: {
 	selectedItem: Item;
@@ -29,8 +29,6 @@ const AddAlertModal = (prop: {
 
 	const storeSelector = useRef<HTMLDivElement>(null);
 	const priceField = useRef<HTMLInputElement>(null);
-
-	// const { saveAlert } = databaseCoordinator();
 
 	const selectableStores = (): StorePrices[] => {
 		return prop.selectedItem?.storePrices.filter((prices) => prices.inventory.length) ?? [];
@@ -112,10 +110,9 @@ const AddAlertModal = (prop: {
 			stores: selectedStores.map((store) => store.store),
 		};
 
-		// saveAlert(newAlert, prop.selectedItem).then(() => {
-		// 	prop.setToastMessage({ message: 'Added price alert', show: true });
-		// 	prop.setShowAddPriceAlertModal(false);
-		// });
+		ipcRenderer.send('saveAlert', { alert: newAlert, item: prop.selectedItem });
+		prop.setToastMessage({ message: 'Added price alert', show: true });
+		prop.setShowAddPriceAlertModal(false);
 	};
 
 	return (

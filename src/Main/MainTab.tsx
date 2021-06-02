@@ -24,8 +24,6 @@ const MainTab = (prop: {
 
 	useEffect(() => {
 		ipcRenderer.on('search', (event, response) => {
-			console.log('--------');
-			console.log(response);
 			if (is(response, array(Item))) {
 				if (response.length) {
 					setSearchState(response);
@@ -36,23 +34,15 @@ const MainTab = (prop: {
 				setSearchState([]);
 			}
 		});
+		return () => {
+			ipcRenderer.removeAllListeners('search');
+		};
 	}, []);
 
 	const search = () => {
 		setSearchState('searching');
 		if (searchBar.current?.value) {
 			ipcRenderer.send('search', searchBar.current?.value);
-			// chrome.runtime.sendMessage({ search: searchBar.current?.value }, (response) => {
-			// 	if (is(response, array(Item))) {
-			// 		if (response.length) {
-			// 			setSearchState(response)
-			// 		} else {
-			// 			setSearchState([])
-			// 		}
-			// 	} else {
-			// 		setSearchState([])
-			// 	}
-			// })
 		}
 	};
 

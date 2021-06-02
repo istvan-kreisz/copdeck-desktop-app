@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { Currency, ALLCURRENCIES, EUR } from 'copdeck-scraper/dist/types';
-// import { databaseCoordinator } from '../../electron/services/databaseCoordinator';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import Popup from '../Components/Popup';
 import { stringify } from '../utils/proxyparser';

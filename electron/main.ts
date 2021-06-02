@@ -9,7 +9,7 @@ import {
 	didFailToFetchAllStorePrices,
 } from 'copdeck-scraper';
 import { assert, string, is, boolean } from 'superstruct';
-import { ALLSTORES, APIConfig, Item, Proxy, Store } from 'copdeck-scraper/dist/types';
+import { ALLSTORES, APIConfig, Item, PriceAlert, Proxy, Store } from 'copdeck-scraper/dist/types';
 import { databaseCoordinator } from './databaseCoordinator';
 import { Settings, SettingsSchema } from '../src/utils/types';
 import { parse, pacFormat } from '../src/utils/proxyparser';
@@ -52,18 +52,18 @@ function initialize() {
 
 		// Hot Reloading
 		if (isDev) {
-			// require('electron-reload')(__dirname, {
-			// 	electron: path.join(
-			// 		__dirname,
-			// 		'..',
-			// 		'..',
-			// 		'node_modules',
-			// 		'.bin',
-			// 		'electron' + (process.platform === 'win32' ? '.cmd' : '')
-			// 	),
-			// 	forceHardReset: false,
-			// 	hardResetMethod: 'exit',
-			// });
+			require('electron-reload')(__dirname, {
+				electron: path.join(
+					__dirname,
+					'..',
+					'..',
+					'node_modules',
+					'.bin',
+					'electron' + (process.platform === 'win32' ? '.cmd' : '')
+				),
+				forceHardReset: false,
+				hardResetMethod: 'exit',
+			});
 		}
 
 		if (isDev) {
@@ -100,7 +100,7 @@ function makeSingleInstance() {
 			if (mainWindow.isMinimized()) {
 				mainWindow.restore();
 			}
-			// mainWindow.focus();
+			mainWindow.focus();
 		}
 	});
 }
@@ -499,6 +499,8 @@ ipcMain.on('getItemDetails', (event, msg) => {
 			assert(item, Item);
 			assert(forceRefresh, boolean());
 			const itemWithPrices = await getItemDetails(item, forceRefresh);
+			console.log('**********');
+			console.log(itemWithPrices);
 			event.sender.send('getItemDetails', itemWithPrices);
 		} catch (err) {
 			event.sender.send('getItemDetails', undefined);
@@ -542,7 +544,24 @@ ipcMain.on('settings', (event, msg) => {
 	})();
 });
 
-ipcMain.on('refresh', (event, searchTerm) => {
+ipcMain.on('saveAlert', (event, msg) => {
+	(async () => {
+		try {
+			const { saveAlert } = databaseCoordinator();
+			const item = msg.item;
+			const alert = msg.alert;
+			assert(alert, PriceAlert);
+			assert(item, Item);
+
+			saveAlert(alert, item);
+		} catch (err) {
+			console.log(err);
+		}
+		event.sender.send('refresh', {});
+	})();
+});
+
+ipcMain.on('refresh', (event) => {
 	(async () => {
 		try {
 			await updatePrices();
@@ -551,4 +570,10 @@ ipcMain.on('refresh', (event, searchTerm) => {
 		}
 		event.sender.send('refresh', {});
 	})();
+});
+
+ipcMain.on('getExchangeRates', (event, arg) => {
+	const { getExchangeRates } = databaseCoordinator();
+	const rates = getExchangeRates();
+	event.returnValue = rates;
 });

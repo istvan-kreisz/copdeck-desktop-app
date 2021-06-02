@@ -134,8 +134,7 @@ const databaseCoordinator = () => {
 	};
 
 	const cacheItem = (item: Item) => {
-		const result = get('cachedItems');
-		const cachedItems = result.cachedItems;
+		const cachedItems = get('cachedItems');
 		if (is(cachedItems, array(Item))) {
 			const newItems = cachedItems.filter((i) => item.id !== i.id);
 			item.updated = new Date().getTime();
