@@ -1,34 +1,4 @@
-// import {
-// 	browserAPI,
-// 	promiseAllSkippingErrors,
-// 	isOlderThan,
-// 	itemBestPrice,
-// 	didFailToFetchAllStorePrices,
-// } from 'copdeck-scraper'
-// import { assert, string, is, boolean } from 'superstruct'
-// import { ALLSTORES, APIConfig, Item, Proxy, Store } from 'copdeck-scraper/dist/types'
-// import { databaseCoordinator } from '../services/databaseCoordinator'
-// import { Settings } from '../utils/types'
-// import { parse, pacFormat } from '../utils/proxyparser'
-// import { log } from '../utils/logger'
-// import { v4 as uuidv4 } from 'uuid'
-
-// const minUpdateInterval = 5
-// const maxUpdateInterval = 1440
-// const cacheAlarm = 'copdeckCacheAlarm'
-// const refreshPricesAlarm = 'copdeckRefreshPricesAlarm'
-// const refreshExchangeRatesAlarm = 'copdeckrefreshExchangeRatesAlarm'
-// const proxyRotationAlarm = 'copdeckProxyRotationAlarm'
 // const requestDelayMax = 1000
-
-// const clearCache = async () => {
-// 	const { clearItemCache } = databaseCoordinator()
-// 	try {
-// 		await clearItemCache()
-// 	} catch (err) {
-// 		log(err, true)
-// 	}
-// }
 
 // const refreshExchangeRates = async () => {
 // 	const { getSettings, getIsDevelopment, saveExchangeRates } = databaseCoordinator()
@@ -41,72 +11,6 @@
 // 	} catch (err) {
 // 		log(err, dev)
 // 	}
-// }
-
-// const shouldUpdateItem = (item: Item, updateInterval: number): boolean => {
-// 	const lastUpdated = item.updated
-// 	return (!!lastUpdated && isOlderThan(lastUpdated, updateInterval, 'minutes')) || !lastUpdated
-// }
-
-// const updatePrices = async (forced: boolean = false) => {
-// 	const { getItems, saveItems, getAlerts, updateItems, getSettings, getIsDevelopment } =
-// 		databaseCoordinator()
-
-// 	try {
-// 		const [settings, savedAlerts, savedItems, dev] = await Promise.all([
-// 			getSettings(),
-// 			getAlerts(),
-// 			getItems(),
-// 			getIsDevelopment(),
-// 		])
-
-// 		// delete items without alerts
-// 		const activeItems = savedItems.filter((item) =>
-// 			savedAlerts.find((alert) => alert.itemId === item.id)
-// 		)
-// 		if (activeItems.length !== savedItems.length) {
-// 			await saveItems(activeItems)
-// 		}
-
-// 		// refresh items
-// 		const result = await promiseAllSkippingErrors(
-// 			activeItems.map((item) => {
-// 				const lastUpdated = item.updated
-// 				if (forced || shouldUpdateItem(item, settings.updateInterval)) {
-// 					return new Promise<Item>((resolve, reject) => {
-// 						const delay = Math.random() * requestDelayMax
-// 						setTimeout(() => {
-// 							browserAPI
-// 								.getItemPrices(item, apiConfig(settings, dev))
-// 								.then((result) => {
-// 									resolve(result)
-// 								})
-// 								.catch((err) => {
-// 									reject(err)
-// 								})
-// 						}, delay)
-// 					})
-// 				} else {
-// 					return new Promise<Item>((resolve, reject) => reject())
-// 				}
-// 			})
-// 		)
-
-// 		const items = result.filter((item) => item.storePrices && item.storePrices.length)
-// 		if (items && items.length) {
-// 			await updateItems(items)
-// 		}
-// 	} catch (err) {
-// 		console.log(err)
-// 	}
-// }
-
-// const fetchAndSave = async (item: Item) => {
-// 	const { updateItem, getSettings, getIsDevelopment } = databaseCoordinator()
-// 	const [settings, dev] = await Promise.all([getSettings(), getIsDevelopment()])
-// 	const newItem = await browserAPI.getItemPrices(item, apiConfig(settings, dev))
-// 	await updateItem(newItem, dev)
-// 	return newItem
 // }
 
 // const getItemDetails = async (item: Item, forceRefresh: boolean) => {

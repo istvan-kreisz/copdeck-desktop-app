@@ -10,9 +10,5 @@ const SettingsSchema = object({
 
 type Settings = Infer<typeof SettingsSchema>;
 
-const ProxyNotificationUpdatesSchema = record(string(), number());
-
-type ProxyNotificationUpdates = Infer<typeof ProxyNotificationUpdatesSchema>;
-
-export { SettingsSchema, ProxyNotificationUpdatesSchema };
-export type { Settings, ProxyNotificationUpdates };
+export { SettingsSchema };
+export type { Settings };

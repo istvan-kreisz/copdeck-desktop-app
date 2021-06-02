@@ -1,9 +1,9 @@
 import { array, assert, boolean, is, number } from 'superstruct';
 import { Item, PriceAlert, EUR, ExchangeRates } from 'copdeck-scraper/dist/types';
 import { removeDuplicates } from 'copdeck-scraper';
-import { SettingsSchema, ProxyNotificationUpdatesSchema } from '../src/utils/types';
+import { SettingsSchema } from '../src/utils/types';
 import { log } from '../src/utils/logger';
-import type { Settings, ProxyNotificationUpdates } from '../src/utils/types';
+import type { Settings } from '../src/utils/types';
 
 const Store = require('electron-store');
 
@@ -80,15 +80,6 @@ const databaseCoordinator = () => {
 		}
 	};
 
-	const getProxyNotificationUpdates = (): ProxyNotificationUpdates => {
-		const proxyNotificationUpdates = get('proxyNotificationUpdates');
-		if (is(proxyNotificationUpdates, ProxyNotificationUpdatesSchema)) {
-			return proxyNotificationUpdates;
-		} else {
-			return {};
-		}
-	};
-
 	const getExchangeRates = (): ExchangeRates | null => {
 		const exchangeRates = get('exchangeRates');
 		if (is(exchangeRates, ExchangeRates)) {
@@ -98,18 +89,22 @@ const databaseCoordinator = () => {
 		}
 	};
 
-	const listenToSettingsChanges = (callback: (settings: Settings) => void) => {
+	const listenToSettingsChanges = (
+		callback: (oldValue?: Settings, newValue?: Settings) => void
+	) => {
 		store.onDidChange('settings', (oldValue: any, newValue: any) => {
-			const settings = newValue;
-			if (settings) {
-				assert(settings, SettingsSchema);
-				callback(settings);
+			if (newValue && is(newValue, SettingsSchema)) {
+				if (oldValue && is(oldValue, SettingsSchema)) {
+					callback(oldValue, newValue);
+				} else {
+					callback(undefined, newValue);
+				}
 			}
 		});
 		const settings = get('settings');
 		if (settings) {
 			assert(settings, SettingsSchema);
-			callback(settings);
+			callback(undefined, settings);
 		}
 	};
 
@@ -201,10 +196,6 @@ const databaseCoordinator = () => {
 		set('settings', settings);
 	};
 
-	const saveProxyNotificationUpdates = (proxyNotificationUpdates: ProxyNotificationUpdates) => {
-		set('proxyNotificationUpdates', proxyNotificationUpdates);
-	};
-
 	const saveExchangeRates = (exchangeRates: ExchangeRates) => {
 		set('exchangeRates', exchangeRates);
 	};
@@ -251,7 +242,6 @@ const databaseCoordinator = () => {
 		getItemWithId: getItemWithId,
 		getAlerts: getAlerts,
 		getSettings: getSettings,
-		getProxyNotificationUpdates: getProxyNotificationUpdates,
 		getExchangeRates: getExchangeRates,
 		listenToSettingsChanges: listenToSettingsChanges,
 		updateItem: updateItem,
@@ -259,7 +249,6 @@ const databaseCoordinator = () => {
 		updateItems: updateItems,
 		saveAlert: saveAlert,
 		saveSettings: saveSettings,
-		saveProxyNotificationUpdates: saveProxyNotificationUpdates,
 		saveExchangeRates: saveExchangeRates,
 		deleteAlert: deleteAlert,
 		clearItemCache: clearItemCache,
