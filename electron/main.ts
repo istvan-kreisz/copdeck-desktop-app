@@ -493,6 +493,7 @@ const updateProxySettings = async (proxies: Proxy[], dev: boolean): Promise<void
 
 // todo: tailwind purge
 // todo: goat currency
+// todo: open links in browser
 
 function setupServices() {
 	ipcMain.on('search', (event, searchTerm) => {
@@ -504,9 +505,9 @@ function setupServices() {
 				const items = await nodeAPI.searchItems(searchTerm, apiConfig(settings, isDev));
 				log('search results', isDev);
 				log(items, isDev);
-				event.sender.send('search', items);
+				event.reply('search', items);
 			} catch (err) {
-				event.sender.send('search', []);
+				event.reply('search', []);
 				console.log(err);
 			}
 		})();
@@ -520,9 +521,9 @@ function setupServices() {
 				assert(item, Item);
 				assert(forceRefresh, boolean());
 				const itemWithPrices = await getItemDetails(item, forceRefresh);
-				event.sender.send('getItemDetails', itemWithPrices);
+				event.reply('getItemDetails', itemWithPrices);
 			} catch (err) {
-				event.sender.send('getItemDetails', undefined);
+				event.reply('getItemDetails', undefined);
 				console.log(err);
 			}
 		})();
@@ -553,10 +554,10 @@ function setupServices() {
 					settings.updateInterval = maxUpdateInterval;
 				}
 				saveSettings(settings);
-				event.sender.send('settings', proxyParseError);
+				event.reply('settings', proxyParseError);
 			} catch (err) {
 				console.log(err);
-				event.sender.send('settings', err);
+				event.reply('settings', err);
 			}
 		})();
 	});
@@ -573,7 +574,7 @@ function setupServices() {
 			} catch (err) {
 				console.log(err);
 			}
-			event.sender.send('refresh', {});
+			event.reply('refresh', {});
 		})();
 	});
 
@@ -584,12 +585,33 @@ function setupServices() {
 			} catch (err) {
 				console.log(err);
 			}
-			event.sender.send('refresh', {});
+			event.reply('refresh', {});
 		})();
 	});
 
 	ipcMain.on('getExchangeRates', (event, arg) => {
 		const rates = getExchangeRates();
 		event.returnValue = rates;
+	});
+
+	listenToSettingsChanges((settingsOld, settingsNew) => {
+		if (
+			settingsNew &&
+			settingsOld &&
+			is(settingsNew, SettingsSchema) &&
+			is(settingsOld, SettingsSchema)
+		) {
+			if (settingsOld.currency.code !== settingsNew.currency.code) {
+				updatePrices(true);
+			}
+			if (settingsOld.updateInterval !== settingsNew.updateInterval) {
+				addrefreshPricesAlarm(true);
+			}
+			if (JSON.stringify(settingsOld.proxies) !== JSON.stringify(settingsNew.proxies)) {
+				// todo: ?
+				updateProxySettings(settingsNew.proxies, isDev);
+			}
+			mainWindow?.webContents.send('settingsUpdated', settingsNew);
+		}
 	});
 }

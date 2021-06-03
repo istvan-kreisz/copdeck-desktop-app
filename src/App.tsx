@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { CheckIcon } from '@heroicons/react/outline';
 import MainTab from './Main/MainTab';
@@ -8,6 +7,10 @@ import AlertsTab from './Alerts/AlertsTab';
 import { useState, useEffect } from 'react';
 import { SearchIcon, CogIcon, BellIcon, DeviceMobileIcon } from '@heroicons/react/outline';
 import { Currency, EUR } from '@istvankreisz/copdeck-scraper/dist/types';
+import { IpcRenderer } from 'electron';
+import { SettingsSchema } from './utils/types';
+import { is } from 'superstruct';
+const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState<'main' | 'settings' | 'alerts'>('main');
@@ -17,15 +20,15 @@ const App = () => {
 		show: false,
 	});
 
-	// const { listenToSettingsChanges } = databaseCoordinator();
-
 	useEffect(() => {
-		(async () => {
-			// await listenToSettingsChanges((settings) => {
-			// 	setCurrency(settings.currency);
-			// });
-		})();
-		// chrome.runtime.sendMessage({ refresh: true })
+		ipcRenderer.on('settingsUpdated', (event, settings) => {
+			if (is(settings, SettingsSchema)) {
+				setCurrency(settings.currency);
+			}
+		});
+		return () => {
+			ipcRenderer.removeAllListeners('settingsUpdated');
+		};
 	}, []);
 
 	const hideToast = () => {
@@ -46,10 +49,6 @@ const App = () => {
 
 	const selectedTab = (tab: 'main' | 'settings' | 'alerts') => {
 		setActiveTab(tab);
-	};
-
-	const clickedLink = () => {
-		// chrome.tabs.create({ url: 'https://copdeck.com' })
 	};
 
 	return (
@@ -133,7 +132,6 @@ const App = () => {
 			</section>
 			<footer className="h-8 w-full bg-theme-yellow flex-grow-0">
 				<a
-					onClick={clickedLink}
 					className="w-full h-full flex space-x-1 flex-row align-middle items-center justify-center"
 					href="https://copdeck.com"
 				>
