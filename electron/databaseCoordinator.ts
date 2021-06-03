@@ -92,7 +92,7 @@ const databaseCoordinator = () => {
 	const listenToSettingsChanges = (
 		callback: (oldValue?: Settings, newValue?: Settings) => void
 	) => {
-		store.onDidChange('settings', (oldValue: any, newValue: any) => {
+		store.onDidChange('settings', (newValue: any, oldValue: any) => {
 			if (newValue && is(newValue, SettingsSchema)) {
 				if (oldValue && is(oldValue, SettingsSchema)) {
 					callback(oldValue, newValue);

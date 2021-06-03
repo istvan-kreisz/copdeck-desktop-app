@@ -4,7 +4,10 @@ import { Currency, ALLCURRENCIES, EUR } from '@istvankreisz/copdeck-scraper/dist
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import Popup from '../Components/Popup';
 import { stringify } from '../utils/proxyparser';
-import { Switch } from '@headlessui/react';
+import { is } from 'superstruct';
+import { SettingsSchema } from '../utils/types';
+import { IpcRenderer } from 'electron';
+const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
 const SettingsTab = (prop: {
 	setToastMessage: React.Dispatch<
@@ -29,22 +32,38 @@ const SettingsTab = (prop: {
 		message: '',
 		show: false,
 	});
-	const [enabled, setEnabled] = useState(false);
-
-	// const { listenToSettingsChanges } = databaseCoordinator();
 
 	useEffect(() => {
-		(async () => {
-			// await listenToSettingsChanges((settings) => {
-			// 	setSelectedCurrency(settings.currency);
-			// 	const proxyField = proxyTextField.current;
-			// 	if (proxyField) {
-			// 		proxyField.value = stringify(settings.proxies);
-			// 	}
-			// 	setNotificationFrequency(`${settings.notificationFrequency}`);
-			// 	setUpdateInterval(`${settings.updateInterval}`);
-			// });
-		})();
+		// todo: fix
+		ipcRenderer.on('settingsUpdated', (event, settings) => {
+			if (is(settings, SettingsSchema)) {
+				console.log(settings);
+				setSelectedCurrency(settings.currency);
+				const proxyField = proxyTextField.current;
+				if (proxyField) {
+					proxyField.value = stringify(settings.proxies);
+				}
+				setNotificationFrequency(`${settings.notificationFrequency}`);
+				setUpdateInterval(`${settings.updateInterval}`);
+			}
+		});
+
+		ipcRenderer.on('saveSettings', (event, response) => {
+			if (response) {
+				setTelltipMessage({
+					title: 'Invalid proxy format',
+					message: response,
+					show: true,
+				});
+			} else {
+				prop.setToastMessage({ message: 'Settings saved', show: true });
+			}
+		});
+
+		return () => {
+			ipcRenderer.removeAllListeners('settingsUpdated');
+			ipcRenderer.removeAllListeners('saveSettings');
+		};
 	}, []);
 
 	const saveSettings = (event: React.FormEvent<HTMLFormElement>) => {
@@ -53,30 +72,15 @@ const SettingsTab = (prop: {
 		const interval = parseFloat(updateInterval ?? '');
 		const notificationInterval = parseFloat(notificationFrequency ?? '24');
 
-		// chrome.runtime.sendMessage(
-		// 	{
-		// 		settings: {
-		// 			settings: {
-		// 				proxies: [],
-		// 				currency: selectedCurrency,
-		// 				updateInterval: interval,
-		// 				notificationFrequency: notificationInterval,
-		// 			},
-		// 			proxyString: proxyTextField.current?.value ?? '',
-		// 		},
-		// 	},
-		// 	(response) => {
-		// 		if (response) {
-		// 			setTelltipMessage({
-		// 				title: 'Invalid proxy format',
-		// 				message: response,
-		// 				show: true,
-		// 			})
-		// 		} else {
-		// 			prop.setToastMessage({ message: 'Settings saved', show: true })
-		// 		}
-		// 	}
-		// )
+		ipcRenderer.send('saveSettings', {
+			settings: {
+				proxies: [],
+				currency: selectedCurrency,
+				updateInterval: interval,
+				notificationFrequency: notificationInterval,
+			},
+			proxyString: proxyTextField.current?.value ?? '',
+		});
 	};
 
 	const changedInterval = (event: { target: HTMLInputElement }) => {
@@ -93,10 +97,6 @@ const SettingsTab = (prop: {
 		if (currency) {
 			setSelectedCurrency(currency);
 		}
-	};
-
-	const clickedContact = () => {
-		// chrome.tabs.create({ url: 'https://copdeck.com/contact' })
 	};
 
 	return (
@@ -146,22 +146,6 @@ const SettingsTab = (prop: {
 						></QuestionMarkCircleIcon>
 					</div>
 
-					{/* <div className="py-16">
-						<Switch
-							checked={enabled}
-							onChange={setEnabled}
-							className={`${enabled ? 'bg-teal-900' : 'bg-teal-700'}
-          relative inline-flex flex-shrink-0 h-[38px] w-[74px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-						>
-							<span className="sr-only">Use setting</span>
-							<span
-								aria-hidden="true"
-								className={`${enabled ? 'translate-x-9' : 'translate-x-0'}
-            pointer-events-none inline-block h-[34px] w-[34px] rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
-							/>
-						</Switch>
-					</div>
- */}
 					<textarea
 						ref={proxyTextField}
 						style={{ resize: 'none' }}
@@ -230,13 +214,13 @@ const SettingsTab = (prop: {
 				<div className="mt-5 mb-2 border border-gray-300"></div>
 				<div className="flex flex-row flex-nowrap items-center">
 					<h3 className="text-lg font-bold text-gray-600">Got questions?</h3>
-					<button
-						onClick={clickedContact}
+					<a
+						href="https://copdeck.com/contact"
 						className="button-default text-theme-blue border-transparent underline"
 						type="submit"
 					>
 						Contact us!
-					</button>
+					</a>
 				</div>
 			</div>
 			<Popup

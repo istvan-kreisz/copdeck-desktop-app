@@ -1,6 +1,5 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
-import * as isDev from 'electron-is-dev';
 import {
 	nodeAPI,
 	promiseAllSkippingErrors,
@@ -62,9 +61,8 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 380,
 		height: 608,
-		resizable: isDev,
-		// resizable: false,
-		// show: !isDev,
+		resizable: !app.isPackaged,
+		// show: !!app.isPackaged,
 		title: 'CopDeck',
 		webPreferences: {
 			nodeIntegration: true,
@@ -75,7 +73,7 @@ function createWindow() {
 
 	mainWindow.setSize(380, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 580);
 
-	if (isDev) {
+	if (!app.isPackaged) {
 		mainWindow.loadURL('http://localhost:3000/index.html');
 	} else {
 		// 'build/index.html'
@@ -83,7 +81,7 @@ function createWindow() {
 	}
 
 	// Hot Reloading
-	if (isDev) {
+	if (!app.isPackaged) {
 		require('electron-reload')(__dirname, {
 			electron: path.join(
 				__dirname,
@@ -98,7 +96,7 @@ function createWindow() {
 		});
 	}
 
-	if (isDev) {
+	if (!app.isPackaged) {
 		mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
 	}
 }
@@ -119,7 +117,7 @@ app.whenReady().then(() => {
 	});
 
 	app.on('second-instance', () => {
-		if (mainWindow && !isDev) {
+		if (mainWindow && !!app.isPackaged) {
 			if (mainWindow.isMinimized()) {
 				mainWindow.restore();
 			}
@@ -183,7 +181,7 @@ const updatePrices = async (forced: boolean = false) => {
 						const delay = Math.random() * requestDelayMax;
 						setTimeout(() => {
 							nodeAPI
-								.getItemPrices(item, apiConfig(settings, isDev))
+								.getItemPrices(item, apiConfig(settings, !app.isPackaged))
 								.then((result) => {
 									resolve(result);
 								})
@@ -209,8 +207,8 @@ const updatePrices = async (forced: boolean = false) => {
 
 const fetchAndSave = async (item: Item) => {
 	const settings = getSettings();
-	const newItem = await nodeAPI.getItemPrices(item, apiConfig(settings, isDev));
-	updateItem(newItem, isDev);
+	const newItem = await nodeAPI.getItemPrices(item, apiConfig(settings, !app.isPackaged));
+	updateItem(newItem, !app.isPackaged);
 	return newItem;
 };
 
@@ -224,14 +222,14 @@ const getItemDetails = async (item: Item, forceRefresh: boolean) => {
 				shouldUpdateItem(savedItem, settings.updateInterval) ||
 				forceRefresh
 			) {
-				log('fetching new 1', isDev);
+				log('fetching new 1', !app.isPackaged);
 				return fetchAndSave(savedItem);
 			} else {
-				log('returning saved', isDev);
+				log('returning saved', !app.isPackaged);
 				return savedItem;
 			}
 		} else {
-			log('fetching new 2', isDev);
+			log('fetching new 2', !app.isPackaged);
 			return fetchAndSave(item);
 		}
 	} catch (err) {
@@ -342,8 +340,8 @@ const sendNotifications = async () => {
 
 		alertsFiltered.forEach(([alert, item]) => {
 			const bestPrice = itemBestPrice(item, alert);
-			log('notification sent', isDev);
-			log(alert, isDev);
+			log('notification sent', !app.isPackaged);
+			log(alert, !app.isPackaged);
 			// chrome.notifications.create(
 			// 	uuidv4(),
 			// 	{
@@ -363,7 +361,7 @@ const sendNotifications = async () => {
 			// );
 		});
 
-		await updateLastNotificationDateForAlerts(alertsFiltered.map(([alert, item]) => alert));
+		updateLastNotificationDateForAlerts(alertsFiltered.map(([alert, item]) => alert));
 	} catch (err) {
 		console.log(err);
 	}
@@ -378,7 +376,7 @@ const sendNotifications = async () => {
 // 	} else if (alarm.name === refreshExchangeRatesAlarm) {
 // 		await refreshExchangeRates();
 // 	} else if (alarm.name === proxyRotationAlarm) {
-// 		const [settings, dev] = await Promise.all([getSettings(), getIsDevelopment()]);
+// 		const [settings, dev] = await Promise.all([getSettings(), !getapp.isPackagedelopment()]);
 // 		await updateProxies(settings.proxies, dev);
 // 	}
 // });
@@ -465,27 +463,6 @@ const updateProxySettings = async (proxies: Proxy[], dev: boolean): Promise<void
 	// }
 };
 
-// chrome.storage.onChanged.addListener(async function (changes, namespace) {
-// 	listenToSettingsChanges((settingsOld, settingsNew) => {
-// 		if (
-// 			settingsNew &&
-// 			settingsOld &&
-// 			is(settingsNew, SettingsSchema) &&
-// 			is(settingsOld, SettingsSchema)
-// 		) {
-// 			if (settingsOld.currency.code !== settingsNew.currency.code) {
-// 				updatePrices(true);
-// 			}
-// 			if (settingsOld.updateInterval !== settingsNew.updateInterval) {
-// 				addrefreshPricesAlarm(true);
-// 			}
-// 			if (JSON.stringify(settingsOld.proxies) !== JSON.stringify(settingsNew.proxies)) {
-// 				updateProxySettings(settingsNew.proxies, isDev);
-// 			}
-// 		}
-// 	});
-// });
-
 // // add goat bid
 // // add proxy toggle
 // // change goat currency
@@ -501,10 +478,13 @@ function setupServices() {
 			try {
 				assert(searchTerm, string());
 				const settings = getSettings();
-				log('searching', isDev);
-				const items = await nodeAPI.searchItems(searchTerm, apiConfig(settings, isDev));
-				log('search results', isDev);
-				log(items, isDev);
+				log('searching', !app.isPackaged);
+				const items = await nodeAPI.searchItems(
+					searchTerm,
+					apiConfig(settings, !app.isPackaged)
+				);
+				log('search results', !app.isPackaged);
+				log(items, !app.isPackaged);
 				event.reply('search', items);
 			} catch (err) {
 				event.reply('search', []);
@@ -563,8 +543,8 @@ function setupServices() {
 				} catch (err) {
 					settings.proxies = [];
 					proxyParseError = err['message'] ?? 'Invalid proxy format';
-					log('proxy error', isDev);
-					log(err, isDev);
+					log('proxy error', !app.isPackaged);
+					log(err, !app.isPackaged);
 				}
 			}
 			if (settings.updateInterval < minUpdateInterval) {
@@ -610,6 +590,32 @@ function setupServices() {
 		event.returnValue = rates;
 	});
 
+	ipcMain.on('saveSettings', (event, msg) => {
+		const settings = msg.settings;
+		const proxyString = msg.proxyString;
+		assert(settings, SettingsSchema);
+		assert(proxyString, string());
+
+		let proxyParseError;
+		if (proxyString) {
+			try {
+				settings.proxies = parse(proxyString);
+			} catch (err) {
+				settings.proxies = [];
+				proxyParseError = err['message'] ?? 'Invalid proxy format';
+				log('proxy error', true);
+				log(err, true);
+			}
+		}
+		if (settings.updateInterval < minUpdateInterval) {
+			settings.updateInterval = minUpdateInterval;
+		} else if (settings.updateInterval > maxUpdateInterval) {
+			settings.updateInterval = maxUpdateInterval;
+		}
+		saveSettings(settings);
+		event.reply('saveSettings', proxyParseError);
+	});
+
 	listenToSettingsChanges((settingsOld, settingsNew) => {
 		if (
 			settingsNew &&
@@ -625,7 +631,7 @@ function setupServices() {
 			}
 			if (JSON.stringify(settingsOld.proxies) !== JSON.stringify(settingsNew.proxies)) {
 				// todo: ?
-				updateProxySettings(settingsNew.proxies, isDev);
+				updateProxySettings(settingsNew.proxies, !app.isPackaged);
 			}
 			mainWindow?.webContents.send('settingsUpdated', settingsNew);
 		}
