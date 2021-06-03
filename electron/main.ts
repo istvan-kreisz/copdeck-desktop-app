@@ -64,7 +64,7 @@ function createWindow() {
 		height: 608,
 		resizable: isDev,
 		// resizable: false,
-		show: !isDev,
+		// show: !isDev,
 		title: 'CopDeck',
 		webPreferences: {
 			nodeIntegration: true,
@@ -529,53 +529,69 @@ function setupServices() {
 		})();
 	});
 
-	ipcMain.on('settings', (event, msg) => {
-		(async () => {
-			try {
-				const settings = msg.settings;
-				const proxyString = msg.proxyString;
-				assert(settings, SettingsSchema);
-				assert(proxyString, string());
+	ipcMain.on('alertsWithItems', (event, msg) => {
+		try {
+			const alertsWithItems = getAlertsWithItems();
+			event.reply('alertsWithItems', alertsWithItems);
+		} catch (err) {
+			event.reply('alertsWithItems', []);
+			console.log(err);
+		}
+	});
 
-				let proxyParseError;
-				if (proxyString) {
-					try {
-						settings.proxies = parse(proxyString);
-					} catch (err) {
-						settings.proxies = [];
-						proxyParseError = err['message'] ?? 'Invalid proxy format';
-						log('proxy error', isDev);
-						log(err, isDev);
-					}
-				}
-				if (settings.updateInterval < minUpdateInterval) {
-					settings.updateInterval = minUpdateInterval;
-				} else if (settings.updateInterval > maxUpdateInterval) {
-					settings.updateInterval = maxUpdateInterval;
-				}
-				saveSettings(settings);
-				event.reply('settings', proxyParseError);
-			} catch (err) {
-				console.log(err);
-				event.reply('settings', err);
+	ipcMain.on('deleteAlert', (event, alert) => {
+		try {
+			if (is(alert, PriceAlert)) {
+				deleteAlert(alert);
 			}
-		})();
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
+	ipcMain.on('settings', (event, msg) => {
+		try {
+			const settings = msg.settings;
+			const proxyString = msg.proxyString;
+			assert(settings, SettingsSchema);
+			assert(proxyString, string());
+
+			let proxyParseError;
+			if (proxyString) {
+				try {
+					settings.proxies = parse(proxyString);
+				} catch (err) {
+					settings.proxies = [];
+					proxyParseError = err['message'] ?? 'Invalid proxy format';
+					log('proxy error', isDev);
+					log(err, isDev);
+				}
+			}
+			if (settings.updateInterval < minUpdateInterval) {
+				settings.updateInterval = minUpdateInterval;
+			} else if (settings.updateInterval > maxUpdateInterval) {
+				settings.updateInterval = maxUpdateInterval;
+			}
+			saveSettings(settings);
+			event.reply('settings', proxyParseError);
+		} catch (err) {
+			console.log(err);
+			event.reply('settings', err);
+		}
 	});
 
 	ipcMain.on('saveAlert', (event, msg) => {
-		(async () => {
-			try {
-				const item = msg.item;
-				const alert = msg.alert;
-				assert(alert, PriceAlert);
-				assert(item, Item);
+		try {
+			const item = msg.item;
+			const alert = msg.alert;
+			assert(alert, PriceAlert);
+			assert(item, Item);
 
-				saveAlert(alert, item);
-			} catch (err) {
-				console.log(err);
-			}
-			event.reply('refresh', {});
-		})();
+			saveAlert(alert, item);
+		} catch (err) {
+			console.log(err);
+		}
+		event.reply('refresh', {});
 	});
 
 	ipcMain.on('refresh', (event) => {

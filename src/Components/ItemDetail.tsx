@@ -286,7 +286,7 @@ const ItemDetail = (prop: {
 									.map((row) => {
 										return (
 											<li key={row.size} className="flex flex-row space-x-4">
-												<p className="bg-gray-300 h-7 rounded-full flex justify-center items-center w-16">
+												<p className="bg-gray-300 h-7 text-sm rounded-full flex justify-center items-center w-16">
 													{row.size}
 												</p>
 												{row.prices.prices.map((price) => {
@@ -301,7 +301,7 @@ const ItemDetail = (prop: {
 															}`}
 															key={price.store.id}
 														>
-															<p>{price.text}</p>
+															<p className="text-sm">{price.text}</p>
 															{price.store.id === 'goat' &&
 															price.text !== '-' ? (
 																<QuestionMarkCircleIcon

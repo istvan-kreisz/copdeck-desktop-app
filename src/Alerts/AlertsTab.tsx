@@ -4,7 +4,9 @@ import { Item, PriceAlert, Currency } from '@istvankreisz/copdeck-scraper/dist/t
 import { itemBestPrice } from '@istvankreisz/copdeck-scraper';
 import ItemDetail from '../Components/ItemDetail';
 import AlertListItem from './AlertListItem';
-// import { databaseCoordinator } from '../../electron/services/databaseCoordinator';
+import { tuple, is, array } from 'superstruct';
+import { IpcRenderer } from 'electron';
+const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
 const AlertsTab = (prop: {
 	activeTab: 'main' | 'settings' | 'alerts';
@@ -19,23 +21,26 @@ const AlertsTab = (prop: {
 	const [priceAlerts, setPriceAlerts] = useState<[PriceAlert, Item][]>([]);
 	const [selectedItem, setSelectedItem] = useState<Item | null>();
 
-	// const { getAlertsWithItems, deleteAlert } = databaseCoordinator();
-
 	useEffect(() => {
 		if (prop.activeTab === 'alerts') {
-			(async () => {
-				// const alertsWithItems = await getAlertsWithItems();
-				// setPriceAlerts(alertsWithItems);
-			})();
+			ipcRenderer.send('alertsWithItems', {});
 		}
 	}, [prop.activeTab]);
 
 	useEffect(() => {
+		ipcRenderer.on('alertsWithItems', (event, alertsWithItems) => {
+			if (is(alertsWithItems, array(tuple([PriceAlert, Item])))) {
+				setPriceAlerts(alertsWithItems);
+			}
+		});
+		return () => {
+			ipcRenderer.removeAllListeners('alertsWithItems');
+		};
+	}, []);
+
+	useEffect(() => {
 		if (!selectedItem) {
-			(async () => {
-				// const alertsWithItems = await getAlertsWithItems();
-				// setPriceAlerts(alertsWithItems);
-			})();
+			ipcRenderer.send('alertsWithItems', {});
 		}
 	}, [selectedItem]);
 
@@ -47,11 +52,9 @@ const AlertsTab = (prop: {
 
 	const deletedAlert = (alert: PriceAlert, event) => {
 		event.stopPropagation();
-		(async () => {
-			// await deleteAlert(alert);
-			// const alertsWithItems = await getAlertsWithItems();
-			// setPriceAlerts(alertsWithItems);
-		})();
+
+		ipcRenderer.send('deleteAlert', alert);
+		ipcRenderer.send('alertsWithItems', {});
 	};
 
 	return (
