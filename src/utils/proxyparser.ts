@@ -95,8 +95,7 @@ function pacFormat(proxies: Proxy[]): string {
 		string += `${proxy.host}:${proxy.port}`;
 		return string;
 	});
-	return '';
-	// return shuffleArray(proxyStrings).join('; ');
+	return shuffleArray(proxyStrings).join('; ');
 }
 
 export { parse, stringify, pacFormat };

@@ -125,7 +125,10 @@ const AddAlertModal = (prop: {
 					<div className="flex flex-col space-y-0 items-start" ref={storeSelector}>
 						{selectableStores().map((store) => {
 							return (
-								<div className="flex flex-row items-center space-x-2 m-0">
+								<div
+									key={store.store.id}
+									className="flex flex-row items-center space-x-2 m-0"
+								>
 									<label
 										htmlFor={store.store.id}
 										className="text-lg text-gray-800 m-0"
@@ -152,7 +155,11 @@ const AddAlertModal = (prop: {
 						id="size"
 					>
 						{selectableSizes.map((size) => {
-							return <option value={size}>{size}</option>;
+							return (
+								<option key={size} value={size}>
+									{size}
+								</option>
+							);
 						})}
 					</select>
 					<h3 className="text-base font-bold mt-4 mb-1">{`3. Notify me when price goes `}</h3>
@@ -164,10 +171,8 @@ const AddAlertModal = (prop: {
 							name="type"
 							id="type"
 						>
+							<option value="below">Below</option>
 							<option value="above">Above</option>
-							<option selected={true} value="below">
-								Below
-							</option>
 						</select>
 
 						<input

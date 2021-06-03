@@ -114,6 +114,7 @@ const ItemDetail = (prop: {
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
 		let price = priceType === 'ask' ? prices?.lowestAsk : prices?.highestBid;
 		if (price) {
+			// todo
 			// if (store.id === 'goat' && prop.currency.code !== 'USD') {
 			// 	if (exchangeRates) {
 			// 		switch (prop.currency.code) {

@@ -53,93 +53,17 @@ const {
 } = databaseCoordinator();
 
 // function showNotification(body: any) {
-// new Notification({ title: NOTIFICATION_TITLE, body: body }).show();
+// 	new Notification({ title: NOTIFICATION_TITLE, body: body }).show();
 // }
 
-// let mainWindow: BrowserWindow | null | undefined;
-
-// function initialize() {
-// 	function createWindow() {
-// 		mainWindow = new BrowserWindow({
-// 			width: 380,
-// 			height: 580,
-// 			webPreferences: {
-// 				nodeIntegration: true,
-// 				contextIsolation: false,
-// 				preload: path.join(__dirname, 'preload.js'),
-// 			},
-// 		});
-
-// 		if (isDev) {
-// 			mainWindow.loadURL('http://localhost:3000/index.html');
-// 		} else {
-// 			// 'build/index.html'
-// 			mainWindow.loadURL(`file://${__dirname}/../index.html`);
-// 		}
-
-// 		// Hot Reloading
-// 		if (isDev) {
-// 			require('electron-reload')(__dirname, {
-// 				electron: path.join(
-// 					__dirname,
-// 					'..',
-// 					'..',
-// 					'node_modules',
-// 					'.bin',
-// 					'electron' + (process.platform === 'win32' ? '.cmd' : '')
-// 				),
-// 				forceHardReset: false,
-// 				hardResetMethod: 'exit',
-// 			});
-// 		}
-
-// 		if (isDev) {
-// 			mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
-// 		}
-// 	}
-
-// 	makeSingleInstance();
-
-// 	app.whenReady().then(() => {
-// 		createWindow();
-// 	});
-
-// 	app.on('activate', () => {
-// 		if (BrowserWindow.getAllWindows().length === 0) {
-// 			createWindow();
-// 		}
-// 	});
-
-// 	app.on('window-all-closed', () => {
-// 		if (process.platform !== 'darwin') {
-// 			app.quit();
-// 		}
-// 	});
-// }
-
-// function makeSingleInstance() {
-// 	if (process.mas) return;
-
-// 	app.requestSingleInstanceLock();
-
-// 	app.on('second-instance', () => {
-// 		if (mainWindow) {
-// 			if (mainWindow.isMinimized()) {
-// 				mainWindow.restore();
-// 			}
-// 			mainWindow.focus();
-// 		}
-// 	});
-// }
-
-// initialize();
+let mainWindow: BrowserWindow | null | undefined;
 
 function createWindow() {
-	const win = new BrowserWindow({
+	mainWindow = new BrowserWindow({
 		width: 380,
 		height: 608,
-		// resizable: isDev,
-		resizable: false,
+		resizable: isDev,
+		// resizable: false,
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
@@ -147,15 +71,17 @@ function createWindow() {
 		},
 	});
 
-	console.log(win.getSize()[1] - win.getContentSize()[1]);
-	win.setSize(380, win.getSize()[1] - win.getContentSize()[1] + 580);
+	console.log(mainWindow.getSize()[1] - mainWindow.getContentSize()[1]);
+	mainWindow.setSize(380, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 580);
 
 	if (isDev) {
-		win.loadURL('http://localhost:3000/index.html');
+		mainWindow.loadURL('http://localhost:3000/index.html');
 	} else {
-		win.loadURL(`file://${__dirname}/../index.html`);
+		// 'build/index.html'
+		mainWindow.loadURL(`file://${__dirname}/../index.html`);
 	}
 
+	// Hot Reloading
 	if (isDev) {
 		require('electron-reload')(__dirname, {
 			electron: path.join(
@@ -166,22 +92,21 @@ function createWindow() {
 				'.bin',
 				'electron' + (process.platform === 'win32' ? '.cmd' : '')
 			),
-			forceHardReset: true,
+			forceHardReset: false,
 			hardResetMethod: 'exit',
 		});
 	}
 
 	if (isDev) {
-		win.webContents.openDevTools();
+		mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
 	}
 }
 
-app.whenReady().then(() => {
-	// DevTools
-	installExtension(REACT_DEVELOPER_TOOLS)
-		.then((name) => console.log(`Added Extension:  ${name}`))
-		.catch((err) => console.log('An error occurred: ', err));
+if (!process.mas) {
+	app.requestSingleInstanceLock();
+}
 
+app.whenReady().then(() => {
 	createWindow();
 
 	app.on('activate', () => {
@@ -190,11 +115,20 @@ app.whenReady().then(() => {
 		}
 	});
 
-	app.on('window-all-closed', () => {
-		if (process.platform !== 'darwin') {
-			app.quit();
+	app.on('second-instance', () => {
+		if (mainWindow) {
+			if (mainWindow.isMinimized()) {
+				mainWindow.restore();
+			}
+			mainWindow.focus();
 		}
 	});
+});
+
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
 });
 
 /////////////////////////////////////////////
@@ -651,3 +585,4 @@ ipcMain.on('getExchangeRates', (event, arg) => {
 });
 
 // todo: tailwind purge
+// todo: goat currency
