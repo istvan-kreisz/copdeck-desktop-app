@@ -34,7 +34,6 @@ const SettingsTab = (prop: {
 	});
 
 	useEffect(() => {
-		// todo: fix
 		ipcRenderer.on('settingsUpdated', (event, settings) => {
 			if (is(settings, SettingsSchema)) {
 				console.log(settings);
@@ -92,8 +91,9 @@ const SettingsTab = (prop: {
 	};
 
 	const changedCurrency = (event: { target: HTMLInputElement }) => {
-		const currencyCode = event.target.value['code'];
+		const currencyCode = event.target.value;
 		const currency = ALLCURRENCIES.find((c) => c.code === currencyCode);
+		console.log(currency);
 		if (currency) {
 			setSelectedCurrency(currency);
 		}
