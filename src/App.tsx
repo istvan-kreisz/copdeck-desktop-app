@@ -7,7 +7,6 @@ import SettingsTab from './Settings/SettingsTab';
 import AlertsTab from './Alerts/AlertsTab';
 import { useState, useEffect } from 'react';
 import { SearchIcon, CogIcon, BellIcon, DeviceMobileIcon } from '@heroicons/react/outline';
-// import { databaseCoordinator } from '../electron/services/databaseCoordinator'
 import { Currency, EUR } from '@istvankreisz/copdeck-scraper/dist/types';
 
 const App = () => {

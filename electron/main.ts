@@ -64,6 +64,8 @@ function createWindow() {
 		height: 608,
 		resizable: isDev,
 		// resizable: false,
+		show: !isDev,
+		title: 'CopDeck',
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
@@ -71,7 +73,6 @@ function createWindow() {
 		},
 	});
 
-	console.log(mainWindow.getSize()[1] - mainWindow.getContentSize()[1]);
 	mainWindow.setSize(380, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 580);
 
 	if (isDev) {
@@ -107,7 +108,9 @@ if (!process.mas) {
 }
 
 app.whenReady().then(() => {
-	createWindow();
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow();
+	}
 
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) {
@@ -116,13 +119,15 @@ app.whenReady().then(() => {
 	});
 
 	app.on('second-instance', () => {
-		if (mainWindow) {
+		if (mainWindow && !isDev) {
 			if (mainWindow.isMinimized()) {
 				mainWindow.restore();
 			}
 			mainWindow.focus();
 		}
 	});
+
+	setupServices();
 });
 
 app.on('window-all-closed', () => {
@@ -486,103 +491,105 @@ const updateProxySettings = async (proxies: Proxy[], dev: boolean): Promise<void
 // // change goat currency
 // // Cookie: _csrf=lKuDAaP8CZOqw-LoxVrr2y5Z; csrf=xQDiRJay-RiSSEinY5fgM631qqcCElyVhLAs; _sneakers_session=v89yqHWNt2U3vHU2Rls%2F%2B0Nb66XdCEAQNBwOVGDxBx6kVnDDtALbhmo9KwDph1EISUTlerOAefWW%2FWpUuq7N--EjpYsea%2BbyqFTy3b--r7Y9SJYqJsSoxqkVP64HeA%3D%3D; ConstructorioID_client_id=e9866fda-fd26-4f06-8e18-b31e22d1ee0b; currency=JPY; OptanonConsent=isIABGlobal=false&datestamp=Sun+May+30+2021+12%3A09%3A31+GMT%2B0200+(Central+European+Summer+Time)&version=6.12.0&hosts=&consentId=ae7c1734-b0a0-4e58-b815-38e294f6e206&interactionCount=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A0%2CC0002%3A0%2CC0004%3A0; __stripe_mid=dca3168b-fbcc-428a-9214-4c2968f68bd34d2970; __stripe_sid=c77cc3fa-abf6-4196-a827-e3dd77e20259deb20a; OptanonAlertBoxClosed=2021-05-30T10:09:31.293Z
 
-ipcMain.on('search', (event, searchTerm) => {
-	(async () => {
-		try {
-			assert(searchTerm, string());
-			const settings = getSettings();
-			log('searching', isDev);
-			const items = await nodeAPI.searchItems(searchTerm, apiConfig(settings, isDev));
-			log('search results', isDev);
-			log(items, isDev);
-			event.sender.send('search', items);
-		} catch (err) {
-			event.sender.send('search', []);
-			console.log(err);
-		}
-	})();
-});
-
-ipcMain.on('getItemDetails', (event, msg) => {
-	(async () => {
-		try {
-			const item = msg.item;
-			const forceRefresh = msg.forceRefresh;
-			assert(item, Item);
-			assert(forceRefresh, boolean());
-			const itemWithPrices = await getItemDetails(item, forceRefresh);
-			event.sender.send('getItemDetails', itemWithPrices);
-		} catch (err) {
-			event.sender.send('getItemDetails', undefined);
-			console.log(err);
-		}
-	})();
-});
-
-ipcMain.on('settings', (event, msg) => {
-	(async () => {
-		try {
-			const settings = msg.settings;
-			const proxyString = msg.proxyString;
-			assert(settings, SettingsSchema);
-			assert(proxyString, string());
-
-			let proxyParseError;
-			if (proxyString) {
-				try {
-					settings.proxies = parse(proxyString);
-				} catch (err) {
-					settings.proxies = [];
-					proxyParseError = err['message'] ?? 'Invalid proxy format';
-					log('proxy error', isDev);
-					log(err, isDev);
-				}
-			}
-			if (settings.updateInterval < minUpdateInterval) {
-				settings.updateInterval = minUpdateInterval;
-			} else if (settings.updateInterval > maxUpdateInterval) {
-				settings.updateInterval = maxUpdateInterval;
-			}
-			saveSettings(settings);
-			event.sender.send('settings', proxyParseError);
-		} catch (err) {
-			console.log(err);
-			event.sender.send('settings', err);
-		}
-	})();
-});
-
-ipcMain.on('saveAlert', (event, msg) => {
-	(async () => {
-		try {
-			const item = msg.item;
-			const alert = msg.alert;
-			assert(alert, PriceAlert);
-			assert(item, Item);
-
-			saveAlert(alert, item);
-		} catch (err) {
-			console.log(err);
-		}
-		event.sender.send('refresh', {});
-	})();
-});
-
-ipcMain.on('refresh', (event) => {
-	(async () => {
-		try {
-			await updatePrices();
-		} catch (err) {
-			console.log(err);
-		}
-		event.sender.send('refresh', {});
-	})();
-});
-
-ipcMain.on('getExchangeRates', (event, arg) => {
-	const rates = getExchangeRates();
-	event.returnValue = rates;
-});
-
 // todo: tailwind purge
 // todo: goat currency
+
+function setupServices() {
+	ipcMain.on('search', (event, searchTerm) => {
+		(async () => {
+			try {
+				assert(searchTerm, string());
+				const settings = getSettings();
+				log('searching', isDev);
+				const items = await nodeAPI.searchItems(searchTerm, apiConfig(settings, isDev));
+				log('search results', isDev);
+				log(items, isDev);
+				event.sender.send('search', items);
+			} catch (err) {
+				event.sender.send('search', []);
+				console.log(err);
+			}
+		})();
+	});
+
+	ipcMain.on('getItemDetails', (event, msg) => {
+		(async () => {
+			try {
+				const item = msg.item;
+				const forceRefresh = msg.forceRefresh;
+				assert(item, Item);
+				assert(forceRefresh, boolean());
+				const itemWithPrices = await getItemDetails(item, forceRefresh);
+				event.sender.send('getItemDetails', itemWithPrices);
+			} catch (err) {
+				event.sender.send('getItemDetails', undefined);
+				console.log(err);
+			}
+		})();
+	});
+
+	ipcMain.on('settings', (event, msg) => {
+		(async () => {
+			try {
+				const settings = msg.settings;
+				const proxyString = msg.proxyString;
+				assert(settings, SettingsSchema);
+				assert(proxyString, string());
+
+				let proxyParseError;
+				if (proxyString) {
+					try {
+						settings.proxies = parse(proxyString);
+					} catch (err) {
+						settings.proxies = [];
+						proxyParseError = err['message'] ?? 'Invalid proxy format';
+						log('proxy error', isDev);
+						log(err, isDev);
+					}
+				}
+				if (settings.updateInterval < minUpdateInterval) {
+					settings.updateInterval = minUpdateInterval;
+				} else if (settings.updateInterval > maxUpdateInterval) {
+					settings.updateInterval = maxUpdateInterval;
+				}
+				saveSettings(settings);
+				event.sender.send('settings', proxyParseError);
+			} catch (err) {
+				console.log(err);
+				event.sender.send('settings', err);
+			}
+		})();
+	});
+
+	ipcMain.on('saveAlert', (event, msg) => {
+		(async () => {
+			try {
+				const item = msg.item;
+				const alert = msg.alert;
+				assert(alert, PriceAlert);
+				assert(item, Item);
+
+				saveAlert(alert, item);
+			} catch (err) {
+				console.log(err);
+			}
+			event.sender.send('refresh', {});
+		})();
+	});
+
+	ipcMain.on('refresh', (event) => {
+		(async () => {
+			try {
+				await updatePrices();
+			} catch (err) {
+				console.log(err);
+			}
+			event.sender.send('refresh', {});
+		})();
+	});
+
+	ipcMain.on('getExchangeRates', (event, arg) => {
+		const rates = getExchangeRates();
+		event.returnValue = rates;
+	});
+}
