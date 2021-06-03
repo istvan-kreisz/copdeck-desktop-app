@@ -18,11 +18,10 @@ import {
 } from '@istvankreisz/copdeck-scraper/dist/types';
 import { databaseCoordinator } from './databaseCoordinator';
 import { Settings, SettingsSchema } from '../src/utils/types';
-import { parse, pacFormat } from '../src/utils/proxyparser';
+import { parse } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 const { ipcMain, Notification } = require('electron');
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 const minUpdateInterval = 5;
 const maxUpdateInterval = 1440;
@@ -114,6 +113,11 @@ app.whenReady().then(() => {
 		if (BrowserWindow.getAllWindows().length === 0) {
 			createWindow();
 		}
+	});
+
+	mainWindow?.webContents.on('new-window', function (event, url) {
+		event.preventDefault();
+		open(url);
 	});
 
 	app.on('second-instance', () => {
@@ -394,75 +398,6 @@ const sendNotifications = async () => {
 // 	]);
 // });
 
-const startProxyRotation = async () => {
-	// return new Promise<void>((resolve, reject) => {
-	// 	chrome.alarms.get(proxyRotationAlarm, (a) => {
-	// 		if (!a) {
-	// 			chrome.alarms.create(proxyRotationAlarm, {
-	// 				periodInMinutes: 60,
-	// 			});
-	// 		}
-	// 		resolve();
-	// 	});
-	// });
-};
-
-const resetProxyRotation = async () => {
-	// return new Promise<void>((resolve, reject) => {
-	// 	chrome.alarms.clear(proxyRotationAlarm, () => {
-	// 		resolve();
-	// 	});
-	// });
-};
-
-const updateProxies = async (proxies: Proxy[], dev: boolean): Promise<void> => {
-	// const proxiesString = pacFormat(proxies);
-	// const pacScriptConfig = {
-	// 	mode: 'pac_script',
-	// 	pacScript: {
-	// 		data: `function FindProxyForURL(url, host) {
-	//             if (dnsDomainIs(host, ".goat.com") || shExpMatch(host, '*2fwotdvm2o-dsn.algolia.net*') || shExpMatch(host, '*apiv2.klekt.com*') || dnsDomainIs(host, ".stockx.com")) {
-	//                 return "${proxiesString}";
-	//             } else {
-	//                 return "DIRECT";
-	//             }
-	//         }`,
-	// 	},
-	// };
-	// return new Promise(async (resolve, reject) => {
-	// 	chrome.proxy.settings.set({ value: pacScriptConfig, scope: 'regular' }, () => {
-	// 		resolve();
-	// 	});
-	// });
-};
-
-const updateProxySettings = async (proxies: Proxy[], dev: boolean): Promise<void> => {
-	// if (proxies.length < 2) {
-	// 	try {
-	// 		await resetProxyRotation();
-	// 	} catch (err) {}
-	// 	if (proxies.length === 0) {
-	// 		return new Promise<void>((resolve, reject) => {
-	// 			chrome.proxy.settings.clear({}, () => {
-	// 				resolve();
-	// 			});
-	// 		});
-	// 	}
-	// }
-	// await updateProxies(proxies, dev);
-	// if (proxies.length > 1) {
-	// 	await startProxyRotation();
-	// }
-	// if (dev) {
-	// 	return new Promise<void>((resolve, reject) => {
-	// 		chrome.proxy.settings.get({}, function (config) {
-	// 			log(JSON.stringify(config), dev);
-	// 			resolve();
-	// 		});
-	// 	});
-	// }
-};
-
 // // add goat bid
 // // add proxy toggle
 // // change goat currency
@@ -628,10 +563,6 @@ function setupServices() {
 			}
 			if (settingsOld.updateInterval !== settingsNew.updateInterval) {
 				addrefreshPricesAlarm(true);
-			}
-			if (JSON.stringify(settingsOld.proxies) !== JSON.stringify(settingsNew.proxies)) {
-				// todo: ?
-				updateProxySettings(settingsNew.proxies, !app.isPackaged);
 			}
 			mainWindow?.webContents.send('settingsUpdated', settingsNew);
 		}

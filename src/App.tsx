@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import { CheckIcon } from '@heroicons/react/outline';
 import MainTab from './Main/MainTab';
