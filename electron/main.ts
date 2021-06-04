@@ -22,13 +22,14 @@ import { parse } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 const { ipcMain, Notification } = require('electron');
+const cron = require('node-cron');
+
+let cacheTask: any;
+let refreshPricesTask: any;
+let refreshExchangeRatesTask: any;
 
 const minUpdateInterval = 5;
 const maxUpdateInterval = 1440;
-const cacheAlarm = 'copdeckCacheAlarm';
-const refreshPricesAlarm = 'copdeckRefreshPricesAlarm';
-const refreshExchangeRatesAlarm = 'copdeckrefreshExchangeRatesAlarm';
-const proxyRotationAlarm = 'copdeckProxyRotationAlarm';
 const requestDelayMax = 1000;
 
 const {
@@ -49,10 +50,6 @@ const {
 	clearItemCache,
 	updateLastNotificationDateForAlerts,
 } = databaseCoordinator();
-
-// function showNotification(body: any) {
-// 	new Notification({ title: NOTIFICATION_TITLE, body: body }).show();
-// }
 
 let mainWindow: BrowserWindow | null | undefined;
 
@@ -129,6 +126,12 @@ app.whenReady().then(() => {
 		}
 	});
 
+	app.on('before-quit', () => {
+		cacheTask?.stop();
+		refreshPricesTask?.stop();
+		refreshExchangeRatesTask?.stop();
+	});
+
 	setupServices();
 });
 
@@ -149,6 +152,17 @@ const clearCache = async () => {
 		clearItemCache();
 	} catch (err) {
 		log(err, true);
+	}
+};
+
+const refreshExchangeRates = async () => {
+	const settings = getSettings();
+
+	try {
+		const rates = await nodeAPI.getExchangeRates(apiConfig(settings, !app.isPackaged));
+		saveExchangeRates(rates);
+	} catch (err) {
+		log(err, !app.isPackaged);
 	}
 };
 
@@ -242,68 +256,6 @@ const getItemDetails = async (item: Item, forceRefresh: boolean) => {
 	}
 };
 
-const addClearCacheAlarm = async () => {
-	// return new Promise<void>((resolve, reject) => {
-	// 	chrome.alarms.get(cacheAlarm, (a) => {
-	// 		if (!a) {
-	// 			chrome.alarms.create(cacheAlarm, {
-	// 				periodInMinutes: 10080,
-	// 			});
-	// 		}
-	// 		resolve();
-	// 	});
-	// });
-};
-
-const addRefreshExchangeRatesAlarm = async () => {
-	// return new Promise<void>((resolve, reject) => {
-	// 	chrome.alarms.get(refreshExchangeRatesAlarm, (a) => {
-	// 		if (!a) {
-	// 			chrome.alarms.create(refreshExchangeRatesAlarm, {
-	// 				periodInMinutes: 720,
-	// 			});
-	// 		}
-	// 		resolve();
-	// 	});
-	// });
-};
-
-const addrefreshPricesAlarm = async (deleteIfExists: boolean) => {
-	// try {
-	// 	const settings = await getSettings();
-	// 	return new Promise<void>((resolve, reject) => {
-	// 		chrome.alarms.get(refreshPricesAlarm, (a) => {
-	// 			if (deleteIfExists) {
-	// 				if (a) {
-	// 					chrome.alarms.clear(refreshPricesAlarm, (wasCleared) => {
-	// 						if (wasCleared) {
-	// 							chrome.alarms.create(refreshPricesAlarm, {
-	// 								periodInMinutes: settings.updateInterval,
-	// 							});
-	// 						}
-	// 						resolve();
-	// 					});
-	// 				} else {
-	// 					chrome.alarms.create(refreshPricesAlarm, {
-	// 						periodInMinutes: settings.updateInterval,
-	// 					});
-	// 					resolve();
-	// 				}
-	// 			} else {
-	// 				if (!a) {
-	// 					chrome.alarms.create(refreshPricesAlarm, {
-	// 						periodInMinutes: settings.updateInterval,
-	// 					});
-	// 				}
-	// 				resolve();
-	// 			}
-	// 		});
-	// 	});
-	// } catch (err) {
-	// 	console.log(err);
-	// }
-};
-
 const sendNotifications = async () => {
 	try {
 		const [alerts, settings] = [getAlertsWithItems(), getSettings()];
@@ -346,23 +298,15 @@ const sendNotifications = async () => {
 			const bestPrice = itemBestPrice(item, alert);
 			log('notification sent', !app.isPackaged);
 			log(alert, !app.isPackaged);
-			// chrome.notifications.create(
-			// 	uuidv4(),
-			// 	{
-			// 		type: 'basic',
-			// 		iconUrl: 'icon-48.png',
-			// 		title: 'CopDeck Price Alert!',
-			// 		message: `${item.name} price ${
-			// 			alert.targetPriceType === 'above' ? 'went above' : 'dropped below'
-			// 		} ${settings.currency.symbol}${alert.targetPrice}! Current best price: ${
-			// 			settings.currency.symbol
-			// 		}${bestPrice}`,
-			// 		priority: 2,
-			// 	},
-			// 	() => {
-			// 		console.log('Error:', chrome.runtime.lastError);
-			// 	}
-			// );
+
+			new Notification({
+				title: 'CopDeck Price Alert!',
+				body: `${item.name} price ${
+					alert.targetPriceType === 'above' ? 'went above' : 'dropped below'
+				} ${settings.currency.symbol}${alert.targetPrice}! Current best price: ${
+					settings.currency.symbol
+				}${bestPrice}`,
+			}).show();
 		});
 
 		updateLastNotificationDateForAlerts(alertsFiltered.map(([alert, item]) => alert));
@@ -370,33 +314,6 @@ const sendNotifications = async () => {
 		console.log(err);
 	}
 };
-
-// chrome.alarms.onAlarm.addListener(async (alarm) => {
-// 	if (alarm.name === refreshPricesAlarm) {
-// 		await updatePrices();
-// 		await sendNotifications();
-// 	} else if (alarm.name === cacheAlarm) {
-// 		await clearCache();
-// 	} else if (alarm.name === refreshExchangeRatesAlarm) {
-// 		await refreshExchangeRates();
-// 	} else if (alarm.name === proxyRotationAlarm) {
-// 		const [settings, dev] = await Promise.all([getSettings(), !getapp.isPackagedelopment()]);
-// 		await updateProxies(settings.proxies, dev);
-// 	}
-// });
-
-// chrome.runtime.onStartup.addListener(async () => {
-// 	chrome.runtime.setUninstallURL('https://copdeck.com/extensionsurvey');
-// });
-
-// chrome.runtime.onInstalled.addListener(async () => {
-// 	await Promise.all([
-// 		addrefreshPricesAlarm(false),
-// 		addClearCacheAlarm(),
-// 		addRefreshExchangeRatesAlarm(),
-// 		refreshExchangeRates(),
-// 	]);
-// });
 
 // // add goat bid
 // // add proxy toggle
@@ -407,7 +324,7 @@ const sendNotifications = async () => {
 // todo: goat currency
 // todo: open links in browser
 
-function setupServices() {
+function setupMessageListeners() {
 	ipcMain.on('search', (event, searchTerm) => {
 		(async () => {
 			try {
@@ -568,9 +485,48 @@ function setupServices() {
 				updatePrices(true);
 			}
 			if (settingsOld.updateInterval !== settingsNew.updateInterval) {
-				addrefreshPricesAlarm(true);
+				addRefreshPricesAlarm(true);
 			}
 			mainWindow?.webContents.send('settingsUpdated', settingsNew);
 		}
 	});
+}
+
+function addRefreshPricesAlarm(forced: boolean = false) {
+	const settings = getSettings();
+	if (forced || !refreshPricesTask) {
+		refreshPricesTask?.stop();
+		refreshPricesTask = cron.schedule(`*/${settings.updateInterval} * * * *`, () => {
+			(async () => {
+				await updatePrices();
+				await sendNotifications();
+			})();
+		});
+	}
+}
+
+function setupAlarms() {
+	addRefreshPricesAlarm();
+	cacheTask = cron.schedule(`* */300 * * *`, () => {
+		(async () => {
+			await clearCache();
+		})();
+	});
+
+	refreshExchangeRatesTask = cron.schedule(`*/720 * * * *`, () => {
+		(async () => {
+			await refreshExchangeRates();
+		})();
+	});
+}
+
+function setupServices() {
+	setupMessageListeners();
+	setupAlarms();
+
+	(async () => {
+		await refreshExchangeRates();
+		await updatePrices();
+		await sendNotifications();
+	})();
 }
