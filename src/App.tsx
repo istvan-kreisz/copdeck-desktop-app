@@ -20,6 +20,7 @@ const App = () => {
 	});
 
 	useEffect(() => {
+		ipcRenderer.send('getSettings');
 		ipcRenderer.on('settingsUpdated', (event, settings) => {
 			if (is(settings, SettingsSchema)) {
 				setCurrency(settings.currency);

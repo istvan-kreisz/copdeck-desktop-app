@@ -34,9 +34,9 @@ const SettingsTab = (prop: {
 	});
 
 	useEffect(() => {
+		ipcRenderer.send('getSettings');
 		ipcRenderer.on('settingsUpdated', (event, settings) => {
 			if (is(settings, SettingsSchema)) {
-				console.log(settings);
 				setSelectedCurrency(settings.currency);
 				const proxyField = proxyTextField.current;
 				if (proxyField) {

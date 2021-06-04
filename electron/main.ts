@@ -551,6 +551,11 @@ function setupServices() {
 		event.reply('saveSettings', proxyParseError);
 	});
 
+	ipcMain.on('getSettings', (event, msg) => {
+		const settings = getSettings();
+		mainWindow?.webContents.send('settingsUpdated', settings);
+	});
+
 	listenToSettingsChanges((settingsOld, settingsNew) => {
 		if (
 			settingsNew &&
@@ -558,6 +563,7 @@ function setupServices() {
 			is(settingsNew, SettingsSchema) &&
 			is(settingsOld, SettingsSchema)
 		) {
+			console.log(settingsNew);
 			if (settingsOld.currency.code !== settingsNew.currency.code) {
 				updatePrices(true);
 			}
