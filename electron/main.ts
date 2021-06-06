@@ -21,7 +21,7 @@ import { Settings, SettingsSchema } from '../src/utils/types';
 import { parse } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
 import { v4 as uuidv4 } from 'uuid';
-const { ipcMain, Notification } = require('electron');
+const { ipcMain, Notification, shell } = require('electron');
 const cron = require('node-cron');
 
 let cacheTask: any;
@@ -149,6 +149,11 @@ app.whenReady().then(() => {
 	mainWindow?.on('ready-to-show', () => {
 		mainWindow?.show();
 		mainWindow?.focus();
+	});
+
+	mainWindow?.webContents.setWindowOpenHandler(({ url }) => {
+		shell.openExternal(url);
+		return { action: 'deny' };
 	});
 
 	setupServices();
@@ -333,9 +338,7 @@ const sendNotifications = async () => {
 // // change goat currency
 // // Cookie: _csrf=lKuDAaP8CZOqw-LoxVrr2y5Z; csrf=xQDiRJay-RiSSEinY5fgM631qqcCElyVhLAs; _sneakers_session=v89yqHWNt2U3vHU2Rls%2F%2B0Nb66XdCEAQNBwOVGDxBx6kVnDDtALbhmo9KwDph1EISUTlerOAefWW%2FWpUuq7N--EjpYsea%2BbyqFTy3b--r7Y9SJYqJsSoxqkVP64HeA%3D%3D; ConstructorioID_client_id=e9866fda-fd26-4f06-8e18-b31e22d1ee0b; currency=JPY; OptanonConsent=isIABGlobal=false&datestamp=Sun+May+30+2021+12%3A09%3A31+GMT%2B0200+(Central+European+Summer+Time)&version=6.12.0&hosts=&consentId=ae7c1734-b0a0-4e58-b815-38e294f6e206&interactionCount=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A0%2CC0002%3A0%2CC0004%3A0; __stripe_mid=dca3168b-fbcc-428a-9214-4c2968f68bd34d2970; __stripe_sid=c77cc3fa-abf6-4196-a827-e3dd77e20259deb20a; OptanonAlertBoxClosed=2021-05-30T10:09:31.293Z
 
-// todo: tailwind purge
 // todo: goat currency
-// todo: open links in browser
 
 function setupMessageListeners() {
 	ipcMain.on('search', (event, searchTerm) => {
@@ -554,3 +557,4 @@ function setupServices() {
 // todo: show max price when selecting above
 // todo: retry when getting forbidden response
 // todo: add country selector to settings?
+// todo: fix warnings

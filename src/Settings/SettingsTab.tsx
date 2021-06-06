@@ -214,6 +214,7 @@ const SettingsTab = (prop: {
 				<div className="flex flex-row flex-nowrap items-center">
 					<h3 className="text-lg font-bold text-gray-600">Got questions?</h3>
 					<a
+						target="_blank"
 						href="https://copdeck.com/contact"
 						className="button-default text-theme-blue border-transparent underline"
 						type="submit"

@@ -266,6 +266,7 @@ const ItemDetail = (prop: {
 												(s) => s.store.id === store.id
 											)?.url
 										}
+										target="_blank"
 										key={store.id}
 										className="h-7 text-gray-800 text-lg font-bold rounded-full flex justify-center items-center w-16 cursor-pointer"
 									>

@@ -132,6 +132,7 @@ const App = () => {
 			</section>
 			<footer className="h-8 w-full bg-theme-yellow flex-grow-0">
 				<a
+					target="_blank"
 					className="w-full h-full flex space-x-1 flex-row align-middle items-center justify-center"
 					href="https://copdeck.com"
 				>
