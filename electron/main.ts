@@ -98,6 +98,7 @@ function createWindow() {
 	if (!app.isPackaged) {
 		mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
 	}
+	mainWindow.removeMenu();
 }
 
 app.whenReady().then(() => {
@@ -553,8 +554,6 @@ function setupServices() {
 // todo: check notifications
 // todo: add warning to landing page about unrecognized developer
 // todo: add google analytics
-// todo: fix UI on windows
-// todo: show max price when selecting above
 // todo: retry when getting forbidden response
 // todo: add country selector to settings?
 // todo: fix warnings

@@ -33,7 +33,7 @@
 		"test": "craco test",
 		"postinstall": "electron-builder install-app-deps",
 		"dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
-		"electron:build": "yarn build && tsc -p electron && electron-builder -m -w",
+		"electron:build": "yarn build && tsc -p electron && electron-builder -w",
 		"eject": "react-scripts eject",
 		"link": "npm link copdeck-scraper"
 	},
