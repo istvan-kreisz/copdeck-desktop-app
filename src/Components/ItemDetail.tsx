@@ -67,7 +67,6 @@ const ItemDetail = (prop: {
 			try {
 				assert(item, Item);
 				if (!didClickBack.current) {
-					console.log(item);
 					prop.setSelectedItem((current) => (current ? item : null));
 				}
 			} catch {}

@@ -8,6 +8,10 @@ body {
 	position: relative;
 }
 
+::-webkit-scrollbar {
+	display: none;
+}
+
 @layer base {
 	body {
 		@apply bg-gray-100;

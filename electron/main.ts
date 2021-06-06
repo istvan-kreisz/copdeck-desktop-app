@@ -57,10 +57,8 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 380,
 		height: 608,
-		resizable: false,
 		show: false,
-		// resizable: !app.isPackaged,
-		// show: !!app.isPackaged,
+		resizable: !app.isPackaged,
 		title: 'CopDeck',
 		webPreferences: {
 			nodeIntegration: true,
@@ -71,35 +69,35 @@ function createWindow() {
 
 	mainWindow.setSize(380, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 580);
 
-	// if (!app.isPackaged) {
-	// 	mainWindow.loadURL('http://localhost:3000/index.html');
-	// } else {
-	mainWindow.loadURL(`file://${__dirname}/../index.html`);
-	// }
+	if (!app.isPackaged) {
+		mainWindow.loadURL('http://localhost:3000/index.html');
+	} else {
+		mainWindow.loadURL(`file://${__dirname}/../index.html`);
+	}
 
-	// if (!process.mas) {
-	// 	app.requestSingleInstanceLock();
-	// }
+	if (!process.mas) {
+		app.requestSingleInstanceLock();
+	}
 
 	// Hot Reloading
-	// if (!app.isPackaged) {
-	// 	require('electron-reload')(__dirname, {
-	// 		electron: path.join(
-	// 			__dirname,
-	// 			'..',
-	// 			'..',
-	// 			'node_modules',
-	// 			'.bin',
-	// 			'electron' + (process.platform === 'win32' ? '.cmd' : '')
-	// 		),
-	// 		forceHardReset: false,
-	// 		hardResetMethod: 'exit',
-	// 	});
-	// }
+	if (!app.isPackaged) {
+		require('electron-reload')(__dirname, {
+			electron: path.join(
+				__dirname,
+				'..',
+				'..',
+				'node_modules',
+				'.bin',
+				'electron' + (process.platform === 'win32' ? '.cmd' : '')
+			),
+			forceHardReset: false,
+			hardResetMethod: 'exit',
+		});
+	}
 
-	// if (!app.isPackaged) {
-	// 	mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
-	// }
+	if (!app.isPackaged) {
+		mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
+	}
 }
 
 app.whenReady().then(() => {
@@ -495,7 +493,6 @@ function setupMessageListeners() {
 			is(settingsNew, SettingsSchema) &&
 			is(settingsOld, SettingsSchema)
 		) {
-			console.log(settingsNew);
 			if (settingsOld.currency.code !== settingsNew.currency.code) {
 				updatePrices(true);
 			}
@@ -549,6 +546,11 @@ function setupServices() {
 // todo: auto-updates
 // todo: code-signing
 // todo: proxies
+// todo: check refresh
+// todo: check notifications
 // todo: add warning to landing page about unrecognized developer
 // todo: add google analytics
 // todo: fix UI on windows
+// todo: show max price when selecting above
+// todo: retry when getting forbidden response
+// todo: add country selector to settings?

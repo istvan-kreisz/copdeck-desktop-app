@@ -93,7 +93,6 @@ const SettingsTab = (prop: {
 	const changedCurrency = (event: { target: HTMLInputElement }) => {
 		const currencyCode = event.target.value;
 		const currency = ALLCURRENCIES.find((c) => c.code === currencyCode);
-		console.log(currency);
 		if (currency) {
 			setSelectedCurrency(currency);
 		}
