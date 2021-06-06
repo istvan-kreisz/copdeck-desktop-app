@@ -1,10 +1,11 @@
 import React from 'react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext, useEffect } from 'react';
 import { Item, StorePrices, PriceAlert, Currency } from '@istvankreisz/copdeck-scraper/dist/types';
 import { v4 as uuidv4 } from 'uuid';
 import Popup from '../Components/Popup';
 import { IpcRenderer } from 'electron';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
+import FirebaseContext from '../context/firebaseContext';
 
 const AddAlertModal = (prop: {
 	selectedItem: Item;
@@ -21,6 +22,12 @@ const AddAlertModal = (prop: {
 	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([]);
 	const [selectedSize, setSelectedSize] = useState<string>();
 	const [selectedType, setSelectedType] = useState<string>('below');
+
+	const firebase = useContext(FirebaseContext);
+
+	useEffect(() => {
+		firebase?.analytics().logEvent('desktop_visited_add_alert', {});
+	}, []);
 
 	const [error, setError] = useState<{ message: string; show: boolean }>({
 		message: '',
@@ -113,6 +120,8 @@ const AddAlertModal = (prop: {
 		ipcRenderer.send('saveAlert', { alert: newAlert, item: prop.selectedItem });
 		prop.setToastMessage({ message: 'Added price alert', show: true });
 		prop.setShowAddPriceAlertModal(false);
+
+		firebase?.analytics().logEvent('desktop_added_alert', {});
 	};
 
 	return (

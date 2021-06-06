@@ -10,6 +10,31 @@ import { IpcRenderer } from 'electron';
 import { SettingsSchema } from './utils/types';
 import { is } from 'superstruct';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
+import firebase from 'firebase/app';
+import 'firebase/analytics';
+import FirebaseContext from './context/firebaseContext';
+
+// const firebaseConfig = {
+// 	apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+// 	authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+// 	databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+// 	projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+// 	storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+// 	messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+// 	appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+// 	measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+// };
+
+const firebaseConfig = {
+	apiKey: 'AIzaSyAN-leerYH2sI4kRBp_cBKPRmjVEGcGp7s',
+	authDomain: 'sneakersnshit-2e22f.firebaseapp.com',
+	databaseURL: 'https://sneakersnshit-2e22f-default-rtdb.europe-west1.firebasedatabase.app',
+	projectId: 'sneakersnshit-2e22f',
+	storageBucket: 'sneakersnshit-2e22f.appspot.com',
+	messagingSenderId: '451723603004',
+	appId: '1:451723603004:web:54fcf1406c2190a0d42739',
+	measurementId: 'G-VR6J8VXWFG',
+};
 
 const App = () => {
 	const [activeTab, setActiveTab] = useState<'main' | 'settings' | 'alerts'>('main');
@@ -18,6 +43,18 @@ const App = () => {
 		message: '',
 		show: false,
 	});
+	const [firebaseApp, setFirebaseApp] = useState<any>(null);
+
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			if (!firebase.apps.length) {
+				firebase.initializeApp(firebaseConfig);
+			}
+			firebase.analytics();
+			setFirebaseApp(firebase);
+		}
+		firebase?.analytics().logEvent('desktop_started');
+	}, [window]);
 
 	useEffect(() => {
 		ipcRenderer.send('getSettings');
@@ -51,114 +88,124 @@ const App = () => {
 		setActiveTab(tab);
 	};
 
+	useEffect(() => {
+		firebase?.analytics().logEvent('desktop_visited_tab', {
+			tab: activeTab,
+		});
+	}, [activeTab]);
+
 	return (
-		<div className="gap-0 grid grid-row-3 absolute top-0 left-0 right-0 bottom-0 text-left">
-			<main style={{ height: '500px' }} className="bg-transparent relative w-full">
-				<div className={`h-full ${activeTab === 'settings' ? 'block' : 'hidden'}`}>
-					<SettingsTab setToastMessage={setToastMessage}></SettingsTab>
-				</div>
-				<div className={`h-full ${activeTab === 'main' ? 'block' : 'hidden'}`}>
-					<MainTab setToastMessage={setToastMessage} currency={currency}></MainTab>
-				</div>
-				<div className={`h-full ${activeTab === 'alerts' ? 'block' : 'hidden'}`}>
-					<AlertsTab
-						setToastMessage={setToastMessage}
-						currency={currency}
-						activeTab={activeTab}
-					></AlertsTab>
-				</div>
-			</main>
-			<section className="bg-white w-full flex h-12 border-gray-400 shadow-xl">
-				<button
-					className={`outline-none group focus:outline-none flex-1 ${
-						activeTab === 'settings' ? 'bg-gray-200 shadow-xl' : ''
-					}`}
-					onClick={selectedTab.bind(null, 'settings')}
-				>
-					<CogIcon
-						className={`mx-auto text-center h-6 w-6 ${
-							activeTab === 'settings' ? 'text-gray-800' : 'text-gray-500'
+		<FirebaseContext.Provider value={firebaseApp}>
+			<div className="gap-0 grid grid-row-3 absolute top-0 left-0 right-0 bottom-0 text-left">
+				<main style={{ height: '500px' }} className="bg-transparent relative w-full">
+					<div className={`h-full ${activeTab === 'settings' ? 'block' : 'hidden'}`}>
+						<SettingsTab setToastMessage={setToastMessage}></SettingsTab>
+					</div>
+					<div className={`h-full ${activeTab === 'main' ? 'block' : 'hidden'}`}>
+						<MainTab setToastMessage={setToastMessage} currency={currency}></MainTab>
+					</div>
+					<div className={`h-full ${activeTab === 'alerts' ? 'block' : 'hidden'}`}>
+						<AlertsTab
+							setToastMessage={setToastMessage}
+							currency={currency}
+							activeTab={activeTab}
+						></AlertsTab>
+					</div>
+				</main>
+				<section className="bg-white w-full flex h-12 border-gray-400 shadow-xl">
+					<button
+						className={`outline-none group focus:outline-none flex-1 ${
+							activeTab === 'settings' ? 'bg-gray-200 shadow-xl' : ''
 						}`}
-						aria-hidden="true"
-					></CogIcon>
-					<p
-						className={`text-xs font-medium ${
-							activeTab === 'settings' ? 'text-gray-800' : 'text-gray-500'
-						}`}
+						onClick={selectedTab.bind(null, 'settings')}
 					>
-						Settings
-					</p>
-				</button>
-				<button
-					className={`outline-none group focus:outline-none flex-1 ${
-						activeTab === 'main' ? 'bg-gray-200 shadow-xl' : ''
-					}`}
-					onClick={selectedTab.bind(null, 'main')}
-				>
-					<SearchIcon
-						className={`mx-auto text-center h-6 w-6 ${
-							activeTab === 'main' ? 'text-gray-800' : 'text-gray-500'
+						<CogIcon
+							className={`mx-auto text-center h-6 w-6 ${
+								activeTab === 'settings' ? 'text-gray-800' : 'text-gray-500'
+							}`}
+							aria-hidden="true"
+						></CogIcon>
+						<p
+							className={`text-xs font-medium ${
+								activeTab === 'settings' ? 'text-gray-800' : 'text-gray-500'
+							}`}
+						>
+							Settings
+						</p>
+					</button>
+					<button
+						className={`outline-none group focus:outline-none flex-1 ${
+							activeTab === 'main' ? 'bg-gray-200 shadow-xl' : ''
 						}`}
-						aria-hidden="true"
-					></SearchIcon>
-					<p
-						className={`text-xs font-medium ${
-							activeTab === 'main' ? 'text-gray-800' : 'text-gray-500'
-						}`}
+						onClick={selectedTab.bind(null, 'main')}
 					>
-						Search
-					</p>
-				</button>
-				<button
-					className={`outline-none group focus:outline-none flex-1 ${
-						activeTab === 'alerts' ? 'bg-gray-200 shadow-xl' : ''
-					}`}
-					onClick={selectedTab.bind(null, 'alerts')}
-				>
-					<BellIcon
-						className={`mx-auto text-center h-6 w-6 ${
-							activeTab === 'alerts' ? 'text-gray-800' : 'text-gray-500'
+						<SearchIcon
+							className={`mx-auto text-center h-6 w-6 ${
+								activeTab === 'main' ? 'text-gray-800' : 'text-gray-500'
+							}`}
+							aria-hidden="true"
+						></SearchIcon>
+						<p
+							className={`text-xs font-medium ${
+								activeTab === 'main' ? 'text-gray-800' : 'text-gray-500'
+							}`}
+						>
+							Search
+						</p>
+					</button>
+					<button
+						className={`outline-none group focus:outline-none flex-1 ${
+							activeTab === 'alerts' ? 'bg-gray-200 shadow-xl' : ''
 						}`}
-						aria-hidden="true"
-					></BellIcon>
-					<p
-						className={`text-xs font-medium ${
-							activeTab === 'alerts' ? 'text-gray-800' : 'text-gray-500'
-						}`}
+						onClick={selectedTab.bind(null, 'alerts')}
 					>
-						Alerts
-					</p>
-				</button>
-			</section>
-			<footer className="h-8 w-full bg-theme-yellow flex-grow-0">
-				<a
-					target="_blank"
-					className="w-full h-full flex space-x-1 flex-row align-middle items-center justify-center"
-					href="https://copdeck.com"
-				>
-					<DeviceMobileIcon
-						className="text-center h-6 text-gray-800"
-						aria-hidden="true"
-					></DeviceMobileIcon>
+						<BellIcon
+							className={`mx-auto text-center h-6 w-6 ${
+								activeTab === 'alerts' ? 'text-gray-800' : 'text-gray-500'
+							}`}
+							aria-hidden="true"
+						></BellIcon>
+						<p
+							className={`text-xs font-medium ${
+								activeTab === 'alerts' ? 'text-gray-800' : 'text-gray-500'
+							}`}
+						>
+							Alerts
+						</p>
+					</button>
+				</section>
+				<footer className="h-8 w-full bg-theme-yellow flex-grow-0">
+					<a
+						target="_blank"
+						className="w-full h-full flex space-x-1 flex-row align-middle items-center justify-center"
+						href="https://copdeck.com"
+					>
+						<DeviceMobileIcon
+							className="text-center h-6 text-gray-800"
+							aria-hidden="true"
+						></DeviceMobileIcon>
 
-					<p className="text-gray-800 font-bold">Coming soon to iOS! Click for more!</p>
-				</a>
-			</footer>
-			<div
-				onClick={hideToast}
-				className={`fixed bottom-3 left-3 right-3 h-10 flex items-center text-white bg-green-500 shadow-lg rounded-lg overflow-hidden mx-auto transition duration-500 ease-in-out transform ${
-					toastMessage.show
-						? '-translate-y-4 opacity-100'
-						: 'translate-y-0 opacity-0 pointer-events-none'
-				}`}
-			>
-				<CheckIcon className="ml-3 font-bold h-6 text-white flex-shrink-0"></CheckIcon>
+						<p className="text-gray-800 font-bold">
+							Coming soon to iOS! Click for more!
+						</p>
+					</a>
+				</footer>
+				<div
+					onClick={hideToast}
+					className={`fixed bottom-3 left-3 right-3 h-10 flex items-center text-white bg-green-500 shadow-lg rounded-lg overflow-hidden mx-auto transition duration-500 ease-in-out transform ${
+						toastMessage.show
+							? '-translate-y-4 opacity-100'
+							: 'translate-y-0 opacity-0 pointer-events-none'
+					}`}
+				>
+					<CheckIcon className="ml-3 font-bold h-6 text-white flex-shrink-0"></CheckIcon>
 
-				<div className="flex items-center px-2">
-					<p className="text-white text-base">{toastMessage.message}</p>
+					<div className="flex items-center px-2">
+						<p className="text-white text-base">{toastMessage.message}</p>
+					</div>
 				</div>
 			</div>
-		</div>
+		</FirebaseContext.Provider>
 	);
 };
 
