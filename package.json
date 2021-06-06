@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"author": "CopDeck",
 	"description": "CopDeck Sneaker Monitor",
-	"homepage": "https://copdeck.com",
+	"homepage": ".",
 	"main": "build/electron/main.js",
 	"private": true,
 	"dependencies": {
@@ -13,16 +13,12 @@
 		"@istvankreisz/copdeck-scraper": "^1.0.0",
 		"@tailwindcss/forms": "^0.3.2",
 		"@tailwindcss/line-clamp": "^0.2.1",
-		"@testing-library/react": "^11.2.7",
-		"@testing-library/user-event": "^13.1.9",
-		"@types/electron-devtools-installer": "^2.2.0",
 		"@types/node": "^15.6.1",
 		"@types/react": "^17.0.8",
 		"@types/react-dom": "^17.0.5",
-		"electron-devtools-installer": "^3.2.0",
-		"electron-is-dev": "^2.0.0",
 		"electron-reload": "^1.5.0",
 		"electron-store": "^8.0.0",
+		"node-cron": "^3.0.0",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-scripts": "4.0.3",
@@ -37,17 +33,31 @@
 		"test": "craco test",
 		"postinstall": "electron-builder install-app-deps",
 		"dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
-		"electron:build": "yarn build && tsc -p electron && electron-builder",
+		"electron:build": "yarn build && tsc -p electron && electron-builder -m -w",
 		"eject": "react-scripts eject",
 		"link": "npm link copdeck-scraper"
 	},
 	"build": {
+		"appId": "com.electron.copdeck",
+		"productName": "CopDeck",
+		"copyright": "Copyright © 2021 CopDeck",
 		"extends": null,
 		"files": [
 			"build/**/*"
 		],
 		"directories": {
-			"buildResources": "assets"
+			"buildResources": "public"
+		},
+		"icon": "logo1024.png",
+		"win": {
+			"icon": "logo1024.png",
+			"target": "nsis",
+			"legalTrademarks": "Copyright © 2021 CopDeck"
+		},
+		"mac": {
+			"category": "public.app-category.utilities",
+			"type": "distribution",
+			"icon": "logo1024.png"
 		}
 	},
 	"browserslist": {

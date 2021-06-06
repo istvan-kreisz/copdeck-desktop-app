@@ -57,7 +57,9 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 380,
 		height: 608,
-		resizable: !app.isPackaged,
+		resizable: false,
+		show: false,
+		// resizable: !app.isPackaged,
 		// show: !!app.isPackaged,
 		title: 'CopDeck',
 		webPreferences: {
@@ -69,42 +71,70 @@ function createWindow() {
 
 	mainWindow.setSize(380, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 580);
 
-	if (!app.isPackaged) {
-		mainWindow.loadURL('http://localhost:3000/index.html');
-	} else {
-		// 'build/index.html'
-		mainWindow.loadURL(`file://${__dirname}/../index.html`);
-	}
+	// if (!app.isPackaged) {
+	// 	mainWindow.loadURL('http://localhost:3000/index.html');
+	// } else {
+	mainWindow.loadURL(`file://${__dirname}/../index.html`);
+	// }
+
+	// if (!process.mas) {
+	// 	app.requestSingleInstanceLock();
+	// }
 
 	// Hot Reloading
-	if (!app.isPackaged) {
-		require('electron-reload')(__dirname, {
-			electron: path.join(
-				__dirname,
-				'..',
-				'..',
-				'node_modules',
-				'.bin',
-				'electron' + (process.platform === 'win32' ? '.cmd' : '')
-			),
-			forceHardReset: false,
-			hardResetMethod: 'exit',
-		});
-	}
+	// if (!app.isPackaged) {
+	// 	require('electron-reload')(__dirname, {
+	// 		electron: path.join(
+	// 			__dirname,
+	// 			'..',
+	// 			'..',
+	// 			'node_modules',
+	// 			'.bin',
+	// 			'electron' + (process.platform === 'win32' ? '.cmd' : '')
+	// 		),
+	// 		forceHardReset: false,
+	// 		hardResetMethod: 'exit',
+	// 	});
+	// }
 
-	if (!app.isPackaged) {
-		mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
-	}
-}
-
-if (!process.mas) {
-	app.requestSingleInstanceLock();
+	// if (!app.isPackaged) {
+	// 	mainWindow.webContents.openDevTools({ activate: false, mode: 'bottom' });
+	// }
 }
 
 app.whenReady().then(() => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow();
-	}
+	// createWindow();
+	// // if (BrowserWindow.getAllWindows().length === 0) {
+	// // 	createWindow();
+	// // }
+
+	// app.on('activate', () => {
+	// 	if (BrowserWindow.getAllWindows().length === 0) {
+	// 		createWindow();
+	// 	}
+	// });
+
+	// mainWindow?.webContents.on('new-window', function (event, url) {
+	// 	event.preventDefault();
+	// 	open(url);
+	// });
+
+	// app.on('second-instance', () => {
+	// 	if (mainWindow && !!app.isPackaged) {
+	// 		if (mainWindow.isMinimized()) {
+	// 			mainWindow.restore();
+	// 		}
+	// 		mainWindow.focus();
+	// 	}
+	// });
+
+	// app.on('before-quit', () => {
+	// 	cacheTask?.stop();
+	// 	refreshPricesTask?.stop();
+	// 	refreshExchangeRatesTask?.stop();
+	// });
+
+	createWindow();
 
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) {
@@ -112,33 +142,18 @@ app.whenReady().then(() => {
 		}
 	});
 
-	mainWindow?.webContents.on('new-window', function (event, url) {
-		event.preventDefault();
-		open(url);
-	});
-
-	app.on('second-instance', () => {
-		if (mainWindow && !!app.isPackaged) {
-			if (mainWindow.isMinimized()) {
-				mainWindow.restore();
-			}
-			mainWindow.focus();
+	app.on('window-all-closed', () => {
+		if (process.platform !== 'darwin') {
+			app.quit();
 		}
 	});
 
-	app.on('before-quit', () => {
-		cacheTask?.stop();
-		refreshPricesTask?.stop();
-		refreshExchangeRatesTask?.stop();
+	mainWindow?.on('ready-to-show', () => {
+		mainWindow?.show();
+		mainWindow?.focus();
 	});
 
 	setupServices();
-});
-
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit();
-	}
 });
 
 /////////////////////////////////////////////
@@ -530,3 +545,10 @@ function setupServices() {
 		await sendNotifications();
 	})();
 }
+
+// todo: auto-updates
+// todo: code-signing
+// todo: proxies
+// todo: add warning to landing page about unrecognized developer
+// todo: add google analytics
+// todo: fix UI on windows
