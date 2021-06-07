@@ -107,14 +107,14 @@ app.whenReady().then(() => {
 	createWindow();
 	// }
 
-	// app.on('second-instance', () => {
-	// 	if (mainWindow && !!app.isPackaged) {
-	// 		if (mainWindow.isMinimized()) {
-	// 			mainWindow.restore();
-	// 		}
-	// 		mainWindow.focus();
-	// 	}
-	// });
+	app.on('second-instance', () => {
+		if (mainWindow && !!app.isPackaged) {
+			if (mainWindow.isMinimized()) {
+				mainWindow.restore();
+			}
+			mainWindow.focus();
+		}
+	});
 
 	app.on('before-quit', () => {
 		cacheTask?.stop();
@@ -123,11 +123,11 @@ app.whenReady().then(() => {
 	});
 
 	app.on('activate', () => {
-		mainWindow?.show();
-
+		logDev('activated');
 		if (BrowserWindow.getAllWindows().length === 0) {
 			createWindow();
 		}
+		mainWindow?.show();
 	});
 
 	app.on('window-all-closed', () => {
