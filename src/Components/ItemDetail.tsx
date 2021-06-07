@@ -113,22 +113,7 @@ const ItemDetail = (prop: {
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
 		let price = priceType === 'ask' ? prices?.lowestAsk : prices?.highestBid;
 		if (price) {
-			if (store.id === 'goat' && prop.currency.code !== 'USD') {
-				if (exchangeRates) {
-					switch (prop.currency.code) {
-						case 'EUR':
-							price = Math.round(price / exchangeRates.usd);
-							break;
-						case 'GBP':
-							price = Math.round((price / exchangeRates.usd) * exchangeRates.gbp);
-					}
-					return [prop.currency.symbol + price, price];
-				} else {
-					return ['-', 0];
-				}
-			} else {
-				return [prop.currency.symbol + price, price];
-			}
+			return [prop.currency.symbol + price, price];
 		} else {
 			return ['-', 0];
 		}

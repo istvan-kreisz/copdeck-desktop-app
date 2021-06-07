@@ -1622,10 +1622,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@istvankreisz/copdeck-scraper@1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.0.8.tgz#055cd86e550cd2b341221c8d7591c2fa8c5b888a"
-  integrity sha512-R9TPMepoPVwsv8kTDY7CS4omprICELd3m1ED0hLtV1HbdF2jRSTgd/DiRCGTs72zT2HVC0asVZVCaoMckhsSzg==
+"@istvankreisz/copdeck-scraper@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.0.10.tgz#6cd04d5bae283b764bc44df7abac09ebab9e6f59"
+  integrity sha512-1CDNrG6A/3pJtrudB6KxtXW11uhPDpRs0+dlCPtAH7/eGT11zYZajVDkkw3ZaKphpfIlNcAEGMw0oCCeJncIdw==
   dependencies:
     "@types/node-fetch" "^2.5.10"
     fast-xml-parser "^3.19.0"
@@ -2241,7 +2241,12 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
+"@types/node@*":
+  version "15.12.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.2.tgz#1f2b42c4be7156ff4a6f914b2fb03d05fa84e38d"
+  integrity sha512-zjQ69G564OCIWIOHSXyQEEDpdpGl+G348RAKY0XXy9Z5kU9Vzv1GMNnkar/ZJ8dzXB3COzD9Mo9NtRZ4xfgUww==
+
+"@types/node@>=12.12.47", "@types/node@>=13.7.0":
   version "15.12.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.1.tgz#9b60797dee1895383a725f828a869c86c6caa5c2"
   integrity sha512-zyxJM8I1c9q5sRMtVF+zdd13Jt6RU4r4qfhTd7lQubyThvLfx6yYekWSQjGCGV2Tkecgxnlpl/DNlb6Hg+dmEw==

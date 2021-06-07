@@ -90,12 +90,12 @@ const databaseCoordinator = () => {
 		}
 	};
 
-	const getExchangeRates = (): ExchangeRates | null => {
+	const getExchangeRates = (): ExchangeRates | undefined => {
 		const exchangeRates = get('exchangeRates');
 		if (is(exchangeRates, ExchangeRates)) {
 			return exchangeRates;
 		} else {
-			return null;
+			return undefined;
 		}
 	};
 

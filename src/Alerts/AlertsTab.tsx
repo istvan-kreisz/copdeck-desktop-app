@@ -1,6 +1,11 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Item, PriceAlert, Currency } from '@istvankreisz/copdeck-scraper/dist/types';
+import {
+	Item,
+	PriceAlert,
+	Currency,
+	ExchangeRates,
+} from '@istvankreisz/copdeck-scraper/dist/types';
 import { itemBestPrice } from '@istvankreisz/copdeck-scraper';
 import ItemDetail from '../Components/ItemDetail';
 import AlertListItem from './AlertListItem';
@@ -20,6 +25,7 @@ const AlertsTab = (prop: {
 }) => {
 	const [priceAlerts, setPriceAlerts] = useState<[PriceAlert, Item][]>([]);
 	const [selectedItem, setSelectedItem] = useState<Item | null>();
+	const [exchangeRates, setExchangeRates] = useState<ExchangeRates>();
 
 	useEffect(() => {
 		if (prop.activeTab === 'alerts') {
@@ -28,6 +34,11 @@ const AlertsTab = (prop: {
 	}, [prop.activeTab]);
 
 	useEffect(() => {
+		const rates = ipcRenderer.sendSync('getExchangeRates');
+		if (rates && is(rates, ExchangeRates)) {
+			setExchangeRates(rates);
+		}
+
 		ipcRenderer.on('alertsWithItems', (event, alertsWithItems) => {
 			if (is(alertsWithItems, array(tuple([PriceAlert, Item])))) {
 				setPriceAlerts(alertsWithItems);

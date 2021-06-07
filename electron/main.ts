@@ -8,7 +8,12 @@ import {
 	didFailToFetchAllStorePrices,
 } from '@istvankreisz/copdeck-scraper';
 import { assert, string, is, boolean } from 'superstruct';
-import { APIConfig, Item, PriceAlert } from '@istvankreisz/copdeck-scraper/dist/types';
+import {
+	APIConfig,
+	ExchangeRates,
+	Item,
+	PriceAlert,
+} from '@istvankreisz/copdeck-scraper/dist/types';
 import { databaseCoordinator } from './databaseCoordinator';
 import { Settings, SettingsSchema } from '../src/utils/types';
 import { parse } from '../src/utils/proxyparser';
@@ -170,7 +175,7 @@ const refreshExchangeRates = async () => {
 	const settings = getSettings();
 
 	try {
-		const rates = await nodeAPI.getExchangeRates(apiConfig(settings, !app.isPackaged));
+		const rates = await nodeAPI.getExchangeRates(apiConfig());
 		saveExchangeRates(rates);
 		logDev('refreshed exchange rates');
 		logDev(rates);
@@ -179,11 +184,15 @@ const refreshExchangeRates = async () => {
 	}
 };
 
-const apiConfig = (settings: Settings, dev: boolean): APIConfig => {
+const apiConfig = (): APIConfig => {
+	const settings = getSettings();
+	const exchangeRates = getExchangeRates();
+
 	return {
 		currency: settings.currency,
 		isLoggingEnabled: !app.isPackaged,
 		proxies: settings.proxies,
+		exchangeRates: exchangeRates,
 	};
 };
 
@@ -213,7 +222,7 @@ const updatePrices = async (forced: boolean = false) => {
 						const delay = Math.random() * requestDelayMax;
 						setTimeout(() => {
 							nodeAPI
-								.getItemPrices(item, apiConfig(settings, !app.isPackaged))
+								.getItemPrices(item, apiConfig())
 								.then((result) => {
 									resolve(result);
 								})
@@ -240,7 +249,7 @@ const updatePrices = async (forced: boolean = false) => {
 
 const fetchAndSave = async (item: Item) => {
 	const settings = getSettings();
-	const newItem = await nodeAPI.getItemPrices(item, apiConfig(settings, !app.isPackaged));
+	const newItem = await nodeAPI.getItemPrices(item, apiConfig());
 	updateItem(newItem, !app.isPackaged);
 	return newItem;
 };
@@ -274,6 +283,10 @@ const getItemDetails = async (item: Item, forceRefresh: boolean) => {
 const sendNotifications = async () => {
 	try {
 		const [alerts, settings] = [getAlertsWithItems(), getSettings()];
+		let exchangeRates: ExchangeRates | undefined;
+		if (settings.currency.code !== 'USD') {
+			exchangeRates = getExchangeRates();
+		}
 		logDev('sending notifications');
 
 		const alertsFiltered = alerts
@@ -338,10 +351,7 @@ function setupMessageListeners() {
 				assert(searchTerm, string());
 				const settings = getSettings();
 				log('searching', !app.isPackaged);
-				const items = await nodeAPI.searchItems(
-					searchTerm,
-					apiConfig(settings, !app.isPackaged)
-				);
+				const items = await nodeAPI.searchItems(searchTerm, apiConfig());
 				event.reply('search', items);
 			} catch (err) {
 				event.reply('search', []);
@@ -542,6 +552,7 @@ function setupServices() {
 
 // todo: add warning to landing page about unrecognized developer
 // add more guide to download page - keep app in bg
+// fix currencies for goat
 
 // checks
 // todo: check proxies
