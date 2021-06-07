@@ -8,19 +8,11 @@ import {
 	didFailToFetchAllStorePrices,
 } from '@istvankreisz/copdeck-scraper';
 import { assert, string, is, boolean } from 'superstruct';
-import {
-	ALLSTORES,
-	APIConfig,
-	Item,
-	PriceAlert,
-	Proxy,
-	Store,
-} from '@istvankreisz/copdeck-scraper/dist/types';
+import { APIConfig, Item, PriceAlert } from '@istvankreisz/copdeck-scraper/dist/types';
 import { databaseCoordinator } from './databaseCoordinator';
 import { Settings, SettingsSchema } from '../src/utils/types';
 import { parse } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
-import { v4 as uuidv4 } from 'uuid';
 const { ipcMain, Notification, shell } = require('electron');
 const cron = require('node-cron');
 
@@ -546,10 +538,7 @@ function setupServices() {
 // add more guide to download page - keep app in bg
 
 // checks
-// todo: check refresh
-// todo: check notifications
 // todo: check proxies
-// todo: check isdev
 
 // todo: nice to have
 // // add goat bid
