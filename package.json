@@ -1,12 +1,15 @@
 {
 	"name": "CopDeck",
-	"version": "0.9.4",
+	"version": "0.9.6",
 	"author": "CopDeck",
 	"description": "CopDeck Sneaker Monitor",
 	"homepage": ".",
 	"main": "build/electron/main.js",
 	"private": true,
-	"repository": "https://github.com/istvan-kreisz/copdeck-desktop-app.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/istvan-kreisz/copdeck-desktop-app.git"
+	},
 	"dependencies": {
 		"@craco/craco": "^6.1.2",
 		"@headlessui/react": "^1.2.0",
@@ -39,6 +42,7 @@
 		"postinstall": "electron-builder install-app-deps",
 		"dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
 		"electron:build": "yarn build && tsc -p electron && electron-builder -m -w -p onTag",
+		"deploy": "yarn build && tsc -p electron && electron-builder build --mac --win --publish always",
 		"eject": "react-scripts eject",
 		"link": "npm link copdeck-scraper"
 	},
