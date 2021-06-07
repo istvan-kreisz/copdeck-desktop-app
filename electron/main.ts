@@ -95,6 +95,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+	require('update-electron-app')();
+
 	// if (BrowserWindow.getAllWindows().length === 0) {
 	createWindow();
 	// }
