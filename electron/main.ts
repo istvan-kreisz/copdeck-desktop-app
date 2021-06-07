@@ -15,6 +15,7 @@ import { parse } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
 const { ipcMain, Notification, shell } = require('electron');
 const cron = require('node-cron');
+const { autoUpdater } = require('electron-updater');
 
 let cacheTask: any;
 let refreshPricesTask: any;
@@ -95,8 +96,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-	require('update-electron-app')();
-
+	autoUpdater.checkForUpdatesAndNotify();
 	// if (BrowserWindow.getAllWindows().length === 0) {
 	createWindow();
 	// }
@@ -533,11 +533,11 @@ function setupServices() {
 	})();
 }
 
-// todo: auto-updates
 // todo: add warning to landing page about unrecognized developer
 // todo: rewrite ip block texts
 // update ui with long prices
 // add more guide to download page - keep app in bg
+// remove noode modules from history
 
 // checks
 // todo: check proxies
