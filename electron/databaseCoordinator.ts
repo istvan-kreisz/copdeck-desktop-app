@@ -70,6 +70,16 @@ const databaseCoordinator = () => {
 		}
 	};
 
+	const getIsFirstAlert = (): boolean => {
+		const isFirstAlert = get('isFirstAlert');
+		if (is(isFirstAlert, boolean())) {
+			return isFirstAlert;
+		} else {
+			set('isFirstAlert', false);
+			return true;
+		}
+	};
+
 	const getSettings = (): Settings => {
 		const settings = get('settings');
 		if (is(settings, SettingsSchema)) {
@@ -236,10 +246,12 @@ const databaseCoordinator = () => {
 	};
 
 	return {
+		store: store,
 		getAlertsWithItems: getAlertsWithItems,
 		getItems: getItems,
 		getItemWithId: getItemWithId,
 		getAlerts: getAlerts,
+		getIsFirstAlert: getIsFirstAlert,
 		getSettings: getSettings,
 		getExchangeRates: getExchangeRates,
 		listenToSettingsChanges: listenToSettingsChanges,

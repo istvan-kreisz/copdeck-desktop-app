@@ -26,10 +26,12 @@ const maxUpdateInterval = 1440;
 const requestDelayMax = 1000;
 
 const {
+	store,
 	getAlertsWithItems,
 	getItems,
 	getItemWithId,
 	getAlerts,
+	getIsFirstAlert,
 	getSettings,
 	getExchangeRates,
 	listenToSettingsChanges,
@@ -445,6 +447,10 @@ function setupMessageListeners() {
 		event.returnValue = rates;
 	});
 
+	ipcMain.on('getIsFirstAlert', (event, arg) => {
+		event.returnValue = getIsFirstAlert();
+	});
+
 	ipcMain.on('saveSettings', (event, msg) => {
 		const settings = msg.settings;
 		const proxyString = msg.proxyString;
@@ -535,10 +541,7 @@ function setupServices() {
 }
 
 // todo: add warning to landing page about unrecognized developer
-// todo: rewrite ip block texts
-// update ui with long prices
 // add more guide to download page - keep app in bg
-// remove noode modules from history
 
 // checks
 // todo: check proxies

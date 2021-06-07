@@ -12,12 +12,7 @@ const AddAlertModal = (prop: {
 	showAddPriceAlertModal: boolean;
 	setShowAddPriceAlertModal: (show: boolean) => void;
 	currency: Currency;
-	setToastMessage: React.Dispatch<
-		React.SetStateAction<{
-			message: string;
-			show: boolean;
-		}>
-	>;
+	setToastMessage: (message: string, show: boolean) => void;
 }) => {
 	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([]);
 	const [selectedSize, setSelectedSize] = useState<string>();
@@ -118,7 +113,7 @@ const AddAlertModal = (prop: {
 		};
 
 		ipcRenderer.send('saveAlert', { alert: newAlert, item: prop.selectedItem });
-		prop.setToastMessage({ message: 'Added price alert', show: true });
+		prop.setToastMessage('Added price alert', true);
 		prop.setShowAddPriceAlertModal(false);
 
 		firebase?.analytics().logEvent('desktop_added_alert', {});

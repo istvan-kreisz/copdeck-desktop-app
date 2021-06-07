@@ -65,7 +65,7 @@ const ItemDetail = (prop: {
 
 		ipcRenderer.on('getItemDetails', (event, item) => {
 			try {
-				assert(item, Item); 
+				assert(item, Item);
 				if (!didClickBack.current) {
 					prop.setSelectedItem((current) => (current ? item : null));
 				}
@@ -160,6 +160,19 @@ const ItemDetail = (prop: {
 				};
 			}),
 		};
+	};
+
+	const setToastMessage = (message: string, show: boolean) => {
+		if (show && ipcRenderer.sendSync('getIsFirstAlert')) {
+			setTelltipMessage({
+				title: 'Price Alert Notifications',
+				message:
+					'Make sure you have notifications enabled for CopDeck in your Mac or Windows system settings.',
+				show: true,
+			});
+		} else {
+			prop.setToastMessage({ message, show });
+		}
 	};
 
 	return (
@@ -268,7 +281,7 @@ const ItemDetail = (prop: {
 										}
 										target="_blank"
 										key={store.id}
-										className="h-7 text-gray-800 text-lg font-bold rounded-full flex justify-center items-center w-16 cursor-pointer"
+										className="h-8 text-gray-800 text-lg font-bold rounded-full flex justify-center items-center w-20 cursor-pointer"
 									>
 										{store.name}
 									</a>
@@ -285,13 +298,13 @@ const ItemDetail = (prop: {
 									.map((row) => {
 										return (
 											<li key={row.size} className="flex flex-row space-x-4">
-												<p className="bg-gray-300 h-7 text-sm rounded-full flex justify-center items-center w-16">
+												<p className="bg-gray-300 h-8 text-sm rounded-full flex justify-center items-center w-20">
 													{row.size}
 												</p>
 												{row.prices.prices.map((price) => {
 													return (
 														<div
-															className={`h-7 space-x-1 rounded-full flex flex-row justify-center items-center w-16 ${
+															className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${
 																price.text !== '-' &&
 																price.store.id ===
 																	row.prices.best?.id
@@ -394,7 +407,7 @@ const ItemDetail = (prop: {
 					selectedItem={prop.selectedItem}
 					showAddPriceAlertModal={showAddPriceAlertModal}
 					setShowAddPriceAlertModal={setShowAddPriceAlertModal}
-					setToastMessage={prop.setToastMessage}
+					setToastMessage={setToastMessage}
 				></AddAlertModal>
 			) : null}
 			<Popup
