@@ -97,6 +97,9 @@ function createWindow() {
 
 app.whenReady().then(() => {
 	autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.logger = require('electron-log');
+	autoUpdater.logger.transports.file.level = 'info';
+
 	// if (BrowserWindow.getAllWindows().length === 0) {
 	createWindow();
 	// }
