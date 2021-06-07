@@ -96,7 +96,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-
 	// if (BrowserWindow.getAllWindows().length === 0) {
 	createWindow();
 	// }
@@ -125,15 +124,13 @@ app.whenReady().then(() => {
 	});
 
 	app.on('window-all-closed', () => {
-		if (process.platform !== 'darwin') {
-			app.quit();
-		}
+		app.quit();
 	});
 
 	mainWindow?.on('ready-to-show', () => {
-        	autoUpdater.checkForUpdatesAndNotify();
-			autoUpdater.logger = require('electron-log');
-			autoUpdater.logger.transports.file.level = 'info';
+		autoUpdater.checkForUpdatesAndNotify();
+		autoUpdater.logger = require('electron-log');
+		autoUpdater.logger.transports.file.level = 'info';
 
 		// mainWindow?.focus();
 		if (app.isPackaged) {
