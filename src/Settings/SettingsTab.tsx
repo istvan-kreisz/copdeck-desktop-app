@@ -138,7 +138,7 @@ const SettingsTab = (prop: {
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Proxies',
-								message: `Add a list of proxies here if you're a heavy user and you're worried about your IP getting blocked by one of the supported sites. The extension will take care of rotating them automatically. Make sure you click on "Save Settings" on the bottom of this page. Alternatively, you can just use a VPN on your computer.`,
+								message: `Add a list of proxies here if you're a heavy user and you're worried about your IP getting blocked by one of the supported sites. The app will take care of rotating them automatically. Make sure you click on "Save Settings" on the bottom of this page. Alternatively, you can just use a VPN on your computer.`,
 								show: true,
 							})}
 							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
@@ -161,7 +161,7 @@ const SettingsTab = (prop: {
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Refresh frequency',
 								message:
-									"How often the extension fetches new prices. Lower settings give you more accurate data but may increase the risk of your IP getting blocked by a resell site. If you're a heavy user we recommend using proxies or a VPN.",
+									"How often the app fetches new prices. Lower settings give you more accurate data but may increase the risk of your IP getting blocked by a resell site. If you're a heavy user we recommend using proxies or a VPN.",
 								show: true,
 							})}
 							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
@@ -185,7 +185,7 @@ const SettingsTab = (prop: {
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Notification frequency',
-								message: `How often the extension will send you Chrome notifications if an item's price stays below your target price. Make sure notifications are enabled in your Chrome and system settings.`,
+								message: `How often the app will send you notifications if an item's price reaches your target price. Make sure notifications are enabled in your system settings.`,
 								show: true,
 							})}
 							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"

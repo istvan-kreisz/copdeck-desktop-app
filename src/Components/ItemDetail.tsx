@@ -65,7 +65,7 @@ const ItemDetail = (prop: {
 
 		ipcRenderer.on('getItemDetails', (event, item) => {
 			try {
-				assert(item, Item);
+				assert(item, Item); 
 				if (!didClickBack.current) {
 					prop.setSelectedItem((current) => (current ? item : null));
 				}

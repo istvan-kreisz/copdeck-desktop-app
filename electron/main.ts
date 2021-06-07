@@ -103,21 +103,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-	// createWindow();
-	// // if (BrowserWindow.getAllWindows().length === 0) {
-	// // 	createWindow();
-	// // }
-
-	// app.on('activate', () => {
-	// 	if (BrowserWindow.getAllWindows().length === 0) {
-	// 		createWindow();
-	// 	}
-	// });
-
-	// mainWindow?.webContents.on('new-window', function (event, url) {
-	// 	event.preventDefault();
-	// 	open(url);
-	// });
+	// if (BrowserWindow.getAllWindows().length === 0) {
+	createWindow();
+	// }
 
 	// app.on('second-instance', () => {
 	// 	if (mainWindow && !!app.isPackaged) {
@@ -128,15 +116,15 @@ app.whenReady().then(() => {
 	// 	}
 	// });
 
-	// app.on('before-quit', () => {
-	// 	cacheTask?.stop();
-	// 	refreshPricesTask?.stop();
-	// 	refreshExchangeRatesTask?.stop();
-	// });
-
-	createWindow();
+	app.on('before-quit', () => {
+		cacheTask?.stop();
+		refreshPricesTask?.stop();
+		refreshExchangeRatesTask?.stop();
+	});
 
 	app.on('activate', () => {
+		mainWindow?.show();
+
 		if (BrowserWindow.getAllWindows().length === 0) {
 			createWindow();
 		}
@@ -149,8 +137,10 @@ app.whenReady().then(() => {
 	});
 
 	mainWindow?.on('ready-to-show', () => {
-		mainWindow?.show();
-		mainWindow?.focus();
+		// mainWindow?.focus();
+		if (app.isPackaged) {
+			mainWindow?.show();
+		}
 	});
 
 	mainWindow?.webContents.setWindowOpenHandler(({ url }) => {
@@ -167,6 +157,10 @@ app.whenReady().then(() => {
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 
+const logDev = (val) => {
+	log(val, !app.isPackaged);
+};
+
 const clearCache = async () => {
 	try {
 		clearItemCache();
@@ -181,15 +175,17 @@ const refreshExchangeRates = async () => {
 	try {
 		const rates = await nodeAPI.getExchangeRates(apiConfig(settings, !app.isPackaged));
 		saveExchangeRates(rates);
+		logDev('refreshed exchange rates');
+		logDev(rates);
 	} catch (err) {
-		log(err, !app.isPackaged);
+		logDev(err);
 	}
 };
 
 const apiConfig = (settings: Settings, dev: boolean): APIConfig => {
 	return {
 		currency: settings.currency,
-		isLoggingEnabled: dev,
+		isLoggingEnabled: !app.isPackaged,
 		proxies: settings.proxies,
 	};
 };
@@ -210,6 +206,7 @@ const updatePrices = async (forced: boolean = false) => {
 		if (activeItems.length !== savedItems.length) {
 			saveItems(activeItems);
 		}
+		logDev('refreshing prices');
 
 		// refresh items
 		const result = await promiseAllSkippingErrors(
@@ -237,6 +234,7 @@ const updatePrices = async (forced: boolean = false) => {
 		const items = result.filter((item) => item.storePrices && item.storePrices.length);
 		if (items && items.length) {
 			updateItems(items);
+			logDev(`refreshed ${items.length} items`);
 		}
 	} catch (err) {
 		console.log(err);
@@ -260,18 +258,18 @@ const getItemDetails = async (item: Item, forceRefresh: boolean) => {
 				shouldUpdateItem(savedItem, settings.updateInterval) ||
 				forceRefresh
 			) {
-				log('fetching new 1', !app.isPackaged);
+				logDev('fetching new 1');
 				return fetchAndSave(savedItem);
 			} else {
-				log('returning saved', !app.isPackaged);
+				logDev('returning saved');
 				return savedItem;
 			}
 		} else {
-			log('fetching new 2', !app.isPackaged);
+			logDev('fetching new 2');
 			return fetchAndSave(item);
 		}
 	} catch (err) {
-		log('fetching new 3', true);
+		logDev('fetching new 3');
 		return fetchAndSave(item);
 	}
 };
@@ -279,6 +277,7 @@ const getItemDetails = async (item: Item, forceRefresh: boolean) => {
 const sendNotifications = async () => {
 	try {
 		const [alerts, settings] = [getAlertsWithItems(), getSettings()];
+		logDev('sending notifications');
 
 		const alertsFiltered = alerts
 			.filter(([alert, item]) => {
@@ -316,8 +315,8 @@ const sendNotifications = async () => {
 
 		alertsFiltered.forEach(([alert, item]) => {
 			const bestPrice = itemBestPrice(item, alert);
-			log('notification sent', !app.isPackaged);
-			log(alert, !app.isPackaged);
+			logDev('notification sent');
+			logDev(alert);
 
 			new Notification({
 				title: 'CopDeck Price Alert!',
@@ -346,8 +345,6 @@ function setupMessageListeners() {
 					searchTerm,
 					apiConfig(settings, !app.isPackaged)
 				);
-				log('search results', !app.isPackaged);
-				log(items, !app.isPackaged);
 				event.reply('search', items);
 			} catch (err) {
 				event.reply('search', []);
@@ -506,6 +503,7 @@ function addRefreshPricesAlarm(forced: boolean = false) {
 	const settings = getSettings();
 	if (forced || !refreshPricesTask) {
 		refreshPricesTask?.stop();
+		logDev('refreshed price alarm');
 		refreshPricesTask = cron.schedule(`*/${settings.updateInterval} * * * *`, () => {
 			(async () => {
 				await updatePrices();
@@ -542,19 +540,19 @@ function setupServices() {
 }
 
 // todo: auto-updates
-// todo: code-signing
 // todo: add warning to landing page about unrecognized developer
-// todo: retry when getting forbidden response
-// todo: add country selector to settings?
-
-// // add goat bid
-// // add proxy toggle
-// // change goat currency
-// // Cookie: _csrf=lKuDAaP8CZOqw-LoxVrr2y5Z; csrf=xQDiRJay-RiSSEinY5fgM631qqcCElyVhLAs; _sneakers_session=v89yqHWNt2U3vHU2Rls%2F%2B0Nb66XdCEAQNBwOVGDxBx6kVnDDtALbhmo9KwDph1EISUTlerOAefWW%2FWpUuq7N--EjpYsea%2BbyqFTy3b--r7Y9SJYqJsSoxqkVP64HeA%3D%3D; ConstructorioID_client_id=e9866fda-fd26-4f06-8e18-b31e22d1ee0b; currency=JPY; OptanonConsent=isIABGlobal=false&datestamp=Sun+May+30+2021+12%3A09%3A31+GMT%2B0200+(Central+European+Summer+Time)&version=6.12.0&hosts=&consentId=ae7c1734-b0a0-4e58-b815-38e294f6e206&interactionCount=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A0%2CC0002%3A0%2CC0004%3A0; __stripe_mid=dca3168b-fbcc-428a-9214-4c2968f68bd34d2970; __stripe_sid=c77cc3fa-abf6-4196-a827-e3dd77e20259deb20a; OptanonAlertBoxClosed=2021-05-30T10:09:31.293Z
-
-// todo: goat currency
+// todo: rewrite ip block texts
+// update ui with long prices
+// add more guide to download page - keep app in bg
 
 // checks
 // todo: check refresh
 // todo: check notifications
 // todo: check proxies
+// todo: check isdev
+
+// todo: nice to have
+// // add goat bid
+// // add proxy toggle
+// // change goat currency
+// todo: add country selector to settings?
