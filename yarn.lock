@@ -1622,10 +1622,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@istvankreisz/copdeck-scraper@1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.0.10.tgz#6cd04d5bae283b764bc44df7abac09ebab9e6f59"
-  integrity sha512-1CDNrG6A/3pJtrudB6KxtXW11uhPDpRs0+dlCPtAH7/eGT11zYZajVDkkw3ZaKphpfIlNcAEGMw0oCCeJncIdw==
+"@istvankreisz/copdeck-scraper@1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.0.13.tgz#a7151ae660399301b255fcf59d0a5bb093e3c6e5"
+  integrity sha512-sFiWYuYXXEBPPv/XR153uVvLlOUkBKrSaVi9qic8pyd/9Q6XWKga52czlccczTlfEPXti2/V/jGLBRT1r5rxkw==
   dependencies:
     "@types/node-fetch" "^2.5.10"
     fast-xml-parser "^3.19.0"

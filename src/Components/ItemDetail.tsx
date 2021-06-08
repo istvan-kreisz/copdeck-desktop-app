@@ -152,7 +152,7 @@ const ItemDetail = (prop: {
 			setTelltipMessage({
 				title: 'Price Alert Notifications',
 				message:
-					'Make sure you have notifications enabled for CopDeck in your Mac or Windows system settings.',
+					"Price alerts send you notifications on your computer when the item's price reaches your target. To make sure they work properly you need to enable notifications for CopDeck in your Mac or Windows system settings and leave the CopDeck app running.",
 				show: true,
 			});
 		} else {
