@@ -31,7 +31,6 @@ const ItemDetail = (prop: {
 	const [showAddPriceAlertModal, setShowAddPriceAlertModal] = useState(false);
 	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask');
 	const didClickBack = useRef(false);
-	const [exchangeRates, setExchangeRates] = useState<ExchangeRates>();
 
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
@@ -56,11 +55,6 @@ const ItemDetail = (prop: {
 		didClickBack.current = false;
 		if (prop.selectedItem) {
 			updateItem(false);
-		}
-
-		const rates = ipcRenderer.sendSync('getExchangeRates');
-		if (rates && is(rates, ExchangeRates)) {
-			setExchangeRates(rates);
 		}
 
 		ipcRenderer.on('getItemDetails', (event, item) => {
@@ -244,7 +238,7 @@ const ItemDetail = (prop: {
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Price refresh',
-								message: `Prices will automatically get refreshed based on your "Refresh frequency" setting on the Settings tab. You can also manually refresh them using this button, but doing so too frequently (without using proxies) might get your IP blocked by the site.`,
+								message: `Prices will automatically get refreshed based on your "Refresh frequency" setting on the Settings tab. Sometimes not all prices might load at first, in that case you can use this button to manually refresh prices.`,
 								show: true,
 							})}
 							className="h-4 cursor-pointer text-gray-800 font-semibold flex-shrink-0"
@@ -326,26 +320,6 @@ const ItemDetail = (prop: {
 																						"GOAT" in
 																						the first
 																						row.
-																					</li>
-																					<br />
-																					<li>
-																						*GOAT
-																						provides
-																						prices in
-																						USD so the
-																						EUR and GBP
-																						prices are
-																						only
-																						estimates
-																						based on
-																						standard
-																						exchange
-																						rates and
-																						may differ
-																						from the
-																						amount you
-																						pay at
-																						checkout
 																					</li>
 																				</ul>
 																			),
