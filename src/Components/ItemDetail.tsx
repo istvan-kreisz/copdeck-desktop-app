@@ -113,7 +113,9 @@ const ItemDetail = (prop: {
 		}
 	};
 
-	const prices = (size: string): { prices: { text: string; store: Store }[]; best?: Store } => {
+	const prices = (
+		size: string
+	): { prices: { text: string; store: Store }[]; lowest?: Store; highest?: Store } => {
 		const prices = ALLSTORES.map((store) => {
 			const p = price(size, store);
 			return {
@@ -123,15 +125,20 @@ const ItemDetail = (prop: {
 			};
 		});
 		const realPrices = prices.filter((price) => price.priceText !== '-');
-		let best: Store | undefined;
+		let lowest: Store | undefined;
+		let highest: Store | undefined;
 		if (realPrices.length) {
-			best = realPrices.reduce((prev, current) => {
+			lowest = realPrices.reduce((prev, current) => {
 				return prev.price < current.price ? prev : current;
+			})?.store;
+			highest = realPrices.reduce((prev, current) => {
+				return prev.price > current.price ? prev : current;
 			})?.store;
 		}
 
 		return {
-			best: best,
+			lowest: lowest,
+			highest: highest,
 			prices: prices.map((p) => {
 				return {
 					text: p.priceText,
@@ -281,15 +288,27 @@ const ItemDetail = (prop: {
 													{row.size}
 												</p>
 												{row.prices.prices.map((price) => {
+													let bubbleStyling = '';
+													if (price.text !== '-') {
+														if (
+															price.store.id === row.prices.lowest?.id
+														) {
+															bubbleStyling =
+																'border-2 border-green-500';
+														} else if (
+															price.store.id ===
+															row.prices.highest?.id
+														) {
+															bubbleStyling =
+																'border-2 border-red-500';
+														} else {
+															bubbleStyling = 'border-2 border-white';
+														}
+													}
+
 													return (
 														<div
-															className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${
-																price.text !== '-' &&
-																price.store.id ===
-																	row.prices.best?.id
-																	? 'border-2 border-green-500'
-																	: 'border-2 border-white'
-															}`}
+															className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${bubbleStyling}`}
 															key={price.store.id}
 														>
 															<p className="text-sm">{price.text}</p>
