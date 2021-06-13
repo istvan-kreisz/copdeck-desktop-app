@@ -101,30 +101,42 @@ const ItemDetail = (prop: {
 		return 0;
 	});
 
-	const price = (size: string, store: Store): [string, number] => {
+	const price = (
+		size: string,
+		store: Store
+	): { ask: [string, number]; bid: [string, number] } => {
 		const prices = allStores
 			.find((s) => s.store.id === store.id)
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
-		let price = priceType === 'ask' ? prices?.lowestAsk : prices?.highestBid;
-		if (price) {
-			return [prop.currency.symbol + price, price];
-		} else {
-			return ['-', 0];
-		}
+		const ask: [string, number] = prices?.lowestAsk
+			? [prop.currency.symbol + prices.lowestAsk, prices.lowestAsk]
+			: ['-', 0];
+
+		const bid: [string, number] = prices?.highestBid
+			? [prop.currency.symbol + prices.highestBid, prices.highestBid]
+			: ['-', 0];
+		return { ask, bid };
 	};
 
 	const prices = (
 		size: string
-	): { prices: { text: string; store: Store }[]; lowest?: Store; highest?: Store } => {
+	): {
+		prices: { primaryText: string; secondaryText: string; store: Store }[];
+		lowest?: Store;
+		highest?: Store;
+	} => {
 		const prices = ALLSTORES.map((store) => {
 			const p = price(size, store);
 			return {
-				priceText: p[0],
-				price: p[1],
+				priceText: priceType === 'ask' ? p.ask[0] : p.bid[0],
+				secondaryPriceText: priceType === 'ask' ? p.bid[0] : p.ask[0],
+				price: priceType === 'ask' ? p.ask[1] : p.bid[1],
 				store: store,
 			};
 		});
-		const realPrices = prices.filter((price) => price.priceText !== '-');
+		const realPrices = prices.filter(
+			(price) => price.priceText !== '-' || price.secondaryPriceText !== '-'
+		);
 		let lowest: Store | undefined;
 		let highest: Store | undefined;
 		if (realPrices.length) {
@@ -141,7 +153,8 @@ const ItemDetail = (prop: {
 			highest: highest,
 			prices: prices.map((p) => {
 				return {
-					text: p.priceText,
+					primaryText: p.priceText,
+					secondaryText: p.secondaryPriceText,
 					store: p.store,
 				};
 			}),
@@ -159,6 +172,10 @@ const ItemDetail = (prop: {
 		} else {
 			prop.setToastMessage({ message, show });
 		}
+	};
+
+	const priceClicked = (store: Store, size: string) => {
+		//
 	};
 
 	return (
@@ -289,7 +306,7 @@ const ItemDetail = (prop: {
 												</p>
 												{row.prices.prices.map((price) => {
 													let bubbleStyling = '';
-													if (price.text !== '-') {
+													if (price.primaryText !== '-') {
 														if (
 															price.store.id === row.prices.lowest?.id
 														) {
@@ -307,47 +324,71 @@ const ItemDetail = (prop: {
 													}
 
 													return (
-														<div
-															className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${bubbleStyling}`}
-															key={price.store.id}
-														>
-															<p className="text-sm">{price.text}</p>
-															{price.store.id === 'goat' &&
-															price.text !== '-' ? (
-																<QuestionMarkCircleIcon
-																	onClick={setTelltipMessage.bind(
-																		null,
-																		{
-																			title: 'GOAT prices',
-																			message: (
-																				<ul className="list-inside text-left">
-																					<li>
-																						*GOAT prices
-																						always show
-																						the price
-																						for new
-																						items with
-																						undamaged
-																						boxes and
-																						regular
-																						shipping. To
-																						visit their
-																						website for
-																						more price
-																						options
-																						click on
-																						"GOAT" in
-																						the first
-																						row.
-																					</li>
-																				</ul>
-																			),
-																			show: true,
-																		}
-																	)}
-																	className="h-3 cursor-pointer text-gray-900 font-bold flex-shrink-0"
-																></QuestionMarkCircleIcon>
-															) : null}
+														<div className="flex flex-col items-center">
+															<div
+																className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${bubbleStyling}`}
+																key={price.store.id}
+																onClick={priceClicked.bind(
+																	null,
+																	price.store,
+																	row.size
+																)}
+															>
+																<p className="text-sm text-gray-500">
+																	{price.primaryText}
+																</p>
+																{price.store.id === 'goat' &&
+																price.primaryText !== '-' ? (
+																	<QuestionMarkCircleIcon
+																		onClick={setTelltipMessage.bind(
+																			null,
+																			{
+																				title: 'GOAT prices',
+																				message: (
+																					<ul className="list-inside text-left">
+																						<li>
+																							*GOAT
+																							prices
+																							always
+																							show the
+																							price
+																							for new
+																							items
+																							with
+																							undamaged
+																							boxes
+																							and
+																							regular
+																							shipping.
+																							To visit
+																							their
+																							website
+																							for more
+																							price
+																							options
+																							click on
+																							"GOAT"
+																							in the
+																							first
+																							row.
+																						</li>
+																					</ul>
+																				),
+																				show: true,
+																			}
+																		)}
+																		className="h-3 cursor-pointer text-gray-900 font-bold flex-shrink-0"
+																	></QuestionMarkCircleIcon>
+																) : null}
+															</div>
+															<p
+																style={{ fontSize: '10px' }}
+																className="text-gray-400"
+															>
+																{(priceType === 'ask'
+																	? 'Bid:'
+																	: 'Ask:') + price.secondaryText}
+															</p>
 														</div>
 													);
 												})}

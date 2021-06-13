@@ -55,7 +55,7 @@ let mainWindow: BrowserWindow | null | undefined;
 
 function createWindow() {
 	mainWindow = new BrowserWindow({
-		width: 380,
+		width: 450,
 		height: 608,
 		show: false,
 		resizable: !app.isPackaged,
