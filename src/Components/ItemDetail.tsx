@@ -30,6 +30,7 @@ const ItemDetail = (prop: {
 	const container = useRef<HTMLDivElement>(null);
 	const [showAddPriceAlertModal, setShowAddPriceAlertModal] = useState(false);
 	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask');
+	const [feeType, setFeeType] = useState<'Seller' | 'Buyer' | 'None'>('None');
 	const didClickBack = useRef(false);
 
 	const [telltipMessage, setTelltipMessage] = useState<{
@@ -108,14 +109,22 @@ const ItemDetail = (prop: {
 		const prices = allStores
 			.find((s) => s.store.id === store.id)
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
-		const ask: [string, number] = prices?.lowestAsk
-			? [prop.currency.symbol + prices.lowestAsk, prices.lowestAsk]
+		const ask = prices?.lowestAsk;
+		const bid = prices?.highestBid;
+		let askPrice: number | null | undefined = ask?.noFees;
+		let bidPrice: number | null | undefined = bid?.noFees;
+		if (feeType !== 'None') {
+			askPrice = feeType === 'Buyer' ? ask?.withBuyerFees : ask?.withSellerFees;
+			bidPrice = feeType === 'Buyer' ? bid?.withBuyerFees : bid?.withSellerFees;
+		}
+		const askInfo: [string, number] = askPrice
+			? [prop.currency.symbol + askPrice, askPrice]
 			: ['-', 0];
 
-		const bid: [string, number] = prices?.highestBid
-			? [prop.currency.symbol + prices.highestBid, prices.highestBid]
+		const bidInfo: [string, number] = bidPrice
+			? [prop.currency.symbol + bidPrice, bidPrice]
 			: ['-', 0];
-		return { ask, bid };
+		return { ask: askInfo, bid: bidInfo };
 	};
 
 	const prices = (
@@ -269,9 +278,42 @@ const ItemDetail = (prop: {
 						></QuestionMarkCircleIcon>
 					</div>
 
+					<div className="flex flex-row space-x-2">
+						<button
+							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
+								feeType === 'None' ? 'bg-theme-blue text-white' : 'text-gray-800'
+							}`}
+							onClick={setFeeType.bind(null, 'None')}
+						>
+							None
+						</button>
+
+						<button
+							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
+								feeType === 'Seller'
+									? 'bg-theme-blue text-white'
+									: 'text-gray-800 border-2'
+							}`}
+							onClick={setFeeType.bind(null, 'Seller')}
+						>
+							Seller
+						</button>
+						<button
+							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
+								feeType === 'Buyer' ? 'bg-theme-blue text-white' : 'text-gray-800'
+							}`}
+							onClick={setFeeType.bind(null, 'Buyer')}
+						>
+							Buyer
+						</button>
+					</div>
+
 					<ul className="bg-white w-full flex flex-col space-y-2 mt-1">
-						<li key={'header'} className="flex flex-row space-x-4">
-							<p className="h-7 rounded-full flex justify-center items-center w-16">
+						<li
+							key={'header'}
+							className="grid grid-cols-4 gap-x-4 justify-items-center"
+						>
+							<p className="h-7 rounded-full flex justify-center items-center w-16 justify-self-start">
 								Sizes
 							</p>
 							{ALLSTORES.map((store) => {
@@ -300,8 +342,11 @@ const ItemDetail = (prop: {
 									})
 									.map((row) => {
 										return (
-											<li key={row.size} className="flex flex-row space-x-4">
-												<p className="bg-gray-300 h-8 text-sm rounded-full flex justify-center items-center w-20">
+											<li
+												key={row.size}
+												className="grid grid-cols-4 gap-x-4 justify-items-center"
+											>
+												<p className="bg-gray-300 h-8 text-sm rounded-full flex justify-center items-center w-20 justify-self-start">
 													{row.size}
 												</p>
 												{row.prices.prices.map((price) => {
@@ -316,8 +361,9 @@ const ItemDetail = (prop: {
 															price.store.id ===
 															row.prices.highest?.id
 														) {
-															bubbleStyling =
-																'border-2 border-red-500';
+															// bubbleStyling =
+															// 	'border-2 border-red-500';
+															bubbleStyling = 'border-2 border-white';
 														} else {
 															bubbleStyling = 'border-2 border-white';
 														}
@@ -334,7 +380,7 @@ const ItemDetail = (prop: {
 																	row.size
 																)}
 															>
-																<p className="text-sm text-gray-500">
+																<p className="text-base text-gray-600">
 																	{price.primaryText}
 																</p>
 																{price.store.id === 'goat' &&
@@ -382,7 +428,7 @@ const ItemDetail = (prop: {
 																) : null}
 															</div>
 															<p
-																style={{ fontSize: '10px' }}
+																style={{ fontSize: '11px' }}
 																className="text-gray-400"
 															>
 																{(priceType === 'ask'

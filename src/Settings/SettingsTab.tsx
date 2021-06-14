@@ -138,7 +138,7 @@ const SettingsTab = (prop: {
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Proxies',
-								message: `Add a list of proxies here if you're a heavy user and you're worried about your IP getting blocked by one of the supported sites. The app will take care of rotating them automatically. Make sure you click on "Save Settings" on the bottom of this page. Alternatively, you can just use a VPN on your computer.`,
+								message: `In most cases you don't need to use proxies, but if you want to be extra safe you can add your own proxies here. The app will take care of rotating them automatically. Make sure you click on "Save Settings" on the bottom of this page. You can also just use a VPN app to hide your IP.`,
 								show: true,
 							})}
 							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
@@ -149,9 +149,9 @@ const SettingsTab = (prop: {
 						ref={proxyTextField}
 						style={{ resize: 'none' }}
 						id="proxies"
-						placeholder="Add a list of proxies here, separated by commas, spaces or newlines"
+						placeholder="Add a list of proxies here, separated by commas, spaces or newlines. Use the following format: user:pw@ip:port OR ip:port"
 						name="proxies"
-						rows={2}
+						rows={3}
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-6"
 					></textarea>
 
@@ -161,7 +161,7 @@ const SettingsTab = (prop: {
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Refresh frequency',
 								message:
-									"How often the app fetches new prices. Lower settings give you more accurate data but may increase the risk of your IP getting blocked by a resell site. If you're a heavy user we recommend using proxies or a VPN.",
+									"How often the app fetches new prices. Lower settings give you more accurate data but if you use the tool a lot, there's a small chance that some requests may get blocked. In that case you can try using proxies or a VPN.",
 								show: true,
 							})}
 							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"

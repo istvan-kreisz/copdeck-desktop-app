@@ -16,7 +16,7 @@ const AddAlertModal = (prop: {
 }) => {
 	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([]);
 	const [selectedSize, setSelectedSize] = useState<string>();
-	const [selectedType, setSelectedType] = useState<string>('below');
+	const [relation, setRelation] = useState<string>('below');
 
 	const firebase = useContext(FirebaseContext);
 
@@ -72,7 +72,7 @@ const AddAlertModal = (prop: {
 	};
 
 	const typeSelected = (event: { target: HTMLSelectElement }) => {
-		setSelectedType(event.target.value);
+		setRelation(event.target.value);
 	};
 
 	const storeLabel = (store: StorePrices): string => {
@@ -97,7 +97,7 @@ const AddAlertModal = (prop: {
 			!selectedSize ||
 			!selectedStores.length ||
 			!prop.selectedItem ||
-			(selectedType !== 'above' && selectedType !== 'below')
+			(relation !== 'above' && relation !== 'below')
 		) {
 			setError({ message: 'Please fill out all the fields', show: true });
 			return;
@@ -107,7 +107,10 @@ const AddAlertModal = (prop: {
 			id: uuidv4(),
 			itemId: prop.selectedItem?.id ?? '',
 			targetPrice: price,
-			targetPriceType: selectedType,
+			relation: relation,
+			// todo:
+			priceType: 'ask',
+			feeType: 'Buy',
 			targetSize: selectedSize,
 			stores: selectedStores.map((store) => store.store),
 		};

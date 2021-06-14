@@ -74,6 +74,12 @@ const AlertsTab = (prop: {
 				<h1 className="font-bold mb-4">Price Alerts</h1>
 				<ul className="my-4 flex flex-col space-y-3">
 					{priceAlerts.map(([alert, item], index) => {
+						let feeType = 'No Fees';
+						if (alert.feeType === 'Buy') {
+							feeType = 'With buyer fees';
+						} else if (alert.feeType === 'Sell') {
+							feeType = 'With seller fees';
+						}
 						return (
 							<AlertListItem
 								name={item.name}
@@ -83,7 +89,8 @@ const AlertsTab = (prop: {
 								onClicked={clickedItem.bind(null, item)}
 								stores={alert.stores.map((s) => s.name)}
 								bestPrice={itemBestPrice(item, alert)}
-								targetPriceType={alert.targetPriceType}
+								priceType={alert.priceType}
+								feeType={feeType}
 								currency={prop.currency.symbol}
 								targetSize={alert.targetSize}
 								targetPrice={alert.targetPrice}

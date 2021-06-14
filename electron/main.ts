@@ -56,7 +56,7 @@ let mainWindow: BrowserWindow | null | undefined;
 function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 450,
-		height: 608,
+		height: 708,
 		show: false,
 		resizable: !app.isPackaged,
 		title: 'CopDeck',
@@ -68,7 +68,7 @@ function createWindow() {
 		},
 	});
 
-	mainWindow.setSize(380, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 580);
+	mainWindow.setSize(450, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 680);
 
 	if (!app.isPackaged) {
 		mainWindow.loadURL('http://localhost:3000/index.html');
@@ -193,6 +193,18 @@ const apiConfig = (): APIConfig => {
 		isLoggingEnabled: !app.isPackaged,
 		proxies: settings.proxies,
 		exchangeRates: exchangeRates,
+		feeCalculation: {
+			countryName: 'Hungary',
+			stockx: {
+				sellerLevel: 3,
+			},
+			goat: {
+				commissionPercentage: 9.5,
+				cashOutFee: 0.029,
+				shippingFee: 40,
+				vat: 27,
+			},
+		},
 	};
 };
 
@@ -305,7 +317,7 @@ const sendNotifications = async () => {
 				const bestPrice = itemBestPrice(item, alert);
 
 				if (bestPrice) {
-					if (alert.targetPriceType === 'below') {
+					if (alert.relation === 'below') {
 						if (bestPrice < alert.targetPrice) {
 							return true;
 						} else {
@@ -331,7 +343,7 @@ const sendNotifications = async () => {
 			new Notification({
 				title: 'CopDeck Price Alert!',
 				body: `${item.name} price ${
-					alert.targetPriceType === 'above' ? 'went above' : 'dropped below'
+					alert.relation === 'above' ? 'went above' : 'dropped below'
 				} ${settings.currency.symbol}${alert.targetPrice}! Current best price: ${
 					settings.currency.symbol
 				}${bestPrice}`,
@@ -550,15 +562,5 @@ function setupServices() {
 	})();
 }
 
-// todo: add warning to landing page about unrecognized developer
-// add more guide to download page - keep app in bg
-// fix currencies for goat
-
-// checks
 // todo: check proxies
-
-// todo: nice to have
-// // add goat bid
-// // add proxy toggle
-// // change goat currency
-// todo: add country selector to settings?
+// todo: add proxy toggle
