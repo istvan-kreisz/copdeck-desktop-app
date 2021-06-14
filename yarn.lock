@@ -1622,10 +1622,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@istvankreisz/copdeck-scraper@1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.1.3.tgz#b9b6c546c879af9a8789d5e3e79a3b26ff477aa7"
-  integrity sha512-bFylg5nQzh2WjOT6WDdd/VA1J72kTxR++4lIFM7ppEGtiG9Kq1P2pOtEYnSSeBICJfkt8jzDfokqV2LyWhGmRw==
+"@istvankreisz/copdeck-scraper@1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.1.6.tgz#17242157d1b8ab6876ca86a69d734d53a93a6025"
+  integrity sha512-aFodJBQTY/3oHD1NhryUiAmoL5b/S4753MRGkdD/L7kNxFUsiAeId9wccY7UUEUzlB0wKdtykjlGSxlxvL+ePA==
   dependencies:
     fast-xml-parser "^3.19.0"
     https-proxy-agent "^5.0.0"

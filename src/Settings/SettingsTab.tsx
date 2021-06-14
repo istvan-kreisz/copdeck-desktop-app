@@ -1,6 +1,15 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
-import { Currency, ALLCURRENCIES, EUR } from '@istvankreisz/copdeck-scraper/dist/types';
+import {
+	Currency,
+	ALLCURRENCIES,
+	EUR,
+	Country,
+	ALLCOUNTRIES,
+	CountryName,
+} from '@istvankreisz/copdeck-scraper/dist/types';
+import { isCountryName } from '@istvankreisz/copdeck-scraper';
+
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import Popup from '../Components/Popup';
 import { stringify } from '../utils/proxyparser';
@@ -19,16 +28,16 @@ const SettingsTab = (prop: {
 }) => {
 	const proxyTextField = useRef<HTMLTextAreaElement>(null);
 	const currencySelector = useRef<HTMLDivElement>(null);
-	const goatShippingFeeField = useRef<HTMLInputElement>(null);
-	const goatVATField = useRef<HTMLInputElement>(null);
+	const goatTaxesField = useRef<HTMLInputElement>(null);
+	const stockxTaxesField = useRef<HTMLInputElement>(null);
 
 	const [updateInterval, setUpdateInterval] = useState('5');
 	const [notificationFrequency, setNotificationFrequency] = useState('24');
 	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
+	const [country, setCountry] = useState<CountryName>('Austria');
 	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4>(1);
 	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 25>(9.5);
 	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] = useState<boolean>(true);
-	const [goatShippingFee, setGoatShippingFee] = useState<40 | number>(40);
 	const [goatVAT, setGoatVAT] = useState<number>(0);
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
@@ -102,6 +111,14 @@ const SettingsTab = (prop: {
 		const currency = ALLCURRENCIES.find((c) => c.code === currencyCode);
 		if (currency) {
 			setSelectedCurrency(currency);
+		}
+	};
+
+	const countrySelected = (event: { target: HTMLSelectElement }) => {
+		const value = event.target.value;
+		if (isCountryName(value)) {
+			const countryName: CountryName = value;
+			setCountry(countryName);
 		}
 	};
 
@@ -232,6 +249,24 @@ const SettingsTab = (prop: {
 
 					<h3 className="text-xl font-bold mt-6 mb-1">Buyer & Seller fee calculation</h3>
 
+					<h4 className="text-lg font-bold mt-2 mb-1">General</h4>
+					<h5 className="text-base font-bold mb-1">Country</h5>
+
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={countrySelected}
+						name="type"
+						id="type"
+					>
+						{ALLCOUNTRIES.map((country) => {
+							return (
+								<option key={country.code} value={country.name}>
+									{country.name}
+								</option>
+							);
+						})}
+					</select>
+
 					<h4 className="text-lg font-bold mt-2 mb-1">StockX</h4>
 					<h5 className="text-base font-bold mb-1">Seller level</h5>
 
@@ -246,6 +281,18 @@ const SettingsTab = (prop: {
 						<option value="3">Level 3</option>
 						<option value="4">Level 4</option>
 					</select>
+
+					<h5 className="text-base font-bold mb-1">Taxes</h5>
+					<div className="flex flex-row flex-nowrap space-x-2 items-center">
+						<input
+							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+							ref={stockxTaxesField}
+							type="number"
+							name="stockxTaxesField"
+							id="stockxTaxesField"
+						/>
+						<p className="text-xl font-medium">%</p>
+					</div>
 
 					<h4 className="text-lg font-bold mt-2 mb-1">GOAT</h4>
 					<h5 className="text-base font-bold mb-1">Commission fee percentage</h5>
@@ -273,27 +320,14 @@ const SettingsTab = (prop: {
 						<option value="dontinclude">Don't include</option>
 					</select>
 
-					<h5 className="text-base font-bold mb-1">Shipping fee</h5>
-
+					<h5 className="text-base font-bold mb-1">Taxes</h5>
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
-							ref={goatShippingFeeField}
+							ref={goatTaxesField}
 							type="number"
-							name="goatShippingFeeField"
-							id="goatShippingFeeField"
-						/>
-						<p className="text-xl font-medium">$</p>
-					</div>
-
-					<h5 className="text-base font-bold mb-1">VAT</h5>
-					<div className="flex flex-row flex-nowrap space-x-2 items-center">
-						<input
-							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
-							ref={goatVATField}
-							type="number"
-							name="goatVATField"
-							id="goatVATField"
+							name="goatTaxesField"
+							id="goatTaxesField"
 						/>
 						<p className="text-xl font-medium">%</p>
 					</div>
