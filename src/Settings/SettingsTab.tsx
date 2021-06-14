@@ -14,7 +14,7 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import Popup from '../Components/Popup';
 import { stringify } from '../utils/proxyparser';
 import { is } from 'superstruct';
-import { SettingsSchema } from '../utils/types';
+import { SettingsSchema, Settings } from '../utils/types';
 import { IpcRenderer } from 'electron';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 
@@ -37,8 +37,8 @@ const SettingsTab = (prop: {
 	const [country, setCountry] = useState<CountryName>('Austria');
 	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4>(1);
 	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 25>(9.5);
-	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] = useState<boolean>(true);
-	const [goatVAT, setGoatVAT] = useState<number>(0);
+	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] =
+		useState<'include' | 'dontinclude'>('include');
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
 		message: string;
@@ -60,14 +60,29 @@ const SettingsTab = (prop: {
 				}
 				setNotificationFrequency(`${settings.notificationFrequency}`);
 				setUpdateInterval(`${settings.updateInterval}`);
+				const countryName = settings.feeCalculation.countryName;
+				if (isCountryName(countryName)) {
+					setCountry(countryName);
+				}
+				setStockxLevel(settings.feeCalculation.stockx.sellerLevel);
+				if (stockxTaxesField.current) {
+					stockxTaxesField.current.value = `${settings.feeCalculation.stockx.taxes}`;
+				}
+				setGoatCommissionFee(settings.feeCalculation.goat.commissionPercentage);
+				setIncludeGoatCashoutFee(
+					settings.feeCalculation.goat.cashOutFee === 0.029 ? 'include' : 'dontinclude'
+				);
+				if (goatTaxesField.current) {
+					goatTaxesField.current.value = `${settings.feeCalculation.goat.taxes}`;
+				}
 			}
 		});
 
 		ipcRenderer.on('saveSettings', (event, response) => {
-			if (response) {
+			if (response && response.title && response.message) {
 				setTelltipMessage({
-					title: 'Invalid proxy format',
-					message: response,
+					title: response.title,
+					message: response.message,
 					show: true,
 				});
 			} else {
@@ -87,13 +102,27 @@ const SettingsTab = (prop: {
 		const interval = parseFloat(updateInterval ?? '');
 		const notificationInterval = parseFloat(notificationFrequency ?? '24');
 
-		ipcRenderer.send('saveSettings', {
-			settings: {
-				proxies: [],
-				currency: selectedCurrency,
-				updateInterval: interval,
-				notificationFrequency: notificationInterval,
+		const newSettings: Settings = {
+			proxies: [],
+			currency: selectedCurrency,
+			updateInterval: interval,
+			notificationFrequency: notificationInterval,
+			feeCalculation: {
+				countryName: country,
+				stockx: {
+					sellerLevel: stockxLevel,
+					taxes: parseFloat(stockxTaxesField.current?.value ?? '') ?? 0,
+				},
+				goat: {
+					commissionPercentage: goatCommissionFee,
+					cashOutFee: includeGoatCashoutFee === 'include' ? 0.029 : 0,
+					taxes: parseFloat(goatTaxesField.current?.value ?? '') ?? 0,
+				},
 			},
+		};
+
+		ipcRenderer.send('saveSettings', {
+			settings: newSettings,
 			proxyString: proxyTextField.current?.value ?? '',
 		});
 	};
@@ -130,7 +159,7 @@ const SettingsTab = (prop: {
 	};
 
 	const goatCommissionFeeSelected = (event: { target: HTMLSelectElement }) => {
-		const value = parseInt(event.target.value);
+		const value = parseFloat(event.target.value);
 		if (value === 9.5 || value === 15 || value === 25) {
 			setGoatCommissionFee(value);
 		}
@@ -138,7 +167,9 @@ const SettingsTab = (prop: {
 
 	const goatIncludeCashoutFeeSelected = (event: { target: HTMLSelectElement }) => {
 		const value = event.target.value;
-		setIncludeGoatCashoutFee(value === 'include');
+		if (value === 'include' || value === 'dontinclude') {
+			setIncludeGoatCashoutFee(value);
+		}
 	};
 
 	return (
@@ -255,7 +286,7 @@ const SettingsTab = (prop: {
 
 					<div className="my-8 border border-gray-300"></div>
 
-					<h3 className="text-xl font-bold mb-1">Buyer & Seller fee calculation</h3>
+					<h3 className="text-xl font-bold mb-1">Fee calculation</h3>
 
 					<h4 className="text-lg font-bold mt-2 mb-1">Country</h4>
 
@@ -264,6 +295,7 @@ const SettingsTab = (prop: {
 						onChange={countrySelected}
 						name="type"
 						id="type"
+						value={country}
 					>
 						{ALLCOUNTRIES.map((country) => {
 							return (
@@ -282,6 +314,7 @@ const SettingsTab = (prop: {
 						onChange={stockxLevelSelected}
 						name="type"
 						id="type"
+						value={stockxLevel}
 					>
 						<option value="1">Level 1</option>
 						<option value="2">Level 2</option>
@@ -309,6 +342,7 @@ const SettingsTab = (prop: {
 						onChange={goatCommissionFeeSelected}
 						name="type"
 						id="type"
+						value={goatCommissionFee}
 					>
 						<option value="9.5">9.5%</option>
 						<option value="15">15%</option>
@@ -322,6 +356,7 @@ const SettingsTab = (prop: {
 						onChange={goatIncludeCashoutFeeSelected}
 						name="type"
 						id="type"
+						value={includeGoatCashoutFee}
 					>
 						<option value="include">Include</option>
 						<option value="dontinclude">Don't include</option>

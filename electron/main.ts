@@ -6,10 +6,12 @@ import {
 	isOlderThan,
 	itemBestPrice,
 	didFailToFetchAllStorePrices,
+	isCountryName,
 } from '@istvankreisz/copdeck-scraper';
 import { assert, string, is, boolean } from 'superstruct';
 import {
 	APIConfig,
+	CountryName,
 	ExchangeRates,
 	Item,
 	PriceAlert,
@@ -188,23 +190,17 @@ const apiConfig = (): APIConfig => {
 	const settings = getSettings();
 	const exchangeRates = getExchangeRates();
 
+	let countryName: CountryName = 'Austria';
+	if (isCountryName(settings.feeCalculation.countryName)) {
+		countryName = settings.feeCalculation.countryName;
+	}
+
 	return {
 		currency: settings.currency,
 		isLoggingEnabled: !app.isPackaged,
 		proxies: settings.proxies,
 		exchangeRates: exchangeRates,
-		feeCalculation: {
-			countryName: 'Hungary',
-			stockx: {
-				sellerLevel: 3,
-			},
-			goat: {
-				commissionPercentage: 9.5,
-				cashOutFee: 0.029,
-				shippingFee: 40,
-				vat: 27,
-			},
-		},
+		feeCalculation: { ...settings.feeCalculation, countryName: countryName },
 	};
 };
 
@@ -295,10 +291,6 @@ const getItemDetails = async (item: Item, forceRefresh: boolean) => {
 const sendNotifications = async () => {
 	try {
 		const [alerts, settings] = [getAlertsWithItems(), getSettings()];
-		let exchangeRates: ExchangeRates | undefined;
-		if (settings.currency.code !== 'USD') {
-			exchangeRates = getExchangeRates();
-		}
 		logDev('sending notifications');
 
 		const alertsFiltered = alerts
@@ -361,7 +353,6 @@ function setupMessageListeners() {
 		(async () => {
 			try {
 				assert(searchTerm, string());
-				const settings = getSettings();
 				log('searching', !app.isPackaged);
 				const items = await nodeAPI.searchItems(searchTerm, apiConfig());
 				event.reply('search', items);
@@ -474,18 +465,22 @@ function setupMessageListeners() {
 	});
 
 	ipcMain.on('saveSettings', (event, msg) => {
+		const savedSettings = getSettings();
 		const settings = msg.settings;
 		const proxyString = msg.proxyString;
 		assert(settings, SettingsSchema);
 		assert(proxyString, string());
 
-		let proxyParseError;
+		let settingsError: { title: string; message: string } | undefined;
 		if (proxyString) {
 			try {
 				settings.proxies = parse(proxyString);
 			} catch (err) {
 				settings.proxies = [];
-				proxyParseError = err['message'] ?? 'Invalid proxy format';
+				settingsError = {
+					title: 'Error',
+					message: err['message'] ?? 'Invalid proxy format',
+				};
 				log('proxy error', true);
 				log(err, true);
 			}
@@ -495,8 +490,26 @@ function setupMessageListeners() {
 		} else if (settings.updateInterval > maxUpdateInterval) {
 			settings.updateInterval = maxUpdateInterval;
 		}
+		if (
+			settings.feeCalculation.stockx.taxes > 100 ||
+			settings.feeCalculation.stockx.taxes < 0
+		) {
+			settings.feeCalculation.stockx.taxes = savedSettings.feeCalculation.stockx.taxes;
+			settingsError = {
+				title: 'Error',
+				message: 'Taxes must be a number between 0 and 100.',
+			};
+		}
+		if (settings.feeCalculation.goat.taxes > 100 || settings.feeCalculation.goat.taxes < 0) {
+			settings.feeCalculation.goat.taxes = savedSettings.feeCalculation.goat.taxes;
+			settingsError = {
+				title: 'Error',
+				message: 'Taxes must be a number between 0 and 100.',
+			};
+		}
+
 		saveSettings(settings);
-		event.reply('saveSettings', proxyParseError);
+		event.reply('saveSettings', settingsError);
 	});
 
 	ipcMain.on('getSettings', (event, msg) => {
@@ -511,7 +524,19 @@ function setupMessageListeners() {
 			is(settingsNew, SettingsSchema) &&
 			is(settingsOld, SettingsSchema)
 		) {
-			if (settingsOld.currency.code !== settingsNew.currency.code) {
+			if (
+				settingsOld.currency.code !== settingsNew.currency.code ||
+				settingsOld.feeCalculation.countryName !== settingsNew.feeCalculation.countryName ||
+				settingsOld.feeCalculation.stockx.sellerLevel !==
+					settingsNew.feeCalculation.stockx.sellerLevel ||
+				settingsOld.feeCalculation.stockx.taxes !==
+					settingsNew.feeCalculation.stockx.taxes ||
+				settingsOld.feeCalculation.goat.cashOutFee !==
+					settingsNew.feeCalculation.goat.cashOutFee ||
+				settingsOld.feeCalculation.goat.commissionPercentage !==
+					settingsNew.feeCalculation.goat.commissionPercentage ||
+				settingsOld.feeCalculation.goat.taxes !== settingsNew.feeCalculation.goat.taxes
+			) {
 				updatePrices(true);
 			}
 			if (settingsOld.updateInterval !== settingsNew.updateInterval) {

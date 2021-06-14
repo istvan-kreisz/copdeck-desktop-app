@@ -37,11 +37,6 @@ const AlertListItem = ({
 					>
 						{(priceType === 'above' ? '>' : '<') + currency + targetPrice}
 					</p>
-					<p
-						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-orange text-white`}
-					>
-						{feeType}
-					</p>
 				</div>
 				<div className="flex space-x-1">
 					<p
@@ -49,9 +44,15 @@ const AlertListItem = ({
 					>
 						{`${stores.join(', ')}`}
 					</p>
+					<p
+						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-blue text-white`}
+					>
+						{feeType}
+					</p>
 				</div>
 			</div>
-			<div style={{ flexGrow: 200 }}></div>
+			<div className="w-10 flex-shrink-0"></div>
+			<div style={{ flexGrow: 200, minWidth: '5px' }}></div>
 			<button
 				onClick={onDeleted}
 				className="cursor-pointer focus:outline-none flex-shrink-0 flex h-7 w-7 bg-red-500 rounded-full justify-center items-center"

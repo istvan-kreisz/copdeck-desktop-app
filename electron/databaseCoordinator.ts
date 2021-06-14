@@ -17,6 +17,18 @@ const databaseCoordinator = () => {
 		updateInterval: 30,
 		notificationFrequency: 24,
 		proxies: [],
+		feeCalculation: {
+			countryName: 'Austria',
+			stockx: {
+				sellerLevel: 1,
+				taxes: 0,
+			},
+			goat: {
+				commissionPercentage: 9.5,
+				cashOutFee: 0.029,
+				taxes: 0,
+			},
+		},
 	};
 
 	const set = (key: string, value: any) => {

@@ -76,9 +76,9 @@ const AlertsTab = (prop: {
 					{priceAlerts.map(([alert, item], index) => {
 						let feeType = 'No Fees';
 						if (alert.feeType === 'Buy') {
-							feeType = 'With buyer fees';
+							feeType = 'Buyer fees';
 						} else if (alert.feeType === 'Sell') {
-							feeType = 'With seller fees';
+							feeType = 'Seller fees';
 						}
 						return (
 							<AlertListItem
