@@ -6,7 +6,8 @@ import {
 	Store,
 	Currency,
 	ALLSTORES,
-	ExchangeRates,
+	FeeType,
+	ALLFEETYPES,
 } from '@istvankreisz/copdeck-scraper/dist/types';
 import { bestStoreInfo } from '@istvankreisz/copdeck-scraper';
 import AddAlertModal from '../Main/AddAlertModal';
@@ -30,7 +31,7 @@ const ItemDetail = (prop: {
 	const container = useRef<HTMLDivElement>(null);
 	const [showAddPriceAlertModal, setShowAddPriceAlertModal] = useState(false);
 	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask');
-	const [feeType, setFeeType] = useState<'Seller' | 'Buyer' | 'None'>('None');
+	const [feeType, setFeeType] = useState<FeeType>('None');
 	const didClickBack = useRef(false);
 
 	const [telltipMessage, setTelltipMessage] = useState<{
@@ -114,8 +115,8 @@ const ItemDetail = (prop: {
 		let askPrice: number | null | undefined = ask?.noFees;
 		let bidPrice: number | null | undefined = bid?.noFees;
 		if (feeType !== 'None') {
-			askPrice = feeType === 'Buyer' ? ask?.withBuyerFees : ask?.withSellerFees;
-			bidPrice = feeType === 'Buyer' ? bid?.withBuyerFees : bid?.withSellerFees;
+			askPrice = feeType === 'Buy' ? ask?.withBuyerFees : ask?.withSellerFees;
+			bidPrice = feeType === 'Sell' ? bid?.withBuyerFees : bid?.withSellerFees;
 		}
 		const askInfo: [string, number] = askPrice
 			? [prop.currency.symbol + askPrice, askPrice]
@@ -265,37 +266,21 @@ const ItemDetail = (prop: {
 
 						<div className="flex flex-row items-center space-x-2">
 							<h3 className="text-sm w-12 font-bold">Fees:</h3>
-							<button
-								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
-									feeType === 'None'
-										? 'bg-theme-purple text-white'
-										: 'text-gray-800'
-								}`}
-								onClick={setFeeType.bind(null, 'None')}
-							>
-								None
-							</button>
-
-							<button
-								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
-									feeType === 'Seller'
-										? 'bg-theme-purple  text-white'
-										: 'text-gray-800 border-2'
-								}`}
-								onClick={setFeeType.bind(null, 'Seller')}
-							>
-								Seller
-							</button>
-							<button
-								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
-									feeType === 'Buyer'
-										? 'bg-theme-purple  text-white'
-										: 'text-gray-800'
-								}`}
-								onClick={setFeeType.bind(null, 'Buyer')}
-							>
-								Buyer
-							</button>
+							{ALLFEETYPES.map((type) => {
+								return (
+									<button
+										key={type}
+										className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
+											type === feeType
+												? 'bg-theme-purple text-white'
+												: 'text-gray-800'
+										}`}
+										onClick={setFeeType.bind(null, type)}
+									>
+										{type}
+									</button>
+								);
+							})}
 						</div>
 					</div>
 
@@ -363,7 +348,7 @@ const ItemDetail = (prop: {
 														if (
 															price.store.id ===
 																row.prices.lowest?.id &&
-															(feeType === 'Buyer' ||
+															(feeType === 'Buy' ||
 																feeType === 'None')
 														) {
 															bubbleStyling =
@@ -371,7 +356,7 @@ const ItemDetail = (prop: {
 														} else if (
 															price.store.id ===
 																row.prices.highest?.id &&
-															(feeType === 'Seller' ||
+															(feeType === 'Sell' ||
 																feeType === 'None')
 														) {
 															bubbleStyling =

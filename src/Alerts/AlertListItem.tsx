@@ -6,6 +6,7 @@ const AlertListItem = ({
 	name,
 	onClicked,
 	bestPrice,
+	relation,
 	priceType,
 	feeType,
 	currency,
@@ -35,7 +36,12 @@ const AlertListItem = ({
 					<p
 						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-orange text-white`}
 					>
-						{(priceType === 'above' ? '>' : '<') + currency + targetPrice}
+						{(relation === 'above' ? '>' : '<') + currency + targetPrice}
+					</p>
+					<p
+						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-yellow text-white`}
+					>
+						{priceType === 'ask' ? 'Ask' : 'Bid'}
 					</p>
 				</div>
 				<div className="flex space-x-1">
@@ -65,8 +71,8 @@ const AlertListItem = ({
 				<p
 					className={`text-gray-800 font-medium text-base ${
 						bestPrice
-							? ((bestPrice ?? 99999) < targetPrice && priceType === 'below') ||
-							  ((bestPrice ?? 99999) > targetPrice && priceType === 'above')
+							? ((bestPrice ?? 99999) < targetPrice && relation === 'below') ||
+							  ((bestPrice ?? 99999) > targetPrice && relation === 'above')
 								? 'text-green-500'
 								: 'text-red-500'
 							: ''

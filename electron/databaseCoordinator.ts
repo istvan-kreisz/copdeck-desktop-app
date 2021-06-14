@@ -73,6 +73,13 @@ const databaseCoordinator = () => {
 		}
 	};
 
+	const incrementOpenedCount = (): number => {
+		const currentOpenedCount: number = get('openedCount') ?? 0;
+		const newOpenedCount = currentOpenedCount + 1;
+		set('openedCount', newOpenedCount);
+		return newOpenedCount;
+	};
+
 	const getAlerts = (): Array<PriceAlert> => {
 		const alerts = get('alerts');
 		if (is(alerts, array(PriceAlert))) {
@@ -261,6 +268,7 @@ const databaseCoordinator = () => {
 		store: store,
 		getAlertsWithItems: getAlertsWithItems,
 		getItems: getItems,
+		incrementOpenedCount: incrementOpenedCount,
 		getItemWithId: getItemWithId,
 		getAlerts: getAlerts,
 		getIsFirstAlert: getIsFirstAlert,

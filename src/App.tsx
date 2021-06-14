@@ -8,7 +8,7 @@ import { SearchIcon, CogIcon, BellIcon, DeviceMobileIcon } from '@heroicons/reac
 import { Currency, EUR } from '@istvankreisz/copdeck-scraper/dist/types';
 import { IpcRenderer } from 'electron';
 import { SettingsSchema } from './utils/types';
-import { is } from 'superstruct';
+import { is, number } from 'superstruct';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 import firebase from 'firebase/app';
 import 'firebase/analytics';
@@ -63,6 +63,12 @@ const App = () => {
 				setCurrency(settings.currency);
 			}
 		});
+		const openedCount = ipcRenderer.sendSync('openedCount');
+		if (is(openedCount, number())) {
+			if (openedCount === 3) {
+				// show email capture
+			}
+		}
 		return () => {
 			ipcRenderer.removeAllListeners('settingsUpdated');
 		};

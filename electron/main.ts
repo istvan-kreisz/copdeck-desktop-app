@@ -33,9 +33,9 @@ const maxUpdateInterval = 1440;
 const requestDelayMax = 1000;
 
 const {
-	store,
 	getAlertsWithItems,
 	getItems,
+	incrementOpenedCount,
 	getItemWithId,
 	getAlerts,
 	getIsFirstAlert,
@@ -54,10 +54,11 @@ const {
 } = databaseCoordinator();
 
 let mainWindow: BrowserWindow | null | undefined;
+let didIncrementOpenedCount = false;
 
 function createWindow() {
 	mainWindow = new BrowserWindow({
-		width: 450,
+		width: 470,
 		height: 768,
 		show: false,
 		resizable: !app.isPackaged,
@@ -458,6 +459,14 @@ function setupMessageListeners() {
 	ipcMain.on('getExchangeRates', (event, arg) => {
 		const rates = getExchangeRates();
 		event.returnValue = rates;
+	});
+
+	ipcMain.on('openedCount', (event, arg) => {
+		if (!didIncrementOpenedCount) {
+			didIncrementOpenedCount = true;
+			const openedCount = incrementOpenedCount();
+			event.returnValue = openedCount;
+		}
 	});
 
 	ipcMain.on('getIsFirstAlert', (event, arg) => {

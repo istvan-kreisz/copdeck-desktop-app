@@ -1,11 +1,18 @@
 import React from 'react';
 import { useRef, useState, useContext, useEffect } from 'react';
-import { Item, StorePrices, PriceAlert, Currency } from '@istvankreisz/copdeck-scraper/dist/types';
+import {
+	Item,
+	StorePrices,
+	PriceAlert,
+	Currency,
+	FeeType,
+} from '@istvankreisz/copdeck-scraper/dist/types';
 import { v4 as uuidv4 } from 'uuid';
 import Popup from '../Components/Popup';
 import { IpcRenderer } from 'electron';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 import FirebaseContext from '../context/firebaseContext';
+import { is } from 'superstruct';
 
 const AddAlertModal = (prop: {
 	selectedItem: Item;
@@ -17,6 +24,8 @@ const AddAlertModal = (prop: {
 	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([]);
 	const [selectedSize, setSelectedSize] = useState<string>();
 	const [relation, setRelation] = useState<'above' | 'below'>('below');
+	const [feeType, setFeeType] = useState<FeeType>('None');
+	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask');
 
 	const firebase = useContext(FirebaseContext);
 
@@ -71,10 +80,24 @@ const AddAlertModal = (prop: {
 		setSelectedSize(event.target.value);
 	};
 
-	const typeSelected = (event: { target: HTMLSelectElement }) => {
+	const priceTypeSelected = (event: { target: HTMLSelectElement }) => {
+		const value = event.target.value;
+		if (value === 'ask' || value === 'bid') {
+			setPriceType(value);
+		}
+	};
+
+	const relationSelected = (event: { target: HTMLSelectElement }) => {
 		const value = event.target.value;
 		if (value === 'above' || value === 'below') {
 			setRelation(value);
+		}
+	};
+
+	const feeTypeSelected = (event: { target: HTMLSelectElement }) => {
+		const value = event.target.value;
+		if (is(value, FeeType)) {
+			setFeeType(value);
 		}
 	};
 
@@ -111,9 +134,8 @@ const AddAlertModal = (prop: {
 			itemId: prop.selectedItem?.id ?? '',
 			targetPrice: price,
 			relation: relation,
-			// todo:
-			priceType: 'ask',
-			feeType: 'Buy',
+			priceType: priceType,
+			feeType: feeType,
 			targetSize: selectedSize,
 			stores: selectedStores.map((store) => store.store),
 		};
@@ -163,6 +185,7 @@ const AddAlertModal = (prop: {
 						onChange={sizeSelected}
 						name="size"
 						id="size"
+						value={selectedSize}
 					>
 						{selectableSizes.map((size) => {
 							return (
@@ -176,9 +199,10 @@ const AddAlertModal = (prop: {
 
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
-						onChange={typeSelected}
+						onChange={priceTypeSelected}
 						name="type"
 						id="type"
+						value={priceType}
 					>
 						<option value="ask">Ask price</option>
 						<option value="bid">Bid price</option>
@@ -187,9 +211,10 @@ const AddAlertModal = (prop: {
 
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
-						onChange={typeSelected}
-						name="type"
-						id="type"
+						onChange={relationSelected}
+						name="relation"
+						id="relation"
+						value={relation}
 					>
 						<option value="below">Below</option>
 						<option value="above">Above</option>
@@ -211,13 +236,14 @@ const AddAlertModal = (prop: {
 					<h3 className="text-base font-bold mt-1 mb-1">{`including:`}</h3>
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
-						onChange={typeSelected}
-						name="type"
-						id="type"
+						onChange={feeTypeSelected}
+						name="feeType"
+						id="feeType"
+						value={feeType}
 					>
-						<option value="above">No fees</option>
-						<option value="below">Seller fees</option>
-						<option value="below">Buyer fees</option>
+						<option value="None">No fees</option>
+						<option value="Sell">Seller fees</option>
+						<option value="Buy">Buyer fees</option>
 					</select>
 
 					<input

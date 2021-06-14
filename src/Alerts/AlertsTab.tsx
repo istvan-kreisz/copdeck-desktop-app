@@ -89,6 +89,7 @@ const AlertsTab = (prop: {
 								onClicked={clickedItem.bind(null, item)}
 								stores={alert.stores.map((s) => s.name)}
 								bestPrice={itemBestPrice(item, alert)}
+								relation={alert.relation}
 								priceType={alert.priceType}
 								feeType={feeType}
 								currency={prop.currency.symbol}
