@@ -176,7 +176,9 @@ const SettingsTab = (prop: {
 						})}
 					</div>
 
-					<div className="flex flex-row items-center mt-6 mb-1 space-x-1">
+					<div className="my-5 border border-gray-300"></div>
+
+					<div className="flex flex-row items-center mb-1 space-x-1">
 						<h3 className="text-xl font-bold">Proxies</h3>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
@@ -198,7 +200,9 @@ const SettingsTab = (prop: {
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-6"
 					></textarea>
 
-					<div className="flex flex-row items-center mt-6 mb-1 space-x-1">
+					<div className="my-5 border border-gray-300"></div>
+
+					<div className="flex flex-row items-center mb-1 space-x-1">
 						<h3 className="text-xl font-bold">Refresh frequency</h3>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
@@ -223,7 +227,9 @@ const SettingsTab = (prop: {
 						onChange={changedInterval}
 					/>
 
-					<div className="flex flex-row items-center mt-6 mb-1 space-x-1">
+					<div className="my-5 border border-gray-300"></div>
+
+					<div className="flex flex-row items-center mb-1 space-x-1">
 						<h3 className="text-xl font-bold">Notification frequency</h3>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
@@ -247,10 +253,11 @@ const SettingsTab = (prop: {
 						onChange={changedNotificationFrequency}
 					/>
 
-					<h3 className="text-xl font-bold mt-6 mb-1">Buyer & Seller fee calculation</h3>
+					<div className="my-8 border border-gray-300"></div>
 
-					<h4 className="text-lg font-bold mt-2 mb-1">General</h4>
-					<h5 className="text-base font-bold mb-1">Country</h5>
+					<h3 className="text-xl font-bold mb-1">Buyer & Seller fee calculation</h3>
+
+					<h4 className="text-lg font-bold mt-2 mb-1">Country</h4>
 
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -267,7 +274,7 @@ const SettingsTab = (prop: {
 						})}
 					</select>
 
-					<h4 className="text-lg font-bold mt-2 mb-1">StockX</h4>
+					<h4 className="text-lg font-bold mt-4 mb-1">StockX</h4>
 					<h5 className="text-base font-bold mb-1">Seller level</h5>
 
 					<select
@@ -282,7 +289,7 @@ const SettingsTab = (prop: {
 						<option value="4">Level 4</option>
 					</select>
 
-					<h5 className="text-base font-bold mb-1">Taxes</h5>
+					<h5 className="text-base font-bold mt-2 mb-1">Taxes</h5>
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -294,7 +301,7 @@ const SettingsTab = (prop: {
 						<p className="text-xl font-medium">%</p>
 					</div>
 
-					<h4 className="text-lg font-bold mt-2 mb-1">GOAT</h4>
+					<h4 className="text-lg font-bold mt-4 mb-1">GOAT</h4>
 					<h5 className="text-base font-bold mb-1">Commission fee percentage</h5>
 
 					<select
@@ -308,7 +315,7 @@ const SettingsTab = (prop: {
 						<option value="25">25%</option>
 					</select>
 
-					<h5 className="text-base font-bold mb-1">Include cash-out fee (2.9%)</h5>
+					<h5 className="text-base font-bold mt-2 mb-1">Include cash-out fee (2.9%)</h5>
 
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -320,7 +327,7 @@ const SettingsTab = (prop: {
 						<option value="dontinclude">Don't include</option>
 					</select>
 
-					<h5 className="text-base font-bold mb-1">Taxes</h5>
+					<h5 className="text-base font-bold mt-2 mb-1">Taxes</h5>
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -333,7 +340,7 @@ const SettingsTab = (prop: {
 					</div>
 
 					<input
-						className="mt-4 w-full button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
+						className="mt-8 w-full button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
 						type="submit"
 						value="Save Settings"
 					/>
