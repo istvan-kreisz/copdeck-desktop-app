@@ -172,19 +172,32 @@ const AddAlertModal = (prop: {
 							);
 						})}
 					</select>
-					<h3 className="text-base font-bold mt-4 mb-1">{`3. Notify me when price goes `}</h3>
+					<h3 className="text-base font-bold mt-4 mb-1">{`3. Notify me when`}</h3>
 
-					<div className="flex flex-row flex-nowrap space-x-2 items-center">
-						<select
-							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
-							onChange={typeSelected}
-							name="type"
-							id="type"
-						>
-							<option value="below">Below</option>
-							<option value="above">Above</option>
-						</select>
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={typeSelected}
+						name="type"
+						id="type"
+					>
+						<option value="ask">Ask price</option>
+						<option value="bid">Bid price</option>
+					</select>
+					<h3 className="text-base font-bold mt-1 mb-1">{`goes`}</h3>
 
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={typeSelected}
+						name="type"
+						id="type"
+					>
+						<option value="below">Below</option>
+						<option value="above">Above</option>
+					</select>
+
+					<h3 className="text-base font-bold mt-1 mb-1">{`target price:`}</h3>
+
+					<div className="flex items-center space-x-2">
 						<input
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 							ref={priceField}
@@ -194,6 +207,19 @@ const AddAlertModal = (prop: {
 						/>
 						<p className="text-xl font-medium">{prop.currency.symbol}</p>
 					</div>
+
+					<h3 className="text-base font-bold mt-1 mb-1">{`including:`}</h3>
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={typeSelected}
+						name="type"
+						id="type"
+					>
+						<option value="above">No fees</option>
+						<option value="below">Seller fees</option>
+						<option value="below">Buyer fees</option>
+					</select>
+
 					<input
 						className="mt-4 button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
 						type="submit"
