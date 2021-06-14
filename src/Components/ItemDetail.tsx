@@ -143,9 +143,7 @@ const ItemDetail = (prop: {
 				store: store,
 			};
 		});
-		const realPrices = prices.filter(
-			(price) => price.priceText !== '-' || price.secondaryPriceText !== '-'
-		);
+		const realPrices = prices.filter((price) => price.priceText !== '-');
 		let lowest: Store | undefined;
 		let highest: Store | undefined;
 		if (realPrices.length) {
@@ -353,17 +351,21 @@ const ItemDetail = (prop: {
 													let bubbleStyling = '';
 													if (price.primaryText !== '-') {
 														if (
-															price.store.id === row.prices.lowest?.id
+															price.store.id ===
+																row.prices.lowest?.id &&
+															(feeType === 'Buyer' ||
+																feeType === 'None')
 														) {
 															bubbleStyling =
 																'border-2 border-green-500';
 														} else if (
 															price.store.id ===
-															row.prices.highest?.id
+																row.prices.highest?.id &&
+															(feeType === 'Seller' ||
+																feeType === 'None')
 														) {
-															// bubbleStyling =
-															// 	'border-2 border-red-500';
-															bubbleStyling = 'border-2 border-white';
+															bubbleStyling =
+																'border-2 border-red-500';
 														} else {
 															bubbleStyling = 'border-2 border-white';
 														}
