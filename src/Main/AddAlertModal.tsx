@@ -16,7 +16,7 @@ const AddAlertModal = (prop: {
 }) => {
 	const [selectedStores, setSelectedStores] = useState<StorePrices[]>([]);
 	const [selectedSize, setSelectedSize] = useState<string>();
-	const [relation, setRelation] = useState<string>('below');
+	const [relation, setRelation] = useState<'above' | 'below'>('below');
 
 	const firebase = useContext(FirebaseContext);
 
@@ -72,7 +72,10 @@ const AddAlertModal = (prop: {
 	};
 
 	const typeSelected = (event: { target: HTMLSelectElement }) => {
-		setRelation(event.target.value);
+		const value = event.target.value;
+		if (value === 'above' || value === 'below') {
+			setRelation(value);
+		}
 	};
 
 	const storeLabel = (store: StorePrices): string => {

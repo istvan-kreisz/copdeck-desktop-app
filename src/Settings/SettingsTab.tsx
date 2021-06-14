@@ -19,10 +19,17 @@ const SettingsTab = (prop: {
 }) => {
 	const proxyTextField = useRef<HTMLTextAreaElement>(null);
 	const currencySelector = useRef<HTMLDivElement>(null);
+	const goatShippingFeeField = useRef<HTMLInputElement>(null);
+	const goatVATField = useRef<HTMLInputElement>(null);
 
 	const [updateInterval, setUpdateInterval] = useState('5');
 	const [notificationFrequency, setNotificationFrequency] = useState('24');
 	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
+	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4>(1);
+	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 25>(9.5);
+	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] = useState<boolean>(true);
+	const [goatShippingFee, setGoatShippingFee] = useState<40 | number>(40);
+	const [goatVAT, setGoatVAT] = useState<number>(0);
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
 		message: string;
@@ -98,15 +105,34 @@ const SettingsTab = (prop: {
 		}
 	};
 
+	const stockxLevelSelected = (event: { target: HTMLSelectElement }) => {
+		const value = parseInt(event.target.value);
+		if (value === 1 || value === 2 || value === 3 || value === 4) {
+			setStockxLevel(value);
+		}
+	};
+
+	const goatCommissionFeeSelected = (event: { target: HTMLSelectElement }) => {
+		const value = parseInt(event.target.value);
+		if (value === 9.5 || value === 15 || value === 25) {
+			setGoatCommissionFee(value);
+		}
+	};
+
+	const goatIncludeCashoutFeeSelected = (event: { target: HTMLSelectElement }) => {
+		const value = event.target.value;
+		setIncludeGoatCashoutFee(value === 'include');
+	};
+
 	return (
 		<>
 			<div className="bg-gray-100 p-3 w-full h-full overflow-y-scroll overflow-x-hidden">
-				<h1 key="header" className="font-bold mb-4">
+				<h1 key="header" className="font-bold text-3xl mb-4">
 					Settings
 				</h1>
 
 				<form key="form" onSubmit={saveSettings} className="flex flex-col">
-					<h3 className="text-base font-bold mt-0 mb-1">Currency</h3>
+					<h3 className="text-xl font-bold mt-0 mb-1">Currency</h3>
 
 					<div className="flex flex-row space-x-2 items-start" ref={currencySelector}>
 						{ALLCURRENCIES.map((currency) => currency.code).map((currency) => {
@@ -133,8 +159,8 @@ const SettingsTab = (prop: {
 						})}
 					</div>
 
-					<div className="flex flex-row items-center mt-2 mb-1 space-x-1">
-						<h3 className="text-base font-bold">Proxies</h3>
+					<div className="flex flex-row items-center mt-6 mb-1 space-x-1">
+						<h3 className="text-xl font-bold">Proxies</h3>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Proxies',
@@ -155,8 +181,8 @@ const SettingsTab = (prop: {
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-6"
 					></textarea>
 
-					<div className="flex flex-row items-center mt-2 mb-1 space-x-1">
-						<h3 className="text-base font-bold">Refresh frequency</h3>
+					<div className="flex flex-row items-center mt-6 mb-1 space-x-1">
+						<h3 className="text-xl font-bold">Refresh frequency</h3>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Refresh frequency',
@@ -180,8 +206,8 @@ const SettingsTab = (prop: {
 						onChange={changedInterval}
 					/>
 
-					<div className="flex flex-row items-center mt-2 mb-1 space-x-1">
-						<h3 className="text-base font-bold">Notification frequency</h3>
+					<div className="flex flex-row items-center mt-6 mb-1 space-x-1">
+						<h3 className="text-xl font-bold">Notification frequency</h3>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
 								title: 'Notification frequency',
@@ -203,6 +229,74 @@ const SettingsTab = (prop: {
 						value={notificationFrequency}
 						onChange={changedNotificationFrequency}
 					/>
+
+					<h3 className="text-xl font-bold mt-6 mb-1">Buyer & Seller fee calculation</h3>
+
+					<h4 className="text-lg font-bold mt-2 mb-1">StockX</h4>
+					<h5 className="text-base font-bold mb-1">Seller level</h5>
+
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={stockxLevelSelected}
+						name="type"
+						id="type"
+					>
+						<option value="1">Level 1</option>
+						<option value="2">Level 2</option>
+						<option value="3">Level 3</option>
+						<option value="4">Level 4</option>
+					</select>
+
+					<h4 className="text-lg font-bold mt-2 mb-1">GOAT</h4>
+					<h5 className="text-base font-bold mb-1">Commission fee percentage</h5>
+
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={goatCommissionFeeSelected}
+						name="type"
+						id="type"
+					>
+						<option value="9.5">9.5%</option>
+						<option value="15">15%</option>
+						<option value="25">25%</option>
+					</select>
+
+					<h5 className="text-base font-bold mb-1">Include cash-out fee (2.9%)</h5>
+
+					<select
+						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						onChange={goatIncludeCashoutFeeSelected}
+						name="type"
+						id="type"
+					>
+						<option value="include">Include</option>
+						<option value="dontinclude">Don't include</option>
+					</select>
+
+					<h5 className="text-base font-bold mb-1">Shipping fee</h5>
+
+					<div className="flex flex-row flex-nowrap space-x-2 items-center">
+						<input
+							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+							ref={goatShippingFeeField}
+							type="number"
+							name="goatShippingFeeField"
+							id="goatShippingFeeField"
+						/>
+						<p className="text-xl font-medium">$</p>
+					</div>
+
+					<h5 className="text-base font-bold mb-1">VAT</h5>
+					<div className="flex flex-row flex-nowrap space-x-2 items-center">
+						<input
+							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+							ref={goatVATField}
+							type="number"
+							name="goatVATField"
+							id="goatVATField"
+						/>
+						<p className="text-xl font-medium">%</p>
+					</div>
 
 					<input
 						className="mt-4 w-full button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
