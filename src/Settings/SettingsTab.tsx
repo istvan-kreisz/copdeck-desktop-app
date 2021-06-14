@@ -381,16 +381,30 @@ const SettingsTab = (prop: {
 					/>
 				</form>
 				<div className="mt-5 mb-2 border border-gray-300"></div>
-				<div className="flex flex-row flex-nowrap items-center">
-					<h3 className="text-lg font-bold text-gray-600">Got questions?</h3>
-					<a
-						target="_blank"
-						href="https://copdeck.com/contact"
-						className="button-default text-theme-blue border-transparent underline"
-						type="submit"
-					>
-						Contact us!
-					</a>
+				<div className="flex flex-col justify-start">
+					<div className="flex flex-row flex-nowrap items-center">
+						<h3 className="text-lg font-bold text-gray-600">Got questions?</h3>
+						<a
+							target="_blank"
+							href="https://copdeck.com/contact"
+							className="button-default text-theme-blue border-transparent underline"
+							type="submit"
+						>
+							Contact us!
+						</a>
+					</div>
+					<div className="mt-1 flex flex-nowrap items-center">
+						<h3 className="text-lg font-bold text-gray-600">Join us on Discord!</h3>
+
+						<a
+							target="_blank"
+							href="https://discord.com/invite/cQh6VTvXas"
+							className="button-default text-theme-blue border-transparent underline"
+							type="submit"
+						>
+							<img className="w-32" src="/discord.svg" alt="" />
+						</a>
+					</div>
 				</div>
 			</div>
 			<Popup

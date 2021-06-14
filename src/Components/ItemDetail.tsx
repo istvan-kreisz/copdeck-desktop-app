@@ -233,38 +233,79 @@ const ItemDetail = (prop: {
 				</section>
 
 				<section className="bg-white w-screen p-3">
-					<div className="flex flex-row space-x-2 justify-between items-center flex-nowrap">
-						<div className="flex flex-col">
-							<h3 className="text-base">Price comparison</h3>
-							<p className="text-xs">Tap store's name to visit website</p>
-						</div>
-						<div className="flex-shrink flex-grow"></div>
-						<button
-							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
-								priceType === 'ask'
-									? 'bg-theme-blue text-white'
-									: 'text-gray-800 border-2'
-							}`}
-							onClick={setPriceType.bind(null, 'ask')}
-						>
-							Ask
-						</button>
-						<button
-							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
-								priceType === 'bid' ? 'bg-theme-blue text-white' : 'text-gray-800'
-							}`}
-							onClick={setPriceType.bind(null, 'bid')}
-						>
-							Bid
-						</button>
+					<div className="flex flex-col justify-between items-start flex-nowrap">
+						<h2 className="text-2xl">Price comparison</h2>
+						<p className="text-xs">Tap store's name to visit the website</p>
 					</div>
-					<div className="mt-1 mb-6 flex flex-row items-center space-x-1">
+
+					<div className="flex flex-col justify-start mt-2 mb-8 space-y-2">
+						<div className="flex flex-row items-center space-x-2">
+							<h3 className="text-sm w-12 font-bold">Prices:</h3>
+							<button
+								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
+									priceType === 'ask'
+										? 'bg-theme-blue text-white'
+										: 'text-gray-800 border-2'
+								}`}
+								onClick={setPriceType.bind(null, 'ask')}
+							>
+								Ask
+							</button>
+							<button
+								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
+									priceType === 'bid'
+										? 'bg-theme-blue text-white'
+										: 'text-gray-800'
+								}`}
+								onClick={setPriceType.bind(null, 'bid')}
+							>
+								Bid
+							</button>
+						</div>
+
+						<div className="flex flex-row items-center space-x-2">
+							<h3 className="text-sm w-12 font-bold">Fees:</h3>
+							<button
+								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
+									feeType === 'None'
+										? 'bg-theme-purple text-white'
+										: 'text-gray-800'
+								}`}
+								onClick={setFeeType.bind(null, 'None')}
+							>
+								None
+							</button>
+
+							<button
+								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
+									feeType === 'Seller'
+										? 'bg-theme-purple  text-white'
+										: 'text-gray-800 border-2'
+								}`}
+								onClick={setFeeType.bind(null, 'Seller')}
+							>
+								Seller
+							</button>
+							<button
+								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
+									feeType === 'Buyer'
+										? 'bg-theme-purple  text-white'
+										: 'text-gray-800'
+								}`}
+								onClick={setFeeType.bind(null, 'Buyer')}
+							>
+								Buyer
+							</button>
+						</div>
+					</div>
+
+					<div className="flex flex-row items-center space-x-1">
 						<button
 							onClick={updateItem.bind(null, true)}
 							className="flex flex-row cursor-pointer focus:outline-none space-x-1 justify-center items-center"
 						>
-							<RefreshIcon className="font-bold h-4 text-theme-orange flex-shrink-0"></RefreshIcon>
 							<p className="text-theme-orange">Refresh prices</p>
+							<RefreshIcon className="font-bold h-4 text-theme-orange flex-shrink-0"></RefreshIcon>
 						</button>
 						<QuestionMarkCircleIcon
 							onClick={setTelltipMessage.bind(null, {
@@ -275,37 +316,6 @@ const ItemDetail = (prop: {
 							className="h-4 cursor-pointer text-gray-800 font-semibold flex-shrink-0"
 						></QuestionMarkCircleIcon>
 					</div>
-
-					<div className="flex flex-row space-x-2">
-						<button
-							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
-								feeType === 'None' ? 'bg-theme-blue text-white' : 'text-gray-800'
-							}`}
-							onClick={setFeeType.bind(null, 'None')}
-						>
-							None
-						</button>
-
-						<button
-							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
-								feeType === 'Seller'
-									? 'bg-theme-blue text-white'
-									: 'text-gray-800 border-2'
-							}`}
-							onClick={setFeeType.bind(null, 'Seller')}
-						>
-							Seller
-						</button>
-						<button
-							className={`button-default h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
-								feeType === 'Buyer' ? 'bg-theme-blue text-white' : 'text-gray-800'
-							}`}
-							onClick={setFeeType.bind(null, 'Buyer')}
-						>
-							Buyer
-						</button>
-					</div>
-
 					<ul className="bg-white w-full flex flex-col space-y-2 mt-1">
 						<li
 							key={'header'}
