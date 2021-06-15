@@ -117,7 +117,7 @@ const ItemDetail = (prop: {
 		let bidPrice: number | null | undefined = bid?.noFees;
 		if (feeType !== 'None') {
 			askPrice = feeType === 'Buy' ? ask?.withBuyerFees : ask?.withSellerFees;
-			bidPrice = feeType === 'Sell' ? bid?.withBuyerFees : bid?.withSellerFees;
+			bidPrice = feeType === 'Buy' ? bid?.withBuyerFees : bid?.withSellerFees;
 		}
 		const askInfo: [string, number] = askPrice
 			? [prop.currency.symbol + askPrice, askPrice]
