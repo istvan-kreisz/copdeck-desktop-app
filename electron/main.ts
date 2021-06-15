@@ -59,7 +59,7 @@ let didIncrementOpenedCount = false;
 function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 470,
-		height: 768,
+		height: 788,
 		show: false,
 		resizable: !app.isPackaged,
 		title: 'CopDeck',
@@ -71,7 +71,7 @@ function createWindow() {
 		},
 	});
 
-	mainWindow.setSize(450, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 740);
+	mainWindow.setSize(450, mainWindow.getSize()[1] - mainWindow.getContentSize()[1] + 760);
 
 	if (!app.isPackaged) {
 		mainWindow.loadURL('http://localhost:3000/index.html');

@@ -13,7 +13,7 @@ const SettingsSchema = object({
 			taxes: number(),
 		}),
 		goat: object({
-			commissionPercentage: union([literal(9.5), literal(15), literal(25)]),
+			commissionPercentage: union([literal(9.5), literal(15), literal(20)]),
 			cashOutFee: union([literal(0.029), literal(0)]),
 			taxes: number(),
 		}),

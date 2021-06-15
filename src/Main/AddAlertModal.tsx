@@ -61,12 +61,22 @@ const AddAlertModal = (prop: {
 		const isChecked = event.target.checked;
 		const storeName = event.target.value;
 		const store = selectableStores().find((s) => s.store.id === storeName);
-		if (!store) return;
+		if (!store) {
+			if (storeName === 'all') {
+				if (isChecked) {
+					setSelectedStores(selectableStores());
+				} else {
+					setSelectedStores([]);
+				}
+			}
+			return;
+		}
 
 		setSelectedStores((stores) => {
 			if (isChecked) {
 				if (!stores.find((s) => s.store.id === storeName)) {
-					return [...stores, store];
+					const newValue = [...stores, store];
+					return newValue;
 				} else {
 					return stores;
 				}
@@ -155,6 +165,20 @@ const AddAlertModal = (prop: {
 				<form onSubmit={addAlert} className="flex flex-col">
 					<h3 className="text-base font-bold mt-2 mb-1">1. Select store(s)</h3>
 					<div className="flex flex-col space-y-0 items-start" ref={storeSelector}>
+						<div key={'all'} className="flex flex-row items-center space-x-2 m-0">
+							<label htmlFor={'all'} className="text-lg text-gray-800 m-0">
+								All
+							</label>
+							<input
+								name={'all'}
+								value={'all'}
+								type="checkbox"
+								className="h-5 w-5 text-theme-blue rounded m-0"
+								onChange={storeToggled}
+								checked={selectableStores().length === selectedStores.length}
+							></input>
+						</div>
+
 						{selectableStores().map((store) => {
 							return (
 								<div
@@ -173,6 +197,7 @@ const AddAlertModal = (prop: {
 										type="checkbox"
 										className="h-5 w-5 text-theme-blue rounded m-0"
 										onChange={storeToggled}
+										checked={selectedStores.includes(store)}
 									></input>
 								</div>
 							);

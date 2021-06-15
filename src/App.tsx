@@ -103,7 +103,7 @@ const App = () => {
 	return (
 		<FirebaseContext.Provider value={firebaseApp}>
 			<div className="gap-0 grid grid-row-3 absolute top-0 left-0 right-0 bottom-0 text-left">
-				<main style={{ height: '660px' }} className="bg-transparent relative w-full">
+				<main style={{ height: '680px' }} className="bg-transparent relative w-full">
 					<div className={`h-full ${activeTab === 'settings' ? 'block' : 'hidden'}`}>
 						<SettingsTab setToastMessage={setToastMessage}></SettingsTab>
 					</div>

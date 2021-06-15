@@ -36,7 +36,7 @@ const SettingsTab = (prop: {
 	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
 	const [country, setCountry] = useState<CountryName>('Austria');
 	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4>(1);
-	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 25>(9.5);
+	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 20>(9.5);
 	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] =
 		useState<'include' | 'dontinclude'>('include');
 	const [telltipMessage, setTelltipMessage] = useState<{
@@ -160,7 +160,7 @@ const SettingsTab = (prop: {
 
 	const goatCommissionFeeSelected = (event: { target: HTMLSelectElement }) => {
 		const value = parseFloat(event.target.value);
-		if (value === 9.5 || value === 15 || value === 25) {
+		if (value === 9.5 || value === 15 || value === 20) {
 			setGoatCommissionFee(value);
 		}
 	};
@@ -330,6 +330,7 @@ const SettingsTab = (prop: {
 							type="number"
 							name="stockxTaxesField"
 							id="stockxTaxesField"
+							step=".01"
 						/>
 						<p className="text-xl font-medium">%</p>
 					</div>
@@ -346,7 +347,7 @@ const SettingsTab = (prop: {
 					>
 						<option value="9.5">9.5%</option>
 						<option value="15">15%</option>
-						<option value="25">25%</option>
+						<option value="20">20%</option>
 					</select>
 
 					<h5 className="text-base font-bold mt-2 mb-1">Include cash-out fee (2.9%)</h5>
@@ -368,6 +369,7 @@ const SettingsTab = (prop: {
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 							ref={goatTaxesField}
 							type="number"
+							step=".01"
 							name="goatTaxesField"
 							id="goatTaxesField"
 						/>

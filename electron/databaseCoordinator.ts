@@ -14,7 +14,7 @@ const databaseCoordinator = () => {
 
 	const defaultSettings: Settings = {
 		currency: EUR,
-		updateInterval: 30,
+		updateInterval: 60,
 		notificationFrequency: 24,
 		proxies: [],
 		feeCalculation: {
@@ -25,7 +25,7 @@ const databaseCoordinator = () => {
 			},
 			goat: {
 				commissionPercentage: 9.5,
-				cashOutFee: 0.029,
+				cashOutFee: 0,
 				taxes: 0,
 			},
 		},

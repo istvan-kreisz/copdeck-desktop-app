@@ -1,5 +1,6 @@
 import ListItem from '../Components/ListItem';
 import { ChevronRightIcon, TrashIcon } from '@heroicons/react/outline';
+import { ALLSTORES } from '@istvankreisz/copdeck-scraper/dist/types';
 
 const AlertListItem = ({
 	imageURL,
@@ -48,7 +49,7 @@ const AlertListItem = ({
 					<p
 						className={`h-5 flex-shrink-0 px-2 rounded-full text-sm bg-theme-green text-white`}
 					>
-						{`${stores.join(', ')}`}
+						{`${stores.length === ALLSTORES.length ? 'All sites' : stores.join(', ')}`}
 					</p>
 					<p
 						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-blue text-white`}
