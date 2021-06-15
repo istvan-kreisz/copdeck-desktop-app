@@ -201,10 +201,6 @@ const ItemDetail = (prop: {
 		}
 	};
 
-	const priceClicked = (store: Store, size: string) => {
-		//
-	};
-
 	return (
 		<>
 			<div
@@ -255,7 +251,7 @@ const ItemDetail = (prop: {
 				<section className="bg-white w-screen p-3">
 					<div className="flex flex-col justify-between items-start flex-nowrap">
 						<h2 className="text-2xl">Price comparison</h2>
-						<p className="text-xs">Tap store's name to visit the website</p>
+						<p className="text-xs">Click on a price to open the buy / sell page</p>
 					</div>
 
 					<div className="flex flex-col justify-start mt-2 mb-8 space-y-2">
@@ -398,11 +394,6 @@ const ItemDetail = (prop: {
 															<div
 																className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${bubbleStyling}`}
 																key={price.store.id}
-																onClick={priceClicked.bind(
-																	null,
-																	price.store,
-																	row.size
-																)}
 															>
 																<p className="text-base text-gray-600">
 																	{price.primaryText}

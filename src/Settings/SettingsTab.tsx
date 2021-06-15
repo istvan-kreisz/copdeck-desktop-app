@@ -411,6 +411,30 @@ const SettingsTab = (prop: {
 					/>
 				</form>
 				<div className="mt-5 mb-2 border border-gray-300"></div>
+				<div className="flex flex-col items-start">
+					<p className="text-base font-bold text-gray-600">
+						CopDeck Price Alerts will always stay free. To help us develop it and bring
+						you a lot more awesomeness (like our{' '}
+						<a
+							className="text-theme-blue border-transparent underline"
+							target="_blank"
+							href="https://copdeck.com"
+						>
+							CopDeck iOS app
+						</a>
+						) please help us out by donating. Any amount means a lot to us!
+					</p>
+					<a
+						target="_blank"
+						href="https://copdeck.com/donate"
+						className="button-default p-0 text-lg text-theme-blue border-transparent underline"
+						type="submit"
+					>
+						Donate now!
+					</a>
+				</div>
+				<div className="mt-5 mb-2 border border-gray-300"></div>
+
 				<div className="flex flex-col justify-start">
 					<div className="flex flex-row flex-nowrap items-center">
 						<h3 className="text-lg font-bold text-gray-600">Got questions?</h3>
