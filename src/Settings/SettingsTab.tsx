@@ -424,8 +424,8 @@ const SettingsTab = (prop: {
 				<div className="mt-5 mb-2 border border-gray-300"></div>
 				<div className="flex flex-col items-start">
 					<p className="text-base font-bold text-gray-600">
-						CopDeck Price Alerts is and will always be free. To help us develop it and
-						bring you a lot more awesomeness (like our{' '}
+						CopDeck Price Alerts is and will always be free. If you'd like to support
+						the development so we can bring you a lot more awesomeness (like our{' '}
 						<a
 							className="text-theme-blue border-transparent underline"
 							target="_blank"
@@ -433,19 +433,19 @@ const SettingsTab = (prop: {
 						>
 							CopDeck iOS app
 						</a>
-						) please help us out by donating. Any amount means a lot to us!
+						), you can help us out by donating. Any amount means a lot to us!
 					</p>
 					<a
 						target="_blank"
 						href="https://copdeck.com/donate"
-						className="button-default p-0 text-lg text-theme-blue border-transparent underline"
+						className="button-default p-0 text-lg mt-2 text-theme-blue border-transparent underline"
 						type="submit"
 						onClick={clickedDonate}
 					>
 						Donate now!
 					</a>
 				</div>
-				<div className="mt-5 mb-2 border border-gray-300"></div>
+				<div className="mt-3 mb-2 border border-gray-300"></div>
 
 				<div className="flex flex-col justify-start">
 					<div className="flex flex-row flex-nowrap items-center">
