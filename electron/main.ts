@@ -60,7 +60,7 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 470,
 		height: 788,
-		show: false,
+		show: true,
 		resizable: !app.isPackaged,
 		title: 'CopDeck',
 		webPreferences: {
@@ -175,8 +175,6 @@ const clearCache = async () => {
 };
 
 const refreshExchangeRates = async () => {
-	const settings = getSettings();
-
 	try {
 		const rates = await nodeAPI.getExchangeRates(apiConfig());
 		saveExchangeRates(rates);

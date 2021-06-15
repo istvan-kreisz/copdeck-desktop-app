@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState, useRef } from 'react';
-import { assert, is } from 'superstruct';
+import { assert, is, string } from 'superstruct';
 import {
 	Item,
 	Store,
@@ -106,10 +106,11 @@ const ItemDetail = (prop: {
 	const price = (
 		size: string,
 		store: Store
-	): { ask: [string, number]; bid: [string, number] } => {
+	): { ask: [string, number]; bid: [string, number]; buyLink?: string; sellLink?: string } => {
 		const prices = allStores
 			.find((s) => s.store.id === store.id)
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
+		const storeInfo = prop.selectedItem.storeInfo.find((s) => s.store.id === store.id);
 		const ask = prices?.lowestAsk;
 		const bid = prices?.highestBid;
 		let askPrice: number | null | undefined = ask?.noFees;
@@ -125,13 +126,27 @@ const ItemDetail = (prop: {
 		const bidInfo: [string, number] = bidPrice
 			? [prop.currency.symbol + bidPrice, bidPrice]
 			: ['-', 0];
-		return { ask: askInfo, bid: bidInfo };
+		const regex = /[\d|,|.|e|E|\+]+/g;
+		const sizeNum = parseFloat(size.match(regex)?.[0] ?? '');
+		const sizeQuery = store.id === 'goat' || store.id === 'stockx' ? `size=${sizeNum}` : '';
+		return {
+			ask: askInfo,
+			bid: bidInfo,
+			buyLink: storeInfo?.buyUrl + sizeQuery,
+			sellLink: storeInfo?.sellUrl,
+		};
 	};
 
 	const prices = (
 		size: string
 	): {
-		prices: { primaryText: string; secondaryText: string; store: Store }[];
+		prices: {
+			primaryText: string;
+			secondaryText: string;
+			buyLink?: string;
+			sellLink?: string;
+			store: Store;
+		}[];
 		lowest?: Store;
 		highest?: Store;
 	} => {
@@ -141,6 +156,8 @@ const ItemDetail = (prop: {
 				priceText: priceType === 'ask' ? p.ask[0] : p.bid[0],
 				secondaryPriceText: priceType === 'ask' ? p.bid[0] : p.ask[0],
 				price: priceType === 'ask' ? p.ask[1] : p.bid[1],
+				buyLink: p.buyLink,
+				sellLink: p.sellLink,
 				store: store,
 			};
 		});
@@ -163,6 +180,8 @@ const ItemDetail = (prop: {
 				return {
 					primaryText: p.priceText,
 					secondaryText: p.secondaryPriceText,
+					buyLink: p.buyLink,
+					sellLink: p.sellLink,
 					store: p.store,
 				};
 			}),
@@ -367,7 +386,15 @@ const ItemDetail = (prop: {
 													}
 
 													return (
-														<div className="flex flex-col items-center">
+														<a
+															href={
+																feeType === 'Sell'
+																	? price.sellLink
+																	: price.buyLink
+															}
+															target="_blank"
+															className="flex flex-col items-center"
+														>
 															<div
 																className={`h-8 space-x-1 rounded-full flex flex-row justify-center items-center w-20 ${bubbleStyling}`}
 																key={price.store.id}
@@ -432,7 +459,7 @@ const ItemDetail = (prop: {
 																	? 'Bid:'
 																	: 'Ask:') + price.secondaryText}
 															</p>
-														</div>
+														</a>
 													);
 												})}
 												<p className="flex-grow"></p>

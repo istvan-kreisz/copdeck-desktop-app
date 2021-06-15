@@ -172,6 +172,38 @@ const SettingsTab = (prop: {
 		}
 	};
 
+	const headerWithTellTip = (header: string, tellTip: { title: string; message: string }) => {
+		return (
+			<div className="flex flex-row items-center mb-1 space-x-1">
+				<h3 className="text-xl font-bold">{header}</h3>
+				<QuestionMarkCircleIcon
+					onClick={setTelltipMessage.bind(null, {
+						title: tellTip.title,
+						message: tellTip.message,
+						show: true,
+					})}
+					className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
+				></QuestionMarkCircleIcon>
+			</div>
+		);
+	};
+
+	const subheaderWithTellTip = (header: string, tellTip: { title: string; message: string }) => {
+		return (
+			<div className="flex flex-row items-center mt-2 mb-1 space-x-1">
+				<h5 className="text-base font-bold">{header}</h5>
+				<QuestionMarkCircleIcon
+					onClick={setTelltipMessage.bind(null, {
+						title: tellTip.title,
+						message: tellTip.message,
+						show: true,
+					})}
+					className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
+				></QuestionMarkCircleIcon>
+			</div>
+		);
+	};
+
 	return (
 		<>
 			<div className="bg-gray-100 p-3 w-full h-full overflow-y-scroll overflow-x-hidden">
@@ -209,17 +241,10 @@ const SettingsTab = (prop: {
 
 					<div className="my-5 border border-gray-300"></div>
 
-					<div className="flex flex-row items-center mb-1 space-x-1">
-						<h3 className="text-xl font-bold">Proxies</h3>
-						<QuestionMarkCircleIcon
-							onClick={setTelltipMessage.bind(null, {
-								title: 'Proxies',
-								message: `In most cases you don't need to use proxies, but if you want to be extra safe you can add your own proxies here. The app will take care of rotating them automatically. Make sure you click on "Save Settings" on the bottom of this page. You can also just use a VPN app to hide your IP.`,
-								show: true,
-							})}
-							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
-						></QuestionMarkCircleIcon>
-					</div>
+					{headerWithTellTip('Proxies', {
+						title: 'Proxies',
+						message: `In most cases you don't need to use proxies, but if you want to be extra safe you can add your own proxies here. The app will take care of rotating them automatically. Make sure you click on "Save Settings" on the bottom of this page. You can also just use a VPN app to hide your IP.`,
+					})}
 
 					<textarea
 						ref={proxyTextField}
@@ -233,18 +258,11 @@ const SettingsTab = (prop: {
 
 					<div className="my-5 border border-gray-300"></div>
 
-					<div className="flex flex-row items-center mb-1 space-x-1">
-						<h3 className="text-xl font-bold">Refresh frequency</h3>
-						<QuestionMarkCircleIcon
-							onClick={setTelltipMessage.bind(null, {
-								title: 'Refresh frequency',
-								message:
-									"How often the app fetches new prices. Lower settings give you more accurate data but if you use the tool a lot, there's a small chance that some requests may get blocked. In that case you can try using proxies or a VPN.",
-								show: true,
-							})}
-							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
-						></QuestionMarkCircleIcon>
-					</div>
+					{headerWithTellTip('Refresh frequency', {
+						title: 'Refresh frequency',
+						message:
+							"How often the app fetches new prices. Lower settings give you more accurate data but if you use the tool a lot, there's a small chance that some requests may get blocked. In that case you can try using proxies or a VPN.",
+					})}
 
 					<label htmlFor="pricefield">{`${updateInterval} mins`}</label>
 
@@ -260,17 +278,10 @@ const SettingsTab = (prop: {
 
 					<div className="my-5 border border-gray-300"></div>
 
-					<div className="flex flex-row items-center mb-1 space-x-1">
-						<h3 className="text-xl font-bold">Notification frequency</h3>
-						<QuestionMarkCircleIcon
-							onClick={setTelltipMessage.bind(null, {
-								title: 'Notification frequency',
-								message: `How often the app will send you notifications if an item's price reaches your target price. Make sure notifications are enabled in your system settings.`,
-								show: true,
-							})}
-							className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
-						></QuestionMarkCircleIcon>
-					</div>
+					{headerWithTellTip('Notification frequency', {
+						title: 'Notification frequency',
+						message: `How often the app will send you notifications if an item's price reaches your target price. Make sure notifications are enabled in your system settings.`,
+					})}
 
 					<label htmlFor="pricefield">{`${notificationFrequency} hours`}</label>
 
@@ -322,7 +333,12 @@ const SettingsTab = (prop: {
 						<option value="4">Level 4</option>
 					</select>
 
-					<h5 className="text-base font-bold mt-2 mb-1">Taxes</h5>
+					{subheaderWithTellTip('Taxes', {
+						title: 'StockX Taxes',
+						message:
+							'In some countries, extra taxes and duties may be added to the price at checkout. If this applies to you, you can specify the amount here.',
+					})}
+
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -336,7 +352,11 @@ const SettingsTab = (prop: {
 					</div>
 
 					<h4 className="text-lg font-bold mt-4 mb-1">GOAT</h4>
-					<h5 className="text-base font-bold mb-1">Commission fee percentage</h5>
+					{subheaderWithTellTip('Commission fee percentage', {
+						title: 'GOAT Commission fee',
+						message:
+							'GOAT charges a commission fee on every sale. The fee can be 9.5%, 15% or 20% depending on your seller rating.',
+					})}
 
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -350,7 +370,10 @@ const SettingsTab = (prop: {
 						<option value="20">20%</option>
 					</select>
 
-					<h5 className="text-base font-bold mt-2 mb-1">Include cash-out fee (2.9%)</h5>
+					{subheaderWithTellTip('Include cash-out fee (2.9%)', {
+						title: 'GOAT Cash-out fee',
+						message: `When you withdraw money from your GOAT account, you have to pay a 2.9% cash-out fee. Set this to "Don't include" if you don't want this to be included in the price calculation.`,
+					})}
 
 					<select
 						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
@@ -363,7 +386,12 @@ const SettingsTab = (prop: {
 						<option value="dontinclude">Don't include</option>
 					</select>
 
-					<h5 className="text-base font-bold mt-2 mb-1">Taxes</h5>
+					{subheaderWithTellTip('Taxes', {
+						title: 'GOAT Taxes',
+						message:
+							'In some countries, extra taxes and duties may be added to the price at checkout. If this applies to you, you can specify the amount here.',
+					})}
+
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
 							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
