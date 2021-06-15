@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import {
 	Currency,
 	ALLCURRENCIES,
@@ -17,6 +17,7 @@ import { is } from 'superstruct';
 import { SettingsSchema, Settings } from '../utils/types';
 import { IpcRenderer } from 'electron';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
+import FirebaseContext from '../context/firebaseContext';
 
 const SettingsTab = (prop: {
 	setToastMessage: React.Dispatch<
@@ -30,6 +31,8 @@ const SettingsTab = (prop: {
 	const currencySelector = useRef<HTMLDivElement>(null);
 	const goatTaxesField = useRef<HTMLInputElement>(null);
 	const stockxTaxesField = useRef<HTMLInputElement>(null);
+
+	const firebase = useContext(FirebaseContext);
 
 	const [updateInterval, setUpdateInterval] = useState('5');
 	const [notificationFrequency, setNotificationFrequency] = useState('24');
@@ -202,6 +205,14 @@ const SettingsTab = (prop: {
 				></QuestionMarkCircleIcon>
 			</div>
 		);
+	};
+
+	const clickedDonate = () => {
+		firebase?.analytics().logEvent('desktop_clicked_donate', {});
+	};
+
+	const clickedDiscord = () => {
+		firebase?.analytics().logEvent('desktop_clicked_discord', {});
 	};
 
 	return (
@@ -429,6 +440,7 @@ const SettingsTab = (prop: {
 						href="https://copdeck.com/donate"
 						className="button-default p-0 text-lg text-theme-blue border-transparent underline"
 						type="submit"
+						onClick={clickedDonate}
 					>
 						Donate now!
 					</a>
@@ -453,6 +465,7 @@ const SettingsTab = (prop: {
 							href="https://discord.com/invite/cQh6VTvXas"
 							className="button-default p-0 text-theme-blue border-transparent underline"
 							type="submit"
+							onClick={clickedDiscord}
 						>
 							Join us on Discord!
 						</a>
