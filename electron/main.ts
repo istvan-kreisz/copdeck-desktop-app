@@ -17,6 +17,7 @@ import { log } from '../src/utils/logger';
 const { ipcMain, Notification, shell } = require('electron');
 const cron = require('node-cron');
 const { autoUpdater } = require('electron-updater');
+import nodeFetch from 'node-fetch';
 
 let cacheTask: any;
 let refreshPricesTask: any;
@@ -55,7 +56,7 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 470,
 		height: 788,
-		show: true,
+		show: app.isPackaged,
 		resizable: !app.isPackaged,
 		title: 'CopDeck',
 		webPreferences: {
@@ -156,6 +157,17 @@ app.whenReady().then(() => {
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 /////////////////////////////////////////////
+
+const sendFeedback = async (message: string) => {
+	return nodeFetch('https://copdeck.com/api/contact', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ email: 'Send from Desktop App', message: message }),
+	});
+};
 
 const logDev = (val) => {
 	log(val, !app.isPackaged);
@@ -470,6 +482,22 @@ function setupMessageListeners() {
 	ipcMain.on('getExchangeRates', (event, arg) => {
 		const rates = getExchangeRates();
 		event.returnValue = rates;
+	});
+
+	ipcMain.on('sendFeedback', (event, msg) => {
+		const message = msg.message;
+		if (is(message, string()) && message.length) {
+			(async () => {
+				try {
+					await sendFeedback(message);
+				} catch (err) {
+					console.log(err);
+				}
+				event.reply('sendFeedback', {});
+			})();
+		} else {
+			event.reply('sendFeedback', {});
+		}
 	});
 
 	ipcMain.on('openedCount', (event, arg) => {

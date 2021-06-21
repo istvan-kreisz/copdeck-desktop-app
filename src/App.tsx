@@ -103,6 +103,9 @@ const App = () => {
 	}, [activeTab]);
 
 	const feedbackFormClosed = (feedback: string | undefined) => {
+		if (feedback?.length) {
+			ipcRenderer.send('sendFeedback', { message: feedback });
+		}
 		setShowFeedbackForm(false);
 	};
 
@@ -191,7 +194,7 @@ const App = () => {
 						className="button-default w-full text-white font-bold text-center"
 						onClick={setShowFeedbackForm.bind(null, true)}
 					>
-						Got suggestions? Click here to send feedback.
+						Got suggestions? Click here to send feedback!
 					</button>
 				</section>
 
