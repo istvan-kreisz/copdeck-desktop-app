@@ -597,10 +597,10 @@ function setupAlarms() {
 }
 
 function setupServices() {
-	if (!app.isPackaged) {
-		logDev('clearing database');
-		store.clear();
-	}
+	// if (!app.isPackaged) {
+	// 	logDev('clearing database');
+	// 	store.clear();
+	// }
 	setupMessageListeners();
 	setupAlarms();
 

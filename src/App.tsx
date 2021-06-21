@@ -12,6 +12,7 @@ import { is, number } from 'superstruct';
 const ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
 import firebase from 'firebase/app';
 import 'firebase/analytics';
+import TextfieldPopup from './Components/TextfieldPopup';
 import FirebaseContext from './context/firebaseContext';
 
 // const firebaseConfig = {
@@ -44,6 +45,7 @@ const App = () => {
 		show: false,
 	});
 	const [firebaseApp, setFirebaseApp] = useState<any>(null);
+	const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
@@ -100,10 +102,14 @@ const App = () => {
 		});
 	}, [activeTab]);
 
+	const feedbackFormClosed = (feedback: string | undefined) => {
+		setShowFeedbackForm(false);
+	};
+
 	return (
 		<FirebaseContext.Provider value={firebaseApp}>
-			<div className="gap-0 grid grid-row-3 absolute top-0 left-0 right-0 bottom-0 text-left">
-				<main style={{ height: '680px' }} className="bg-transparent relative w-full">
+			<div className="gap-0 grid grid-row-4 absolute top-0 left-0 right-0 bottom-0 text-left">
+				<main style={{ height: '648px' }} className="bg-transparent relative w-full">
 					<div className={`h-full ${activeTab === 'settings' ? 'block' : 'hidden'}`}>
 						<SettingsTab setToastMessage={setToastMessage}></SettingsTab>
 					</div>
@@ -180,6 +186,15 @@ const App = () => {
 						</p>
 					</button>
 				</section>
+				<section className="h-8 w-full bg-theme-blue flex-grow-0">
+					<button
+						className="button-default w-full text-white font-bold text-center"
+						onClick={setShowFeedbackForm.bind(null, true)}
+					>
+						Got suggestions? Click here to send feedback.
+					</button>
+				</section>
+
 				<footer className="h-8 w-full bg-theme-yellow flex-grow-0">
 					<a
 						target="_blank"
@@ -210,6 +225,12 @@ const App = () => {
 						<p className="text-white text-base">{toastMessage.message}</p>
 					</div>
 				</div>
+				<TextfieldPopup
+					title={'Send Feedback'}
+					placeholder="Send us any suggestions, feedback, bugs you found etc."
+					open={showFeedbackForm}
+					close={feedbackFormClosed}
+				></TextfieldPopup>
 			</div>
 		</FirebaseContext.Provider>
 	);
