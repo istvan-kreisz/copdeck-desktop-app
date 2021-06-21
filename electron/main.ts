@@ -9,15 +9,9 @@ import {
 	isCountryName,
 } from '@istvankreisz/copdeck-scraper';
 import { assert, string, is, boolean } from 'superstruct';
-import {
-	APIConfig,
-	CountryName,
-	ExchangeRates,
-	Item,
-	PriceAlert,
-} from '@istvankreisz/copdeck-scraper/dist/types';
+import { APIConfig, CountryName, Item, PriceAlert } from '@istvankreisz/copdeck-scraper/dist/types';
 import { databaseCoordinator } from './databaseCoordinator';
-import { Settings, SettingsSchema } from '../src/utils/types';
+import { SettingsSchema } from '../src/utils/types';
 import { parse } from '../src/utils/proxyparser';
 import { log } from '../src/utils/logger';
 const { ipcMain, Notification, shell } = require('electron');
@@ -33,6 +27,7 @@ const maxUpdateInterval = 1440;
 const requestDelayMax = 1000;
 
 const {
+	store,
 	getAlertsWithItems,
 	getItems,
 	incrementOpenedCount,
@@ -174,14 +169,32 @@ const clearCache = async () => {
 	}
 };
 
-const refreshExchangeRates = async () => {
-	try {
-		const rates = await nodeAPI.getExchangeRates(apiConfig());
+const fetchExchangeRates = async () => {
+	const rates = await nodeAPI.getExchangeRates(apiConfig());
+	if (rates.chf && rates.gbp && rates.nok && rates.usd) {
 		saveExchangeRates(rates);
 		logDev('refreshed exchange rates');
 		logDev(rates);
-	} catch (err) {
-		logDev(err);
+		return rates;
+	} else {
+		throw new Error('refresh failed');
+	}
+};
+
+const refreshExchangeRates = async () => {
+	try {
+		await fetchExchangeRates();
+	} catch {
+		try {
+			await fetchExchangeRates();
+		} catch {
+			try {
+				await fetchExchangeRates();
+			} catch (err) {
+				logDev('exchange rates refresh failed');
+				logDev(err);
+			}
+		}
 	}
 };
 
@@ -584,6 +597,10 @@ function setupAlarms() {
 }
 
 function setupServices() {
+	if (!app.isPackaged) {
+		logDev('clearing database');
+		store.clear();
+	}
 	setupMessageListeners();
 	setupAlarms();
 
@@ -594,5 +611,4 @@ function setupServices() {
 	})();
 }
 
-// todo: check proxies
 // todo: add proxy toggle

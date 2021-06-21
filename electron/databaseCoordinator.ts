@@ -1,4 +1,4 @@
-import { array, assert, boolean, is, number } from 'superstruct';
+import { array, assert, boolean, is } from 'superstruct';
 import { Item, PriceAlert, EUR, ExchangeRates } from '@istvankreisz/copdeck-scraper/dist/types';
 import { removeDuplicates } from '@istvankreisz/copdeck-scraper';
 import { SettingsSchema } from '../src/utils/types';
@@ -111,10 +111,16 @@ const databaseCoordinator = () => {
 
 	const getExchangeRates = (): ExchangeRates | undefined => {
 		const exchangeRates = get('exchangeRates');
-		if (is(exchangeRates, ExchangeRates)) {
+		if (
+			is(exchangeRates, ExchangeRates) &&
+			exchangeRates.chf &&
+			exchangeRates.gbp &&
+			exchangeRates.nok &&
+			exchangeRates.usd
+		) {
 			return exchangeRates;
 		} else {
-			return undefined;
+			return { usd: 1.1891, gbp: 0.8567, chf: 1.0954, nok: 10.2673 };
 		}
 	};
 
