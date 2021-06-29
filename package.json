@@ -20,7 +20,9 @@
 		"@types/node": "^15.6.1",
 		"@types/react": "^17.0.8",
 		"@types/react-dom": "^17.0.5",
+		"dotenv": "^10.0.0",
 		"electron-log": "^4.3.5",
+		"electron-notarize": "^1.0.0",
 		"electron-reload": "^1.5.0",
 		"electron-store": "^8.0.0",
 		"electron-updater": "^4.3.9",
@@ -52,6 +54,7 @@
 		"appId": "com.electron.copdeck",
 		"productName": "CopDeck",
 		"copyright": "Copyright © 2021 CopDeck",
+		"afterSign": "scripts/notarize.js",
 		"extends": null,
 		"files": [
 			"build/**/*"
@@ -81,7 +84,11 @@
 			],
 			"category": "public.app-category.utilities",
 			"type": "distribution",
-			"icon": "logo1024.png"
+			"icon": "logo1024.png",
+			"gatekeeperAssess": false,
+			"entitlements": "build/entitlements.mac.plist",
+			"entitlementsInherit": "build/entitlements.mac.plist",
+			"hardenedRuntime": true
 		}
 	},
 	"browserslist": {
