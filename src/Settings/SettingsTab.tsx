@@ -4,7 +4,6 @@ import {
 	Currency,
 	ALLCURRENCIES,
 	EUR,
-	Country,
 	ALLCOUNTRIES,
 	CountryName,
 } from '@istvankreisz/copdeck-scraper/dist/types';
@@ -28,20 +27,22 @@ const SettingsTab = (prop: {
 	>;
 }) => {
 	const proxyTextField = useRef<HTMLTextAreaElement>(null);
-	const currencySelector = useRef<HTMLDivElement>(null);
 	const goatTaxesField = useRef<HTMLInputElement>(null);
 	const stockxTaxesField = useRef<HTMLInputElement>(null);
 
 	const firebase = useContext(FirebaseContext);
 
 	const [updateInterval, setUpdateInterval] = useState('5');
+	const [darkModeOn, setDarkModeOn] = useState(false);
 	const [notificationFrequency, setNotificationFrequency] = useState('24');
 	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
 	const [country, setCountry] = useState<CountryName>('Austria');
 	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4>(1);
 	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 20>(9.5);
-	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] =
-		useState<'include' | 'dontinclude'>('include');
+	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] = useState<'include' | 'dontinclude'>(
+		'include'
+	);
+
 	const [telltipMessage, setTelltipMessage] = useState<{
 		title: string;
 		message: string;
@@ -67,6 +68,7 @@ const SettingsTab = (prop: {
 				if (isCountryName(countryName)) {
 					setCountry(countryName);
 				}
+				setDarkModeOn(settings.darkModeOn);
 				setStockxLevel(settings.feeCalculation.stockx.sellerLevel);
 				if (stockxTaxesField.current) {
 					stockxTaxesField.current.value = `${settings.feeCalculation.stockx.taxes}`;
@@ -99,9 +101,7 @@ const SettingsTab = (prop: {
 		};
 	}, []);
 
-	const saveSettings = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-
+	const saveSettings = () => {
 		const interval = parseFloat(updateInterval ?? '');
 		const notificationInterval = parseFloat(notificationFrequency ?? '24');
 
@@ -110,6 +110,7 @@ const SettingsTab = (prop: {
 			currency: selectedCurrency,
 			updateInterval: interval,
 			notificationFrequency: notificationInterval,
+			darkModeOn: darkModeOn,
 			feeCalculation: {
 				countryName: country,
 				stockx: {
@@ -143,6 +144,13 @@ const SettingsTab = (prop: {
 		const currency = ALLCURRENCIES.find((c) => c.code === currencyCode);
 		if (currency) {
 			setSelectedCurrency(currency);
+		}
+	};
+
+	const changedDarkModeState = (event: { target: HTMLInputElement }) => {
+		const darkModeState = event.target.value;
+		if (darkModeState) {
+			setDarkModeOn(darkModeState === 'On');
 		}
 	};
 
@@ -185,7 +193,7 @@ const SettingsTab = (prop: {
 						message: tellTip.message,
 						show: true,
 					})}
-					className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
+					className="h-4 cursor-pointer text-gray-800 dark:text-gray-400 flex-shrink-0"
 				></QuestionMarkCircleIcon>
 			</div>
 		);
@@ -201,7 +209,7 @@ const SettingsTab = (prop: {
 						message: tellTip.message,
 						show: true,
 					})}
-					className="h-4 cursor-pointer text-gray-800 flex-shrink-0"
+					className="h-4 cursor-pointer text-gray-800 dark:text-gray-400 flex-shrink-0"
 				></QuestionMarkCircleIcon>
 			</div>
 		);
@@ -217,22 +225,51 @@ const SettingsTab = (prop: {
 
 	return (
 		<>
-			<div className="bg-gray-100 p-3 w-full h-full overflow-y-scroll overflow-x-hidden">
+			<div className="bg-default p-3 w-full h-full overflow-y-scroll overflow-x-hidden">
 				<h1 key="header" className="font-bold text-3xl mb-4">
 					Settings
 				</h1>
 
-				<form key="form" onSubmit={saveSettings} className="flex flex-col">
+				<form id="settings" key="form" onSubmit={saveSettings} className="flex flex-col">
+					<h3 className="text-xl font-bold mt-0 mb-1">Dark Mode</h3>
+
+					<div className="flex flex-row space-x-2 items-start">
+						{['On', 'Off'].map((state) => {
+							return (
+								<div
+									key={state}
+									className="flex flex-row items-center space-x-2 m-0"
+								>
+									<label className="text-lg m-0" htmlFor={state}>
+										{state}
+									</label>
+
+									<input
+										type="radio"
+										id={state}
+										name="darkmode"
+										value={state}
+										checked={state === (darkModeOn ? 'On' : 'Off')}
+										onChange={changedDarkModeState}
+										className="h-5 w-5 text-theme-blue rounded-full m-0"
+									/>
+								</div>
+							);
+						})}
+					</div>
+
+					<div className="my-5 border border-gray-300 dark:border-gray-700"></div>
+
 					<h3 className="text-xl font-bold mt-0 mb-1">Currency</h3>
 
-					<div className="flex flex-row space-x-2 items-start" ref={currencySelector}>
+					<div className="flex flex-row space-x-2 items-start">
 						{ALLCURRENCIES.map((currency) => currency.code).map((currency) => {
 							return (
 								<div
 									key={currency}
 									className="flex flex-row items-center space-x-2 m-0"
 								>
-									<label className="text-lg text-gray-800 m-0" htmlFor={currency}>
+									<label className="text-lg m-0" htmlFor={currency}>
 										{currency}
 									</label>
 
@@ -250,7 +287,7 @@ const SettingsTab = (prop: {
 						})}
 					</div>
 
-					<div className="my-5 border border-gray-300"></div>
+					<div className="my-5 border border-gray-300 dark:border-gray-700"></div>
 
 					{headerWithTellTip('Proxies', {
 						title: 'Proxies',
@@ -264,10 +301,10 @@ const SettingsTab = (prop: {
 						placeholder="Add a list of proxies here, separated by commas, spaces or newlines. Use the following format: user:pw@ip:port OR ip:port"
 						name="proxies"
 						rows={3}
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-6"
+						className="w-full"
 					></textarea>
 
-					<div className="my-5 border border-gray-300"></div>
+					<div className="my-5 border border-gray-300 dark:border-gray-700"></div>
 
 					{headerWithTellTip('Refresh frequency', {
 						title: 'Refresh frequency',
@@ -281,13 +318,13 @@ const SettingsTab = (prop: {
 						type="range"
 						min="5"
 						max="1440"
-						className="focus:outline-none slider w-full bg-white rounded-xl border  border-theme-blue text-base outline-none leading-6"
+						className="focus:outline-none slider w-full"
 						id="myRange"
 						value={updateInterval}
 						onChange={changedInterval}
 					/>
 
-					<div className="my-5 border border-gray-300"></div>
+					<div className="my-5 border border-gray-300 dark:border-gray-700"></div>
 
 					{headerWithTellTip('Notification frequency', {
 						title: 'Notification frequency',
@@ -300,20 +337,20 @@ const SettingsTab = (prop: {
 						type="range"
 						min="1"
 						max="168"
-						className="focus:outline-none slider w-full bg-white rounded-xl border  border-theme-blue text-base outline-none leading-6"
+						className="focus:outline-none slider w-full"
 						id="notificationFrequency"
 						value={notificationFrequency}
 						onChange={changedNotificationFrequency}
 					/>
 
-					<div className="my-8 border border-gray-300"></div>
+					<div className="my-8 border border-gray-300 dark:border-gray-700"></div>
 
 					<h3 className="text-xl font-bold mb-1">Fee calculation</h3>
 
 					<h4 className="text-lg font-bold mt-2 mb-1">Country</h4>
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full"
 						onChange={countrySelected}
 						name="type"
 						id="type"
@@ -332,7 +369,7 @@ const SettingsTab = (prop: {
 					<h5 className="text-base font-bold mb-1">Seller level</h5>
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full"
 						onChange={stockxLevelSelected}
 						name="type"
 						id="type"
@@ -352,7 +389,7 @@ const SettingsTab = (prop: {
 
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
-							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+							className="w-full rounded-xl"
 							ref={stockxTaxesField}
 							type="number"
 							name="stockxTaxesField"
@@ -370,7 +407,7 @@ const SettingsTab = (prop: {
 					})}
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full"
 						onChange={goatCommissionFeeSelected}
 						name="type"
 						id="type"
@@ -387,7 +424,7 @@ const SettingsTab = (prop: {
 					})}
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full"
 						onChange={goatIncludeCashoutFeeSelected}
 						name="type"
 						id="type"
@@ -405,7 +442,7 @@ const SettingsTab = (prop: {
 
 					<div className="flex flex-row flex-nowrap space-x-2 items-center">
 						<input
-							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+							className="w-full rounded-xl"
 							ref={goatTaxesField}
 							type="number"
 							step=".01"
@@ -415,13 +452,15 @@ const SettingsTab = (prop: {
 						<p className="text-xl font-medium">%</p>
 					</div>
 
-					<input
+					<button
 						className="mt-8 w-full button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
 						type="submit"
-						value="Save Settings"
-					/>
+						onClick={saveSettings}
+					>
+						Save Settings
+					</button>
 				</form>
-				<div className="mt-5 mb-2 border border-gray-300"></div>
+				<div className="mt-5 mb-2 border border-gray-300 dark:border-gray-700"></div>
 				<div className="flex flex-col items-start">
 					<p className="text-base font-bold text-gray-600">
 						CopDeck Price Alerts is and will always be free. If you'd like to support
@@ -445,7 +484,7 @@ const SettingsTab = (prop: {
 						Donate now!
 					</a>
 				</div>
-				<div className="mt-3 mb-2 border border-gray-300"></div>
+				<div className="mt-3 mb-2 border border-gray-300 dark:border-gray-700"></div>
 
 				<div className="flex flex-col justify-start">
 					<div className="flex flex-row flex-nowrap items-center">

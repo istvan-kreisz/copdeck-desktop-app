@@ -1,4 +1,4 @@
-import { number, object, Infer, array, record, string, union, literal } from 'superstruct';
+import { number, object, Infer, array, record, string, union, literal, boolean } from 'superstruct';
 import { Currency, Proxy } from '@istvankreisz/copdeck-scraper/dist/types';
 
 const SettingsSchema = object({
@@ -6,6 +6,7 @@ const SettingsSchema = object({
 	currency: Currency,
 	updateInterval: number(),
 	notificationFrequency: number(),
+	darkModeOn: boolean(),
 	feeCalculation: object({
 		countryName: string(),
 		stockx: object({

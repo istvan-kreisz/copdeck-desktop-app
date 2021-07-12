@@ -16,6 +16,7 @@ const databaseCoordinator = () => {
 		currency: EUR,
 		updateInterval: 60,
 		notificationFrequency: 24,
+		darkModeOn: false,
 		proxies: [],
 		feeCalculation: {
 			countryName: 'Austria',
