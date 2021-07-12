@@ -203,10 +203,7 @@ const ItemDetail = (prop: {
 
 	return (
 		<>
-			<div
-				ref={container}
-				className="flexbg-white bg-gray-100 flex-col fixed inset-0 overflow-y-scroll"
-			>
+			<div ref={container} className="bg-default flex-col fixed inset-0 overflow-y-scroll">
 				<section className="relative bg-white w-screen h-48 ">
 					<img
 						className="w-48 h-full object-contain mx-auto"
@@ -248,7 +245,7 @@ const ItemDetail = (prop: {
 					</div>
 				</section>
 
-				<section className="bg-white w-screen p-3">
+				<section className="bg-default2 w-screen p-3">
 					<div className="flex flex-col justify-between items-start flex-nowrap">
 						<h2 className="text-2xl">Price comparison</h2>
 						<p className="text-xs">Click on a price to open the buy / sell page</p>
@@ -261,7 +258,7 @@ const ItemDetail = (prop: {
 								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
 									priceType === 'ask'
 										? 'bg-theme-blue text-white'
-										: 'text-gray-800 border-2'
+										: 'text-gray-800 dark:text-white  border-2'
 								}`}
 								onClick={setPriceType.bind(null, 'ask')}
 							>
@@ -271,7 +268,7 @@ const ItemDetail = (prop: {
 								className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-blue ${
 									priceType === 'bid'
 										? 'bg-theme-blue text-white'
-										: 'text-gray-800'
+										: 'text-gray-800 dark:text-white'
 								}`}
 								onClick={setPriceType.bind(null, 'bid')}
 							>
@@ -288,7 +285,7 @@ const ItemDetail = (prop: {
 										className={`button-default w-16 h-8 flex-shrink-0 flex-grow-0 rounded-full border-2 border-theme-purple ${
 											type === feeType
 												? 'bg-theme-purple text-white'
-												: 'text-gray-800'
+												: 'text-gray-800 dark:text-white'
 										}`}
 										onClick={setFeeType.bind(null, type)}
 									>
@@ -313,10 +310,10 @@ const ItemDetail = (prop: {
 								message: `Prices will automatically get refreshed based on your "Refresh frequency" setting on the Settings tab. Sometimes not all prices might load at first, in that case you can use this button to manually refresh prices.`,
 								show: true,
 							})}
-							className="h-4 cursor-pointer text-gray-800 font-semibold flex-shrink-0"
+							className="h-4 cursor-pointer text-gray-800 dark:text-gray-400 dark font-semibold flex-shrink-0"
 						></QuestionMarkCircleIcon>
 					</div>
-					<ul className="bg-white w-full flex flex-col space-y-2 mt-1">
+					<ul className="w-full flex flex-col space-y-2 mt-1">
 						<li
 							key={'header'}
 							className="grid grid-cols-4 gap-x-4 justify-items-center"
@@ -354,7 +351,7 @@ const ItemDetail = (prop: {
 												key={row.size}
 												className="grid grid-cols-4 gap-x-4 justify-items-center"
 											>
-												<p className="bg-gray-300 h-8 text-sm rounded-full flex justify-center items-center w-20 justify-self-start">
+												<p className="bg-gray-300 dark:bg-gray-900 h-8 text-sm rounded-full flex justify-center items-center w-20 justify-self-start">
 													{row.size}
 												</p>
 												{row.prices.prices.map((price) => {
@@ -438,7 +435,7 @@ const ItemDetail = (prop: {
 																				show: true,
 																			}
 																		)}
-																		className="h-3 cursor-pointer text-gray-900 font-bold flex-shrink-0"
+																		className="h-3 cursor-pointer text-gray-800 dark:text-gray-400 font-bold flex-shrink-0"
 																	></QuestionMarkCircleIcon>
 																) : null}
 															</div>
@@ -468,11 +465,11 @@ const ItemDetail = (prop: {
 						) : null}
 					</div>
 				</section>
-				<section className="bg-white w-screen p-3">
+				<section className="bg-default2 w-screen p-3">
 					{prop.selectedItem.storePrices.length ? (
 						<button
 							style={{ fontWeight: 'normal' }}
-							className="-mt-3 mb-4 mx-auto button-default h-9 flex-shrink-0 flex-grow-0 rounded-full font-thin bg-black text-white"
+							className="-mt-3 mb-4 mx-auto button-default h-9 flex-shrink-0 flex-grow-0 rounded-full font-thin bg-black dark:bg-gray-600 text-white"
 							onClick={setShowAddPriceAlertModal.bind(null, true)}
 						>
 							Add price alert

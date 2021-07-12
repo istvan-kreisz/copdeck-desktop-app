@@ -124,8 +124,7 @@ const AddAlertModal = (prop: {
 		return label;
 	};
 
-	const addAlert = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
+	const addAlert = () => {
 		const price = parseFloat(priceField.current?.value ?? '');
 
 		if (
@@ -159,7 +158,7 @@ const AddAlertModal = (prop: {
 
 	return (
 		<>
-			<div className="fixed inset-0 bg-gray-100 p-3">
+			<div className="fixed inset-0 bg-default p-3">
 				<h1 className="font-bold mb-4">Add Price Alert</h1>
 
 				<form onSubmit={addAlert} className="flex flex-col">
@@ -206,7 +205,7 @@ const AddAlertModal = (prop: {
 					<h3 className="text-base font-bold mt-4 mb-1">2. Select size</h3>
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full bg-default2 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 						onChange={sizeSelected}
 						name="size"
 						id="size"
@@ -223,7 +222,7 @@ const AddAlertModal = (prop: {
 					<h3 className="text-base font-bold mt-4 mb-1">{`3. Notify me when`}</h3>
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full bg-default2 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 						onChange={priceTypeSelected}
 						name="type"
 						id="type"
@@ -235,7 +234,7 @@ const AddAlertModal = (prop: {
 					<h3 className="text-base font-bold mt-1 mb-1">{`goes`}</h3>
 
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full bg-default2 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 						onChange={relationSelected}
 						name="relation"
 						id="relation"
@@ -249,7 +248,7 @@ const AddAlertModal = (prop: {
 
 					<div className="flex items-center space-x-2">
 						<input
-							className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+							className="w-full bg-default2 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 							ref={priceField}
 							type="number"
 							name="pricefield"
@@ -260,7 +259,7 @@ const AddAlertModal = (prop: {
 
 					<h3 className="text-base font-bold mt-1 mb-1">{`including:`}</h3>
 					<select
-						className="w-full bg-white rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
+						className="w-full bg-default2 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none leading-8"
 						onChange={feeTypeSelected}
 						name="feeType"
 						id="feeType"
@@ -271,11 +270,12 @@ const AddAlertModal = (prop: {
 						<option value="Buy">Buyer fees</option>
 					</select>
 
-					<input
+					<button
 						className="mt-4 button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
-						type="submit"
-						value="Add alert"
-					/>
+						onClick={addAlert}
+					>
+						Add alert
+					</button>
 				</form>
 				<button
 					className="mt-2 w-full button-default text-theme-orange rounded-lg bg h-10"

@@ -52,7 +52,7 @@ const TextfieldPopup = ({ title, placeholder, open, close }) => {
 						leaveFrom="opacity-100 scale-100"
 						leaveTo="opacity-0 scale-95"
 					>
-						<div className="inline-block w-96 p-6 my-8 overflow-hidden text-center align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+						<div className="inline-block w-96 p-6 my-8 overflow-hidden text-center align-middle transition-all transform bg-default shadow-xl rounded-2xl">
 							<div className="flex flex-col justify-center items-center">
 								<Dialog.Title as="h3" className="text-2xl font-medium leading-6">
 									{title}

@@ -141,22 +141,26 @@ const App = () => {
 						></AlertsTab>
 					</div>
 				</main>
-				<section className="bg-white w-full flex h-12 border-gray-400 shadow-xl">
+				<section className="bg-default2 w-full flex h-12 border-gray-400 shadow-xl">
 					<button
 						className={`outline-none group focus:outline-none flex-1 ${
-							activeTab === 'settings' ? 'bg-gray-200 shadow-xl' : ''
+							activeTab === 'settings' ? 'bg-gray-200 dark:bg-gray-700 shadow-xl' : ''
 						}`}
 						onClick={selectedTab.bind(null, 'settings')}
 					>
 						<CogIcon
 							className={`mx-auto text-center h-6 w-6 ${
-								activeTab === 'settings' ? 'text-gray-800' : 'text-gray-500'
+								activeTab === 'settings'
+									? 'text-gray-800 dark:text-gray-100'
+									: 'text-gray-500'
 							}`}
 							aria-hidden="true"
 						></CogIcon>
 						<p
 							className={`text-xs font-medium ${
-								activeTab === 'settings' ? 'text-gray-800' : 'text-gray-500'
+								activeTab === 'settings'
+									? 'text-gray-800 dark:text-gray-100'
+									: 'text-gray-500'
 							}`}
 						>
 							Settings
@@ -164,19 +168,23 @@ const App = () => {
 					</button>
 					<button
 						className={`outline-none group focus:outline-none flex-1 ${
-							activeTab === 'main' ? 'bg-gray-200 shadow-xl' : ''
+							activeTab === 'main' ? 'bg-gray-200 dark:bg-gray-700 shadow-xl' : ''
 						}`}
 						onClick={selectedTab.bind(null, 'main')}
 					>
 						<SearchIcon
 							className={`mx-auto text-center h-6 w-6 ${
-								activeTab === 'main' ? 'text-gray-800' : 'text-gray-500'
+								activeTab === 'main'
+									? 'text-gray-800 dark:text-gray-100'
+									: 'text-gray-500'
 							}`}
 							aria-hidden="true"
 						></SearchIcon>
 						<p
 							className={`text-xs font-medium ${
-								activeTab === 'main' ? 'text-gray-800' : 'text-gray-500'
+								activeTab === 'main'
+									? 'text-gray-800 dark:text-gray-100'
+									: 'text-gray-500'
 							}`}
 						>
 							Search
@@ -184,19 +192,23 @@ const App = () => {
 					</button>
 					<button
 						className={`outline-none group focus:outline-none flex-1 ${
-							activeTab === 'alerts' ? 'bg-gray-200 shadow-xl' : ''
+							activeTab === 'alerts' ? 'bg-gray-200 dark:bg-gray-700 shadow-xl' : ''
 						}`}
 						onClick={selectedTab.bind(null, 'alerts')}
 					>
 						<BellIcon
 							className={`mx-auto text-center h-6 w-6 ${
-								activeTab === 'alerts' ? 'text-gray-800' : 'text-gray-500'
+								activeTab === 'alerts'
+									? 'text-gray-800 dark:text-gray-100'
+									: 'text-gray-500'
 							}`}
 							aria-hidden="true"
 						></BellIcon>
 						<p
 							className={`text-xs font-medium ${
-								activeTab === 'alerts' ? 'text-gray-800' : 'text-gray-500'
+								activeTab === 'alerts'
+									? 'text-gray-800 dark:text-gray-100'
+									: 'text-gray-500'
 							}`}
 						>
 							Alerts
@@ -205,7 +217,7 @@ const App = () => {
 				</section>
 				<section className="h-8 w-full bg-theme-blue flex-grow-0">
 					<button
-						className="button-default w-full text-white font-bold text-center"
+						className="button-default w-full text-white dark:text-gray-300 font-bold text-center"
 						onClick={setShowFeedbackForm.bind(null, true)}
 					>
 						Got suggestions? Click here to send feedback!
@@ -223,7 +235,7 @@ const App = () => {
 							aria-hidden="true"
 						></DeviceMobileIcon>
 
-						<p className="text-gray-800 font-bold">
+						<p className="text-gray-800 dark:text-gray-800 font-bold">
 							Coming soon to iOS! Click for more!
 						</p>
 					</a>

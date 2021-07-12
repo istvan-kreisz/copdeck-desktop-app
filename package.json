@@ -43,7 +43,7 @@
 		"build": "craco build",
 		"test": "craco test",
 		"postinstall": "electron-builder install-app-deps",
-		"dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
+		"dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && electron .\"",
 		"electron:build": "yarn build && tsc -p electron && electron-builder -m -w -p onTag",
 		"deploy": "yarn build && tsc -p electron && electron-builder build --mac --win --publish always",
 		"testbuild": "yarn build && tsc -p electron && electron-builder build --mac",

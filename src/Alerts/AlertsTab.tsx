@@ -70,7 +70,7 @@ const AlertsTab = (prop: {
 
 	return (
 		<>
-			<div className="bg-transparent p-3 pb-0 relative w-full h-full overflow-y-scroll overflow-x-hidden">
+			<div className="bg-default p-3 pb-0 relative w-full h-full overflow-y-scroll overflow-x-hidden">
 				<h1 className="font-bold text-3xl mb-4">Price Alerts</h1>
 				<ul className="my-4 flex flex-col space-y-3">
 					{priceAlerts.map(([alert, item], index) => {

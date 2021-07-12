@@ -40,7 +40,7 @@ const AlertListItem = ({
 						{(relation === 'above' ? '>' : '<') + currency + targetPrice}
 					</p>
 					<p
-						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-yellow text-white`}
+						className={`h-5 flex items-center text-sm flex-shrink-0 px-2 flex-grow-0 rounded-full bg-theme-yellow text-white dark:text-gray-700`}
 					>
 						{priceType === 'ask' ? 'Ask' : 'Bid'}
 					</p>

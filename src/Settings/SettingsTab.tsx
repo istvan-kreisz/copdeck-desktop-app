@@ -252,6 +252,7 @@ const SettingsTab = (prop: {
 										checked={state === (darkModeOn ? 'On' : 'Off')}
 										onChange={changedDarkModeState}
 										className="h-5 w-5 text-theme-blue rounded-full m-0"
+										style={{ color: 'rgba(0, 2, 252, 1)) !important' }}
 									/>
 								</div>
 							);
@@ -281,6 +282,7 @@ const SettingsTab = (prop: {
 										checked={currency === selectedCurrency.code}
 										onChange={changedCurrency}
 										className="h-5 w-5 text-theme-blue rounded-full m-0"
+										style={{ color: 'rgba(0, 2, 252, 1))' }}
 									/>
 								</div>
 							);
@@ -466,7 +468,7 @@ const SettingsTab = (prop: {
 						CopDeck Price Alerts is and will always be free. If you'd like to support
 						the development so we can bring you a lot more awesomeness (like our{' '}
 						<a
-							className="text-theme-blue border-transparent underline"
+							className="text-theme-blue dark:text-blue-400 border-transparent underline"
 							target="_blank"
 							href="https://copdeck.com"
 						>
@@ -477,7 +479,7 @@ const SettingsTab = (prop: {
 					<a
 						target="_blank"
 						href="https://copdeck.com/donate"
-						className="button-default p-0 text-lg mt-2 text-theme-blue border-transparent underline"
+						className="button-default p-0 text-lg mt-2 text-theme-blue dark:text-blue-400 border-transparent underline"
 						type="submit"
 						onClick={clickedDonate}
 					>
@@ -492,7 +494,7 @@ const SettingsTab = (prop: {
 						<a
 							target="_blank"
 							href="https://copdeck.com/contact"
-							className="button-default text-theme-blue border-transparent underline"
+							className="button-default text-theme-blue dark:text-blue-400 border-transparent underline"
 							type="submit"
 						>
 							Contact us!
@@ -502,7 +504,7 @@ const SettingsTab = (prop: {
 						<a
 							target="_blank"
 							href="https://discord.com/invite/cQh6VTvXas"
-							className="button-default p-0 text-theme-blue border-transparent underline"
+							className="button-default p-0 text-theme-blue dark:text-blue-400 border-transparent underline"
 							type="submit"
 							onClick={clickedDiscord}
 						>

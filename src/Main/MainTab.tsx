@@ -60,7 +60,7 @@ const MainTab = (prop: {
 
 	return (
 		<>
-			<div className="bg-transparent p-3 pb-0 relative w-full h-full overflow-y-scroll overflow-x-hidden">
+			<div className="bg-default p-3 pb-0 relative w-full h-full overflow-y-scroll overflow-x-hidden">
 				<div className="flex flex-row flex-nowrap w-full max-w-full space-x-2">
 					<input
 						placeholder="Search sneakers"

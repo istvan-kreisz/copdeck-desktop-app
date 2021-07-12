@@ -43,7 +43,7 @@ const Popup = ({ title, message, open, close }) => {
 						leaveFrom="opacity-100 scale-100"
 						leaveTo="opacity-0 scale-95"
 					>
-						<div className="inline-block sm:w-72 max-w-md p-6 my-8 overflow-hidden text-center align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+						<div className="inline-block sm:w-72 max-w-md p-6 my-8 overflow-hidden text-center align-middle transition-all transform bg-default2 shadow-xl rounded-2xl">
 							<div className="flex flex-col justify-center items-center space-y-8">
 								<Dialog.Title as="h3" className="text-2xl font-medium leading-6">
 									{title}
