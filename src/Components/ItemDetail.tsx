@@ -348,7 +348,7 @@ const ItemDetail = (prop: {
 										}
 										target="_blank"
 										key={store.id}
-										className="h-8 text-gray-800 text-lg font-bold rounded-full flex justify-center items-center w-20 cursor-pointer"
+										className="h-8 text-gray-800 dark:text-gray-400 text-lg font-bold rounded-full flex justify-center items-center w-20 cursor-pointer"
 									>
 										{store.name}
 									</a>
