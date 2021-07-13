@@ -58,12 +58,29 @@ const ItemDetail = (prop: {
 		if (prop.selectedItem) {
 			updateItem(false);
 		}
+		let isFirst = true;
 
 		ipcRenderer.on('getItemDetails', (event, item) => {
 			try {
 				assert(item, Item);
 				if (!didClickBack.current) {
 					prop.setSelectedItem((current) => (current ? item : null));
+
+					if (isFirst) {
+						const hasOldSizing = !!item.storePrices.find((prices) => {
+							return !!prices.inventory.find((price) => {
+								return (
+									price.size.toLowerCase().includes('y') ||
+									price.size.toLowerCase().includes('w') ||
+									price.size.toLowerCase().includes('m') ||
+									price.size.toLowerCase().includes('c')
+								);
+							});
+						});
+						console.log(hasOldSizing);
+						isFirst = false;
+						updateItem(hasOldSizing);
+					}
 				}
 			} catch {}
 			setIsLoadingPrices(false);
