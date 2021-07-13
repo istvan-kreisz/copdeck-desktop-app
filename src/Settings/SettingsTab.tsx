@@ -101,7 +101,8 @@ const SettingsTab = (prop: {
 		};
 	}, []);
 
-	const saveSettings = () => {
+	const saveSettings = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
 		const interval = parseFloat(updateInterval ?? '');
 		const notificationInterval = parseFloat(notificationFrequency ?? '24');
 
@@ -454,13 +455,11 @@ const SettingsTab = (prop: {
 						<p className="text-xl font-medium">%</p>
 					</div>
 
-					<button
+					<input
 						className="mt-8 w-full button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
 						type="submit"
-						onClick={saveSettings}
-					>
-						Save Settings
-					</button>
+						value="Save Settings"
+					/>
 				</form>
 				<div className="mt-5 mb-2 border border-gray-300 dark:border-gray-700"></div>
 				<div className="flex flex-col items-start">

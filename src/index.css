@@ -39,18 +39,18 @@ body {
 
 	input,
 	textarea {
-		@apply leading-relaxed tracking-wider bg-white dark:bg-gray-800 border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-xl border text-base outline-none;
+		@apply leading-relaxed tracking-wide border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-xl border text-base outline-none;
 	}
 
 	textarea {
-		@apply text-gray-700 dark:text-gray-200;
+		@apply text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800;
 	}
 
 	input[type='range'],
 	input[type='text'],
 	input[type='number'],
 	input[type='number'] {
-		@apply text-gray-700 dark:text-gray-200;
+		@apply text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800;
 	}
 
 	label {

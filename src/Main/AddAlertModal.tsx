@@ -124,7 +124,9 @@ const AddAlertModal = (prop: {
 		return label;
 	};
 
-	const addAlert = () => {
+	const addAlert = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
 		const price = parseFloat(priceField.current?.value ?? '');
 
 		if (
@@ -270,12 +272,11 @@ const AddAlertModal = (prop: {
 						<option value="Buy">Buyer fees</option>
 					</select>
 
-					<button
+					<input
 						className="mt-4 button-default text-white bg-theme-orange hover:bg-theme-orange-dark rounded-lg bg h-10 shadow-md border-transparent"
-						onClick={addAlert}
-					>
-						Add alert
-					</button>
+						type="submit"
+						value="Add alert"
+					/>
 				</form>
 				<button
 					className="mt-2 w-full button-default text-theme-orange rounded-lg bg h-10"
