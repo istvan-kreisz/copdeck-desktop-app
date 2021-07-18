@@ -102,8 +102,8 @@ const databaseCoordinator = () => {
 
 	const getSettings = (): Settings => {
 		const settings = get('settings');
-		if (settings['darkModeOn'] === undefined) {
-			settings['darkModeOn'] = false;
+		if (settings !== undefined && settings?.darkModeOn === undefined) {
+			settings.darkModeOn = false;
 		}
 		if (is(settings, SettingsSchema)) {
 			return settings;
@@ -132,8 +132,8 @@ const databaseCoordinator = () => {
 		callback: (oldValue?: Settings, newValue?: Settings) => void
 	) => {
 		store.onDidChange('settings', (newValue: any, oldValue: any) => {
-			if (newValue['darkModeOn'] === undefined) {
-				newValue['darkModeOn'] = false;
+			if (newValue !== undefined && newValue?.darkModeOn === undefined) {
+				newValue.darkModeOn = false;
 			}
 			if (newValue && is(newValue, SettingsSchema)) {
 				if (oldValue && is(oldValue, SettingsSchema)) {
@@ -145,8 +145,8 @@ const databaseCoordinator = () => {
 		});
 		const settings = get('settings');
 		if (settings) {
-			if (settings['darkModeOn'] === undefined) {
-				settings['darkModeOn'] = false;
+			if (settings !== undefined && settings?.darkModeOn === undefined) {
+				settings.darkModeOn = false;
 			}
 			assert(settings, SettingsSchema);
 			callback(undefined, settings);

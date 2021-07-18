@@ -64,8 +64,6 @@ const App = () => {
 			if (is(settings, SettingsSchema)) {
 				setCurrency(settings.currency);
 				const html = document?.getElementsByTagName('html')?.[0];
-				console.log(html);
-				console.log(settings.darkModeOn);
 				if (html) {
 					if (settings.darkModeOn) {
 						if (!html.classList.contains('dark')) {
