@@ -468,6 +468,14 @@ function setupMessageListeners() {
 		event.reply('refresh', {});
 	});
 
+	ipcMain.on('getVersionNumber', (event, msg) => {
+		try {
+			event.returnValue = app.getVersion();
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
 	ipcMain.on('refresh', (event) => {
 		(async () => {
 			try {

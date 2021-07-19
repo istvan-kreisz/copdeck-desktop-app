@@ -34,6 +34,7 @@ const SettingsTab = (prop: {
 
 	const [updateInterval, setUpdateInterval] = useState('5');
 	const [darkModeOn, setDarkModeOn] = useState(false);
+	const [versionNumber, setVersionNumber] = useState<string>();
 	const [notificationFrequency, setNotificationFrequency] = useState('24');
 	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
 	const [country, setCountry] = useState<CountryName>('Austria');
@@ -54,6 +55,9 @@ const SettingsTab = (prop: {
 	});
 
 	useEffect(() => {
+		const versionNumber = ipcRenderer.sendSync('getVersionNumber');
+		setVersionNumber(versionNumber);
+
 		ipcRenderer.send('getSettings');
 		ipcRenderer.on('settingsUpdated', (event, settings) => {
 			if (is(settings, SettingsSchema)) {
@@ -511,6 +515,11 @@ const SettingsTab = (prop: {
 						</a>
 					</div>
 				</div>
+				<div className="mt-3 mb-2 border border-gray-300 dark:border-gray-700"></div>
+
+				<p className="text-base font-bold text-gray-600">
+					{'CopDeck Price Alerts v' + versionNumber}
+				</p>
 			</div>
 			<Popup
 				title={telltipMessage?.title}
