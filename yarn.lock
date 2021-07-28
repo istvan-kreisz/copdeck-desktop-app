@@ -1622,16 +1622,16 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@istvankreisz/copdeck-scraper@1.2.6":
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.2.6.tgz#6da612b855a7b9ea3bdc9e0a7abca014dd5ca1b2"
-  integrity sha512-ZLgE82LhrwM5X8HpT9K1jaqjKR2GMeOJwSyPar8lClVgn9Juoe9SxQbBdFMX1HKd5pDQeks4qjffHD5FKUoLZA==
+"@istvankreisz/copdeck-scraper@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.3.1.tgz#bf5018f76c4df896074c5d9cc34e94b94dae87b4"
+  integrity sha512-5nrvf4e7E2WqSbqesIYYXYxTp7Z/zvJUMvpaHoN6ftI6+ig1kLQ25sXGOvtvuu0NMW8zcFvqBXSB9ou+AIJGhg==
   dependencies:
     fast-xml-parser "^3.19.0"
     https-proxy-agent "^5.0.0"
     node-fetch "^2.6.1"
     superstruct "^0.15.2"
-    user-agents "^1.0.681"
+    user-agents "^1.0.726"
 
 "@jest/console@^26.6.2":
   version "26.6.2"
@@ -12644,10 +12644,10 @@ use@^3.1.0:
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
 
-user-agents@^1.0.681:
-  version "1.0.709"
-  resolved "https://registry.yarnpkg.com/user-agents/-/user-agents-1.0.709.tgz#bdef0a16e726a9f76c305addb5887f9dd6a95862"
-  integrity sha512-QveBZyUhLLzK/mU8JTLFRmk+ZOXts98EJycEzsfZ5wpGMay2rMdmArg2CouaOdpNQ7a/F7v1PyRyNH72Xc7KlQ==
+user-agents@^1.0.726:
+  version "1.0.726"
+  resolved "https://registry.yarnpkg.com/user-agents/-/user-agents-1.0.726.tgz#9a22bcc6197551653e64c75ac2c0458ad8ddb39a"
+  integrity sha512-FZknASSz6EizoHoLGXbkfE9rgj0PH2grJ/BmMM9Fffd8pL3qBDpWhp0hqcA2XYlRL1vXfq5/W9RcSPKtcdhIzQ==
   dependencies:
     dot-json "^1.2.2"
     lodash.clonedeep "^4.5.0"

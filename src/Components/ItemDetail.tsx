@@ -128,13 +128,17 @@ const ItemDetail = (prop: {
 			.find((s) => s.store.id === store.id)
 			?.inventory.find((inventoryItem) => inventoryItem.size === size);
 		const storeInfo = prop.selectedItem.storeInfo.find((s) => s.store.id === store.id);
-		const ask = prices?.lowestAsk;
-		const bid = prices?.highestBid;
-		let askPrice: number | null | undefined = ask?.noFees;
-		let bidPrice: number | null | undefined = bid?.noFees;
+		let askPrice: number | null | undefined = prices?.lowestAsk;
+		let bidPrice: number | null | undefined = prices?.highestBid;
 		if (feeType !== 'None') {
-			askPrice = feeType === 'Buy' ? ask?.withBuyerFees : ask?.withSellerFees;
-			bidPrice = feeType === 'Buy' ? bid?.withBuyerFees : bid?.withSellerFees;
+			askPrice =
+				feeType === 'Buy'
+					? prices?.lowestAskWithBuyerFees
+					: prices?.lowestAskWithSellerFees;
+			bidPrice =
+				feeType === 'Buy'
+					? prices?.highestBidWithBuyerFees
+					: prices?.highestBidWithSellerFees;
 		}
 		const askInfo: [string, number] = askPrice
 			? [prop.currency.symbol + askPrice, askPrice]

@@ -124,7 +124,13 @@ const databaseCoordinator = () => {
 		) {
 			return exchangeRates;
 		} else {
-			return { usd: 1.1891, gbp: 0.8567, chf: 1.0954, nok: 10.2673 };
+			return {
+				usd: 1.1891,
+				gbp: 0.8567,
+				chf: 1.0954,
+				nok: 10.2673,
+				updated: new Date().getTime(),
+			};
 		}
 	};
 

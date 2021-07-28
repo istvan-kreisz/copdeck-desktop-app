@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import {
 	nodeAPI,
+	calculatePrices,
 	promiseAllSkippingErrors,
 	isOlderThan,
 	itemBestPrice,
@@ -256,7 +257,7 @@ const updatePrices = async (forced: boolean = false) => {
 							nodeAPI
 								.getItemPrices(item, apiConfig())
 								.then((result) => {
-									resolve(result);
+									resolve(calculatePrices(result, apiConfig()));
 								})
 								.catch((err) => {
 									reject(err);
@@ -281,7 +282,8 @@ const updatePrices = async (forced: boolean = false) => {
 
 const fetchAndSave = async (item: Item) => {
 	const settings = getSettings();
-	const newItem = await nodeAPI.getItemPrices(item, apiConfig());
+	let newItem = await nodeAPI.getItemPrices(item, apiConfig());
+	newItem = calculatePrices(newItem, apiConfig());
 	updateItem(newItem, !app.isPackaged);
 	return newItem;
 };
