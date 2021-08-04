@@ -38,7 +38,13 @@ const SettingsTab = (prop: {
 	const [notificationFrequency, setNotificationFrequency] = useState('24');
 	const [selectedCurrency, setSelectedCurrency] = useState<Currency>(EUR);
 	const [country, setCountry] = useState<CountryName>('Austria');
-	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4>(1);
+	const [stockxLevel, setStockxLevel] = useState<1 | 2 | 3 | 4 | 5>(1);
+	const [includeStockXQuickShipBonus, setIncludeStockXQuickShipBonus] = useState<
+		'include' | 'dontinclude'
+	>('include');
+	const [includeStockXSuccessfulShipBonus, setIncludeStockXSuccessfulShipBonus] = useState<
+		'include' | 'dontinclude'
+	>('include');
 	const [goatCommissionFee, setGoatCommissionFee] = useState<9.5 | 15 | 20>(9.5);
 	const [includeGoatCashoutFee, setIncludeGoatCashoutFee] = useState<'include' | 'dontinclude'>(
 		'include'
@@ -81,6 +87,13 @@ const SettingsTab = (prop: {
 				setIncludeGoatCashoutFee(
 					settings.feeCalculation.goat.cashOutFee === 0.029 ? 'include' : 'dontinclude'
 				);
+				setIncludeStockXQuickShipBonus(
+					settings.feeCalculation.stockx.quickShipBonus ? 'include' : 'dontinclude'
+				);
+				setIncludeStockXSuccessfulShipBonus(
+					settings.feeCalculation.stockx.successfulShipBonus ? 'include' : 'dontinclude'
+				);
+
 				if (goatTaxesField.current) {
 					goatTaxesField.current.value = `${settings.feeCalculation.goat.taxes}`;
 				}
@@ -121,6 +134,9 @@ const SettingsTab = (prop: {
 				stockx: {
 					sellerLevel: stockxLevel,
 					taxes: parseFloat(stockxTaxesField.current?.value ?? '') ?? 0,
+					quickShipBonus: includeStockXQuickShipBonus === 'include' && stockxLevel >= 4,
+					successfulShipBonus:
+						includeStockXSuccessfulShipBonus === 'include' && stockxLevel >= 4,
 				},
 				goat: {
 					commissionPercentage: goatCommissionFee,
@@ -185,6 +201,18 @@ const SettingsTab = (prop: {
 		const value = event.target.value;
 		if (value === 'include' || value === 'dontinclude') {
 			setIncludeGoatCashoutFee(value);
+		}
+	};
+	const stockXSuccessfulShipBonusSelected = (event: { target: HTMLSelectElement }) => {
+		const value = event.target.value;
+		if (value === 'include' || value === 'dontinclude') {
+			setIncludeStockXSuccessfulShipBonus(value);
+		}
+	};
+	const stockXQuickShipBonusSelected = (event: { target: HTMLSelectElement }) => {
+		const value = event.target.value;
+		if (value === 'include' || value === 'dontinclude') {
+			setIncludeStockXQuickShipBonus(value);
 		}
 	};
 
@@ -386,6 +414,7 @@ const SettingsTab = (prop: {
 						<option value="2">Level 2</option>
 						<option value="3">Level 3</option>
 						<option value="4">Level 4</option>
+						<option value="5">Level 5</option>
 					</select>
 
 					{subheaderWithTellTip('Taxes', {
@@ -405,6 +434,44 @@ const SettingsTab = (prop: {
 						/>
 						<p className="text-xl font-medium">%</p>
 					</div>
+
+					{stockxLevel >= 4 ? (
+						<>
+							<div className="flex flex-row items-center mt-2 mb-1 space-x-1">
+								<h5 className="text-base font-bold">
+									StockX quick ship bonus (-1%)
+								</h5>
+							</div>
+
+							<select
+								className="w-full"
+								onChange={stockXQuickShipBonusSelected}
+								name="type"
+								id="type"
+								value={includeStockXQuickShipBonus}
+							>
+								<option value="include">Include</option>
+								<option value="dontinclude">Don't include</option>
+							</select>
+
+							<div className="flex flex-row items-center mt-2 mb-1 space-x-1">
+								<h5 className="text-base font-bold">
+									StockX successful ship bonus (-1%)
+								</h5>
+							</div>
+
+							<select
+								className="w-full"
+								onChange={stockXSuccessfulShipBonusSelected}
+								name="type"
+								id="type"
+								value={includeStockXSuccessfulShipBonus}
+							>
+								<option value="include">Include</option>
+								<option value="dontinclude">Don't include</option>
+							</select>
+						</>
+					) : null}
 
 					<h4 className="text-lg font-bold mt-4 mb-1">GOAT</h4>
 					{subheaderWithTellTip('Commission fee percentage', {

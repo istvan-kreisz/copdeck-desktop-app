@@ -23,6 +23,8 @@ const databaseCoordinator = () => {
 			stockx: {
 				sellerLevel: 1,
 				taxes: 0,
+				successfulShipBonus: false,
+				quickShipBonus: false,
 			},
 			goat: {
 				commissionPercentage: 9.5,
