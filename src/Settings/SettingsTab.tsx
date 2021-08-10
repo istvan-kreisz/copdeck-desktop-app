@@ -185,7 +185,7 @@ const SettingsTab = (prop: {
 
 	const stockxLevelSelected = (event: { target: HTMLSelectElement }) => {
 		const value = parseInt(event.target.value);
-		if (value === 1 || value === 2 || value === 3 || value === 4) {
+		if (value === 1 || value === 2 || value === 3 || value === 4 || value === 5) {
 			setStockxLevel(value);
 		}
 	};
