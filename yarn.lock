@@ -1623,9 +1623,9 @@
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
 "@istvankreisz/copdeck-scraper@^1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.3.3.tgz#a71bec3b3d9813972ffe1ff0af80db5c09fc904e"
-  integrity sha512-hAx2ZKtMQZnvPOXR2JhvfZpmywXLoA2qzlJwU+TJBmcYnjLfbSgMOoCxkgxtSGTV7d0RS+Ab+9Y/fmIgBXnmpw==
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@istvankreisz/copdeck-scraper/-/copdeck-scraper-1.4.5.tgz#d0465cbe4a969aeec8dfaf86239e753e95cff545"
+  integrity sha512-JhHFQxQEtasVcRAr53ysvrdAZpZGfycSSl7gHRUPJTQXZDwF4AqvAk23QdC2arhBlbUlIXSAReQRD3/rPS7waQ==
   dependencies:
     fast-xml-parser "^3.19.0"
     htmlparser2 "^6.1.0"
@@ -5050,7 +5050,7 @@ domelementtype@1, domelementtype@^1.3.1:
 
 domelementtype@^2.0.1, domelementtype@^2.2.0:
   version "2.2.0"
-  resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-2.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-2.2.0.tgz#9a0b6c2782ed6a1c7323d42267183df9bd8b1d57"
   integrity sha512-DtBMo82pv1dFtUmHyr48beiuq792Sxohr+8Hm9zoxklYPfa6n0Z3Byjj2IV7bmr2IyqClnqEQhfgHJJ5QF0R5A==
 
 domexception@^2.0.1:
@@ -5360,7 +5360,7 @@ entities@^1.1.1:
 
 entities@^2.0.0:
   version "2.2.0"
-  resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
   integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
 
 env-paths@^2.2.0, env-paths@^2.2.1:
@@ -12681,9 +12681,9 @@ use@^3.1.0:
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
 
 user-agents@^1.0.726:
-  version "1.0.739"
-  resolved "https://registry.yarnpkg.com/user-agents/-/user-agents-1.0.739.tgz#b39791060fdacc19bb5ddb6636fd49279f21de5f"
-  integrity sha512-qr//nzTg1GtvGr5cC+g1NZnOj2YW55LhMoQFDOEMLz3Wj9xBs54NAZ3ZuVRyQV4kemrBugDZf6YtWYIfTPCHrg==
+  version "1.0.754"
+  resolved "https://registry.yarnpkg.com/user-agents/-/user-agents-1.0.754.tgz#bbe3cf7734b1276d3992e4296a20294b988cd471"
+  integrity sha512-Ig59e4ImoQYWC9yQ4EW58aoACDwCO0Jg5JeX2FA6Ql/uro5lUQhbLdTZ+4yB3HU2tdtn2Zp/i8hG8Hp7czXVVQ==
   dependencies:
     dot-json "^1.2.2"
     lodash.clonedeep "^4.5.0"

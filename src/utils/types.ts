@@ -30,6 +30,9 @@ const SettingsSchema = object({
 			cashOutFee: union([literal(0.029), literal(0)]),
 			taxes: number(),
 		}),
+		klekt: object({
+			taxes: number(),
+		}),
 	}),
 });
 

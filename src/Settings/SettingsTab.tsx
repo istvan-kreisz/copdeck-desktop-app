@@ -143,6 +143,9 @@ const SettingsTab = (prop: {
 					cashOutFee: includeGoatCashoutFee === 'include' ? 0.029 : 0,
 					taxes: parseFloat(goatTaxesField.current?.value ?? '') ?? 0,
 				},
+				klekt: {
+					taxes: 0,
+				},
 			},
 		};
 

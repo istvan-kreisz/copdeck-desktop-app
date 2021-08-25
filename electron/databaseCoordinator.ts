@@ -31,6 +31,9 @@ const databaseCoordinator = () => {
 				cashOutFee: 0,
 				taxes: 0,
 			},
+			klekt: {
+				taxes: 0,
+			},
 		},
 	};
 

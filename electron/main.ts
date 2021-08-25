@@ -183,7 +183,7 @@ const clearCache = async () => {
 };
 
 const fetchExchangeRates = async () => {
-	const rates = await nodeAPI.getExchangeRates(apiConfig());
+	const rates = (await nodeAPI.getExchangeRates(apiConfig(), '')).res;
 	if (rates.chf && rates.gbp && rates.nok && rates.usd) {
 		saveExchangeRates(rates);
 		logDev('refreshed exchange rates');
@@ -255,9 +255,9 @@ const updatePrices = async (forced: boolean = false) => {
 						const delay = Math.random() * requestDelayMax;
 						setTimeout(() => {
 							nodeAPI
-								.getItemPrices(item, apiConfig())
+								.getItemPrices(item, apiConfig(), '')
 								.then((result) => {
-									resolve(calculatePrices(result, apiConfig()));
+									resolve(calculatePrices(result.res, apiConfig(), '').res);
 								})
 								.catch((err) => {
 									reject(err);
@@ -281,9 +281,8 @@ const updatePrices = async (forced: boolean = false) => {
 };
 
 const fetchAndSave = async (item: Item) => {
-	const settings = getSettings();
-	let newItem = await nodeAPI.getItemPrices(item, apiConfig());
-	newItem = calculatePrices(newItem, apiConfig());
+	let newItem = (await nodeAPI.getItemPrices(item, apiConfig(), '')).res;
+	newItem = calculatePrices(newItem, apiConfig(), '').res;
 	updateItem(newItem, !app.isPackaged);
 	return newItem;
 };
@@ -380,7 +379,7 @@ function setupMessageListeners() {
 			try {
 				assert(searchTerm, string());
 				log('searching', !app.isPackaged);
-				const items = await nodeAPI.searchItems(searchTerm, apiConfig());
+				const items = (await nodeAPI.searchItems(searchTerm, apiConfig(), '')).res;
 				event.reply('search', items);
 			} catch (err) {
 				event.reply('search', []);

@@ -25,7 +25,7 @@ const AddAlertModal = (prop: {
 	const [selectedSize, setSelectedSize] = useState<string>();
 	const [relation, setRelation] = useState<'above' | 'below'>('below');
 	const [feeType, setFeeType] = useState<FeeType>('None');
-	const [priceType, setPriceType] = useState<'ask' | 'bid'>('ask');
+	const [priceType, setPriceType] = useState<'Ask' | 'Bid'>('Ask');
 
 	const firebase = useContext(FirebaseContext);
 
@@ -92,7 +92,7 @@ const AddAlertModal = (prop: {
 
 	const priceTypeSelected = (event: { target: HTMLSelectElement }) => {
 		const value = event.target.value;
-		if (value === 'ask' || value === 'bid') {
+		if (value === 'Ask' || value === 'Bid') {
 			setPriceType(value);
 		}
 	};
